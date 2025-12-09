@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đặt phòng khách sạn - TourDuLich.com</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Hotel specific styles */
+      .hotel-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+      }
+
+      .hotel-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.1);
+      }
+
+      .hotel-rating {
+        background-color: #ffc107;
+        color: #000;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .amenity-icon {
+        width: 30px;
+        height: 30px;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+      }
+
+      .price-badge {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .room-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .room-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .availability-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1;
+      }
+
+      .hotel-gallery {
+        height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .gallery-main {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .gallery-thumbnails {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+      }
+
+      .gallery-thumb {
+        width: 80px;
+        height: 60px;
+        border-radius: 5px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .gallery-thumb.active {
+        border-color: var(--primary-color);
+      }
+
+      .date-range-picker {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+      }
+
+      .date-input-group {
+        position: relative;
+      }
+
+      .date-input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        z-index: 2;
+      }
+
+      .date-input-group input {
+        padding-left: 45px;
+      }
+
+      .filter-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-option:hover {
+        background-color: #f8f9fa;
+        border-color: var(--primary-color);
+      }
+
+      .filter-option.active {
+        background-color: #e7f1ff;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .star-rating {
+        color: #ffc107;
+      }
+
+      .no-hotel-found {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .no-hotel-found i {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top"
+    >
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <img src="images/logo.png" alt="Logo" height="40" />
+          <span class="brand-text"
+            >TourDuLich<span class="text-primary">.com</span></span
+          >
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tours.html">Tour du lịch</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="hotels.html">Khách sạn</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                data-bs-toggle="dropdown"
+              >
+                Điểm đến
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="hotels.html?city=Ha Noi"
+                    >Hà Nội</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="hotels.html?city=Da Nang"
+                    >Đà Nẵng</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="hotels.html?city=Ho Chi Minh"
+                    >TP.HCM</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="hotels.html?city=Nha Trang"
+                    >Nha Trang</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="hotels.html?city=Phu Quoc"
+                    >Phú Quốc</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Liên hệ</a>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <a href="login.html" class="btn btn-outline-primary me-2">
+              <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="register.html" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5" style="margin-top: 76px">
+      <!-- Search Header -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <div class="card border-0 shadow-lg">
+            <div class="card-body p-4">
+              <h2 class="card-title mb-4">Tìm phòng khách sạn</h2>
+              <form id="hotelSearchForm">
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Địa điểm</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-map-marker-alt"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="searchLocation"
+                        placeholder="Thành phố, địa điểm..."
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Nhận phòng</label>
+                    <div class="date-input-group">
+                      <i class="fas fa-calendar-alt"></i>
+                      <input
+                        type="text"
+                        class="form-control datepicker"
+                        id="checkInDate"
+                        placeholder="Chọn ngày"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Trả phòng</label>
+                    <div class="date-input-group">
+                      <i class="fas fa-calendar-alt"></i>
+                      <input
+                        type="text"
+                        class="form-control datepicker"
+                        id="checkOutDate"
+                        placeholder="Chọn ngày"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Số phòng & Khách</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-user-friends"></i
+                      ></span>
+                      <select class="form-select" id="roomGuests">
+                        <option value="1">1 phòng, 1 khách</option>
+                        <option value="2" selected>1 phòng, 2 khách</option>
+                        <option value="3">1 phòng, 3 khách</option>
+                        <option value="4">2 phòng, 4 khách</option>
+                        <option value="6">2 phòng, 6 khách</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                      <i class="fas fa-search me-2"></i>Tìm khách sạn
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="card border-0 shadow-sm sticky-top" style="top: 90px">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Bộ lọc</h5>
+
+              <!-- Price Range -->
+              <div class="mb-4">
+                <h6 class="mb-3">Khoảng giá / đêm</h6>
+                <div class="d-flex justify-content-between mb-2">
+                  <span id="minPriceLabel">0 VND</span>
+                  <span id="maxPriceLabel">5,000,000 VND</span>
+                </div>
+                <input
+                  type="range"
+                  class="form-range"
+                  min="0"
+                  max="5000000"
+                  step="500000"
+                  id="priceRange"
+                  value="5000000"
+                />
+                <div class="mt-2">
+                  <input
+                    type="number"
+                    class="form-control mb-2"
+                    id="minPriceInput"
+                    placeholder="Từ"
+                    min="0"
+                  />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="maxPriceInput"
+                    placeholder="Đến"
+                    max="5000000"
+                  />
+                </div>
+              </div>
+
+              <!-- Star Rating -->
+              <div class="mb-4">
+                <h6 class="mb-3">Hạng sao</h6>
+                <div id="starRatingFilters">
+                  <div class="filter-option" data-rating="5">
+                    <div>
+                      <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                      </div>
+                      <small class="text-muted">5 sao</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" />
+                    </div>
+                  </div>
+                  <div class="filter-option" data-rating="4">
+                    <div>
+                      <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                      </div>
+                      <small class="text-muted">4 sao</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" />
+                    </div>
+                  </div>
+                  <div class="filter-option" data-rating="3">
+                    <div>
+                      <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                      </div>
+                      <small class="text-muted">3 sao</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Amenities -->
+              <div class="mb-4">
+                <h6 class="mb-3">Tiện nghi</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="wifi" />
+                  <label class="form-check-label" for="wifi">
+                    <i class="fas fa-wifi text-primary me-2"></i>Wi-Fi miễn phí
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="parking"
+                  />
+                  <label class="form-check-label" for="parking">
+                    <i class="fas fa-parking text-primary me-2"></i>Bãi đỗ xe
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="pool" />
+                  <label class="form-check-label" for="pool">
+                    <i class="fas fa-swimming-pool text-primary me-2"></i>Hồ bơi
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="spa" />
+                  <label class="form-check-label" for="spa">
+                    <i class="fas fa-spa text-primary me-2"></i>Spa
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="gym" />
+                  <label class="form-check-label" for="gym">
+                    <i class="fas fa-dumbbell text-primary me-2"></i>Phòng gym
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="breakfast"
+                  />
+                  <label class="form-check-label" for="breakfast">
+                    <i class="fas fa-utensils text-primary me-2"></i>Bữa sáng
+                  </label>
+                </div>
+              </div>
+
+              <!-- Hotel Type -->
+              <div class="mb-4">
+                <h6 class="mb-3">Loại khách sạn</h6>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="hotelType"
+                    id="hotelTypeAll"
+                    checked
+                  />
+                  <label class="form-check-label" for="hotelTypeAll">
+                    Tất cả
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="hotelType"
+                    id="hotelTypeResort"
+                  />
+                  <label class="form-check-label" for="hotelTypeResort">
+                    Resort
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="hotelType"
+                    id="hotelTypeBoutique"
+                  />
+                  <label class="form-check-label" for="hotelTypeBoutique">
+                    Khách sạn boutique
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="hotelType"
+                    id="hotelTypeBudget"
+                  />
+                  <label class="form-check-label" for="hotelTypeBudget">
+                    Khách sạn bình dân
+                  </label>
+                </div>
+              </div>
+
+              <!-- Reset & Apply -->
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary" id="applyHotelFilters">
+                  Áp dụng bộ lọc
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  id="resetHotelFilters"
+                >
+                  Đặt lại
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotels List -->
+        <div class="col-lg-9">
+          <!-- Results Header -->
+          <div class="row mb-4">
+            <div class="col">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 class="mb-1" id="hotelsCount">Đang tải...</h4>
+                  <small class="text-muted" id="searchLocationText"></small>
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="me-2">Sắp xếp:</span>
+                  <select
+                    class="form-select form-select-sm w-auto"
+                    id="sortHotels"
+                  >
+                    <option value="recommended">Được đề xuất</option>
+                    <option value="price_asc">Giá thấp đến cao</option>
+                    <option value="price_desc">Giá cao đến thấp</option>
+                    <option value="rating_desc">Đánh giá cao nhất</option>
+                    <option value="stars_desc">Hạng sao cao nhất</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div id="loadingHotels" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Đang tải danh sách khách sạn...</p>
+          </div>
+
+          <!-- Hotels Grid -->
+          <div id="hotelsGrid" class="row">
+            <!-- Hotels will be loaded here -->
+          </div>
+
+          <!-- No Results -->
+          <div id="noHotelsFound" class="no-hotel-found d-none">
+            <i class="fas fa-hotel"></i>
+            <h4 class="mb-3">Không tìm thấy khách sạn phù hợp</h4>
+            <p class="text-muted mb-4">
+              Hãy thử thay đổi bộ lọc hoặc tìm kiếm với địa điểm khác
+            </p>
+            <button class="btn btn-outline-primary" id="resetSearchBtn">
+              <i class="fas fa-redo me-2"></i>Đặt lại tìm kiếm
+            </button>
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation" class="mt-5" id="hotelPagination">
+            <ul class="pagination justify-content-center">
+              <!-- Pagination will be generated here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hotel Detail Modal -->
+    <div
+      class="modal fade"
+      id="hotelDetailModal"
+      tabindex="-1"
+      aria-labelledby="hotelDetailModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="hotelDetailModalLabel">
+              Chi tiết khách sạn
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Content will be loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div
+      class="modal fade"
+      id="bookingModal"
+      tabindex="-1"
+      aria-labelledby="bookingModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingModalLabel">
+              Đặt phòng khách sạn
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Booking form will be loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h5 class="mb-3">TourDuLich.com</h5>
+            <p class="text-muted">
+              Đặt phòng khách sạn nhanh chóng, giá tốt nhất với hơn 10,000 khách
+              sạn trên toàn quốc.
+            </p>
+            <div class="social-icons mt-3">
+              <a href="#" class="text-white me-3"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="text-white me-3"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="text-white me-3"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-6 mb-4">
+            <h6 class="mb-3">Khách sạn</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="hotels.html?city=Ha Noi"
+                  class="text-muted text-decoration-none"
+                  >Hà Nội</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="hotels.html?city=Da Nang"
+                  class="text-muted text-decoration-none"
+                  >Đà Nẵng</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="hotels.html?city=Ho Chi Minh"
+                  class="text-muted text-decoration-none"
+                  >TP.HCM</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="hotels.html?city=Phu Quoc"
+                  class="text-muted text-decoration-none"
+                  >Phú Quốc</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <h6 class="mb-3">Hỗ trợ</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a href="faq.html" class="text-muted text-decoration-none"
+                  >Câu hỏi thường gặp</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="contact.html" class="text-muted text-decoration-none"
+                  >Liên hệ đặt phòng</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="terms.html" class="text-muted text-decoration-none"
+                  >Điều khoản đặt phòng</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="privacy.html" class="text-muted text-decoration-none"
+                  >Chính sách bảo mật</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3 mb-4">
+            <h6 class="mb-3">Hỗ trợ 24/7</h6>
+            <p class="text-muted small">Gọi ngay để được tư vấn và đặt phòng</p>
+            <div class="mb-3">
+              <h4 class="text-warning">1900 1234</h4>
+              <small class="text-muted">Miễn phí cuộc gọi</small>
+            </div>
+            <div class="input-group">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Email nhận ưu đãi"
+              />
+              <button class="btn btn-primary">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+        <hr class="bg-secondary" />
+        <div class="row pt-3">
+          <div class="col-md-6">
+            <p class="mb-0 text-muted">
+              © 2024 TourDuLich.com. All rights reserved.
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <img
+              src="images/payment-methods.png"
+              alt="Payment Methods"
+              height="30"
+            />
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.vi.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/hotels.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize date pickers
+        $(".datepicker").datepicker({
+          format: "dd/mm/yyyy",
+          language: "vi",
+          autoclose: true,
+          todayHighlight: true,
+        });
+
+        // Set default dates (today and tomorrow)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        $("#checkInDate").datepicker("setDate", today);
+        $("#checkOutDate").datepicker("setDate", tomorrow);
+
+        // Initialize hotel manager
+        const hotelManager = new HotelManager();
+        hotelManager.init();
+
+        // Search form submission
+        document
+          .getElementById("hotelSearchForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            hotelManager.searchHotels();
+          });
+
+        // Filter option click handlers
+        document.querySelectorAll(".filter-option").forEach((option) => {
+          option.addEventListener("click", function () {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle("active", checkbox.checked);
+          });
+        });
+
+        // Apply filters
+        document
+          .getElementById("applyHotelFilters")
+          .addEventListener("click", function () {
+            hotelManager.applyFilters();
+          });
+
+        // Reset filters
+        document
+          .getElementById("resetHotelFilters")
+          .addEventListener("click", function () {
+            hotelManager.resetFilters();
+          });
+
+        // Reset search
+        document
+          .getElementById("resetSearchBtn")
+          ?.addEventListener("click", function () {
+            hotelManager.resetFilters();
+          });
+
+        // Sort hotels
+        document
+          .getElementById("sortHotels")
+          .addEventListener("change", function () {
+            hotelManager.sortHotels(this.value);
+          });
+
+        // Price range slider
+        const priceRange = document.getElementById("priceRange");
+        const minPriceLabel = document.getElementById("minPriceLabel");
+        const maxPriceLabel = document.getElementById("maxPriceLabel");
+        const minPriceInput = document.getElementById("minPriceInput");
+        const maxPriceInput = document.getElementById("maxPriceInput");
+
+        function updatePriceLabels() {
+          const maxPrice = parseInt(priceRange.value);
+          const formattedMaxPrice = new Intl.NumberFormat("vi-VN").format(
+            maxPrice
+          );
+          maxPriceLabel.textContent = `${formattedMaxPrice} VND`;
+
+          if (minPriceInput.value) {
+            const formattedMinPrice = new Intl.NumberFormat("vi-VN").format(
+              minPriceInput.value
+            );
+            minPriceLabel.textContent = `${formattedMinPrice} VND`;
+          }
+        }
+
+        priceRange.addEventListener("input", updatePriceLabels);
+        minPriceInput.addEventListener("input", updatePriceLabels);
+        maxPriceInput.addEventListener("input", function () {
+          priceRange.value = this.value;
+          updatePriceLabels();
+        });
+
+        // Initial load from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const city = urlParams.get("city");
+        if (city) {
+          document.getElementById("searchLocation").value = city;
+          hotelManager.searchHotels();
+        }
+      });
+
+      // Hotel Manager Class
+      class HotelManager {
+        constructor() {
+          this.hotels = [];
+          this.filteredHotels = [];
+          this.currentPage = 1;
+          this.itemsPerPage = 6;
+          this.filters = {
+            minPrice: 0,
+            maxPrice: 5000000,
+            starRating: [],
+            amenities: [],
+            hotelType: "all",
+          };
+        }
+
+        init() {
+          this.loadHotels();
+        }
+
+        async loadHotels() {
+          try {
+            // Show loading
+            document.getElementById("loadingHotels").classList.remove("d-none");
+            document.getElementById("hotelsGrid").innerHTML = "";
+            document.getElementById("noHotelsFound").classList.add("d-none");
+
+            // Simulate API call - In real app, you would fetch from your API
+            await this.simulateApiCall();
+
+            // Update UI
+            this.updateHotelsList();
+            this.updateResultsCount();
+          } catch (error) {
+            console.error("Error loading hotels:", error);
+            this.showNoHotelsFound();
+          } finally {
+            document.getElementById("loadingHotels").classList.add("d-none");
+          }
+        }
+
+        simulateApiCall() {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              // Sample hotel data
+              this.hotels = [
+                {
+                  id: 1,
+                  name: "Khách Sạn Sheraton Hà Nội",
+                  location: "Quận Tây Hồ, Hà Nội",
+                  description: "Khách sạn 5 sao với view hồ Tây tuyệt đẹp",
+                  rating: 4.8,
+                  stars: 5,
+                  price_per_night: 3200000,
+                  images: [
+                    "images/hotels/hotel1-1.jpg",
+                    "images/hotels/hotel1-2.jpg",
+                  ],
+                  amenities: [
+                    "wifi",
+                    "parking",
+                    "pool",
+                    "spa",
+                    "gym",
+                    "breakfast",
+                  ],
+                  rooms_available: 15,
+                },
+                {
+                  id: 2,
+                  name: "Vinpearl Resort Nha Trang",
+                  location: "Đảo Hòn Tre, Nha Trang",
+                  description: "Resort sang trọng với bãi biển riêng",
+                  rating: 4.9,
+                  stars: 5,
+                  price_per_night: 4500000,
+                  images: [
+                    "images/hotels/hotel2-1.jpg",
+                    "images/hotels/hotel2-2.jpg",
+                  ],
+                  amenities: ["wifi", "parking", "pool", "spa", "breakfast"],
+                  rooms_available: 8,
+                },
+                {
+                  id: 3,
+                  name: "Melia Danang Resort",
+                  location: "Bãi biển Mỹ Khê, Đà Nẵng",
+                  description: "Resort 5 sao với hồ bơi vô cực",
+                  rating: 4.7,
+                  stars: 5,
+                  price_per_night: 3800000,
+                  images: [
+                    "images/hotels/hotel3-1.jpg",
+                    "images/hotels/hotel3-2.jpg",
+                  ],
+                  amenities: ["wifi", "parking", "pool", "gym", "breakfast"],
+                  rooms_available: 12,
+                },
+                {
+                  id: 4,
+                  name: "Liberty Central Saigon",
+                  location: "Quận 1, TP.HCM",
+                  description: "Khách sạn 4 sao trung tâm thành phố",
+                  rating: 4.5,
+                  stars: 4,
+                  price_per_night: 1800000,
+                  images: [
+                    "images/hotels/hotel4-1.jpg",
+                    "images/hotels/hotel4-2.jpg",
+                  ],
+                  amenities: ["wifi", "parking", "gym", "breakfast"],
+                  rooms_available: 25,
+                },
+                {
+                  id: 5,
+                  name: "La Siesta Classic Ma May",
+                  location: "Phố cổ Hà Nội",
+                  description: "Boutique hotel với kiến trúc Pháp cổ",
+                  rating: 4.6,
+                  stars: 4,
+                  price_per_night: 1500000,
+                  images: [
+                    "images/hotels/hotel5-1.jpg",
+                    "images/hotels/hotel5-2.jpg",
+                  ],
+                  amenities: ["wifi", "breakfast"],
+                  rooms_available: 18,
+                },
+                {
+                  id: 6,
+                  name: "Phú Quốc Eden Resort",
+                  location: "Bãi Trường, Phú Quốc",
+                  description: "Resort bãi biển với villa riêng tư",
+                  rating: 4.8,
+                  stars: 5,
+                  price_per_night: 5200000,
+                  images: [
+                    "images/hotels/hotel6-1.jpg",
+                    "images/hotels/hotel6-2.jpg",
+                  ],
+                  amenities: [
+                    "wifi",
+                    "parking",
+                    "pool",
+                    "spa",
+                    "gym",
+                    "breakfast",
+                  ],
+                  rooms_available: 6,
+                },
+              ];
+
+              this.filteredHotels = [...this.hotels];
+              resolve();
+            }, 1000);
+          });
+        }
+
+        updateHotelsList() {
+          const container = document.getElementById("hotelsGrid");
+          container.innerHTML = "";
+
+          const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+          const endIndex = startIndex + this.itemsPerPage;
+          const hotelsToShow = this.filteredHotels.slice(startIndex, endIndex);
+
+          if (hotelsToShow.length === 0) {
+            this.showNoHotelsFound();
+            return;
+          }
+
+          hotelsToShow.forEach((hotel) => {
+            const hotelCard = this.createHotelCard(hotel);
+            container.innerHTML += hotelCard;
+          });
+
+          // Add event listeners to hotel cards
+          this.addHotelCardListeners();
+
+          // Update pagination
+          this.updatePagination();
+        }
+
+        createHotelCard(hotel) {
+          const price = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(hotel.price_per_night);
+
+          const stars = "★".repeat(hotel.stars) + "☆".repeat(5 - hotel.stars);
+
+          return `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card hotel-card h-100 border-0 shadow-sm" data-hotel-id="${
+                          hotel.id
+                        }">
+                            <div class="position-relative">
+                                <img src="${
+                                  hotel.images[0] || "images/default-hotel.jpg"
+                                }" 
+                                     class="card-img-top" alt="${hotel.name}" 
+                                     style="height: 200px; object-fit: cover;">
+                                <span class="availability-badge">
+                                    <span class="badge bg-${
+                                      hotel.rooms_available > 5
+                                        ? "success"
+                                        : "warning"
+                                    }">
+                                        ${hotel.rooms_available} phòng còn
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">${
+                                      hotel.name
+                                    }</h6>
+                                    <div class="hotel-rating">
+                                        ${hotel.rating.toFixed(1)}
+                                        <i class="fas fa-star ms-1" style="font-size: 0.8rem;"></i>
+                                    </div>
+                                </div>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt text-primary me-1"></i> 
+                                    ${hotel.location}
+                                </p>
+                                <div class="mb-3">
+                                    <span class="star-rating">${stars}</span>
+                                    <small class="text-muted ms-2">${
+                                      hotel.stars
+                                    } sao</small>
+                                </div>
+                                <p class="card-text small mb-3 text-truncate" title="${
+                                  hotel.description
+                                }">
+                                    ${hotel.description}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <div>
+                                        <h5 class="price-badge mb-0">${price}</h5>
+                                        <small class="text-muted">/đêm</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary book-room-btn" data-hotel-id="${
+                                      hotel.id
+                                    }">
+                                        <i class="fas fa-calendar-check me-1"></i> Đặt phòng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+
+        addHotelCardListeners() {
+          // Hotel card click
+          document.querySelectorAll(".hotel-card").forEach((card) => {
+            card.addEventListener("click", (e) => {
+              if (!e.target.closest(".book-room-btn")) {
+                const hotelId = card.dataset.hotelId;
+                this.showHotelDetail(hotelId);
+              }
+            });
+          });
+
+          // Book room button click
+          document.querySelectorAll(".book-room-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const hotelId = btn.dataset.hotelId;
+              this.showBookingForm(hotelId);
+            });
+          });
+        }
+
+        showHotelDetail(hotelId) {
+          const hotel = this.hotels.find((h) => h.id == hotelId);
+          if (!hotel) return;
+
+          const modal = new bootstrap.Modal(
+            document.getElementById("hotelDetailModal")
+          );
+          const modalBody = document.querySelector(
+            "#hotelDetailModal .modal-body"
+          );
+
+          const stars = "★".repeat(hotel.stars) + "☆".repeat(5 - hotel.stars);
+          const price = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(hotel.price_per_night);
+
+          modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="hotel-gallery mb-4">
+                                <img src="${
+                                  hotel.images[0] || "images/default-hotel.jpg"
+                                }" 
+                                     class="gallery-main" alt="${hotel.name}" 
+                                     id="mainGalleryImage">
+                                <div class="gallery-thumbnails">
+                                    ${hotel.images
+                                      .map(
+                                        (img, index) => `
+                                        <img src="${img}" 
+                                             class="gallery-thumb ${
+                                               index === 0 ? "active" : ""
+                                             }" 
+                                             alt="Thumbnail ${index + 1}"
+                                             data-index="${index}">
+                                    `
+                                      )
+                                      .join("")}
+                                </div>
+                            </div>
+                            
+                            <h4 class="mb-3">${hotel.name}</h4>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="star-rating me-2">${stars}</div>
+                                <span class="hotel-rating me-3">${hotel.rating.toFixed(
+                                  1
+                                )}</span>
+                                <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                                <span>${hotel.location}</span>
+                            </div>
+                            
+                            <p class="mb-4">${hotel.description}</p>
+                            
+                            <h6 class="mb-3">Tiện nghi</h6>
+                            <div class="row mb-4">
+                                ${this.getAmenitiesList(hotel.amenities)}
+                            </div>
+                            
+                            <h6 class="mb-3">Chính sách</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <i class="fas fa-sign-in-alt text-primary me-2"></i>
+                                        <strong>Nhận phòng:</strong> 14:00
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-sign-out-alt text-primary me-2"></i>
+                                        <strong>Trả phòng:</strong> 12:00
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <i class="fas fa-utensils text-primary me-2"></i>
+                                        <strong>Bữa sáng:</strong> Bao gồm
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-wifi text-primary me-2"></i>
+                                        <strong>Wi-Fi:</strong> Miễn phí
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm sticky-top" style="top: 90px;">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">Đặt phòng ngay</h5>
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Còn ${hotel.rooms_available} phòng trống
+                                    </div>
+                                    
+                                    <div class="date-range-picker mb-3">
+                                        <div class="mb-3">
+                                            <label class="form-label small">Nhận phòng</label>
+                                            <input type="text" class="form-control datepicker" 
+                                                   value="${$(
+                                                     "#checkInDate"
+                                                   ).val()}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small">Trả phòng</label>
+                                            <input type="text" class="form-control datepicker" 
+                                                   value="${$(
+                                                     "#checkOutDate"
+                                                   ).val()}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small">Số phòng & Khách</label>
+                                            <select class="form-select" id="roomGuestsDetail">
+                                                <option value="1">1 phòng, 1 khách</option>
+                                                <option value="2" selected>1 phòng, 2 khách</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="price-summary mb-4">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Giá phòng/đêm</span>
+                                            <span>${price}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Phí dịch vụ</span>
+                                            <span>200,000 VND</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Thuế VAT</span>
+                                            <span>100,000 VND</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Tổng cộng</span>
+                                            <span>${new Intl.NumberFormat(
+                                              "vi-VN",
+                                              {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }
+                                            ).format(
+                                              hotel.price_per_night + 300000
+                                            )}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary w-100 mb-2" 
+                                            onclick="hotelManager.showBookingForm(${
+                                              hotel.id
+                                            })">
+                                        <i class="fas fa-calendar-check me-2"></i>Đặt phòng ngay
+                                    </button>
+                                    <button class="btn btn-outline-primary w-100" data-bs-dismiss="modal">
+                                        <i class="fas fa-phone-alt me-2"></i>Gọi tư vấn
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+          // Add gallery functionality
+          this.initGallery();
+
+          // Initialize datepickers in modal
+          $(".datepicker").datepicker({
+            format: "dd/mm/yyyy",
+            language: "vi",
+            autoclose: true,
+            todayHighlight: true,
+          });
+
+          modal.show();
+        }
+
+        getAmenitiesList(amenities) {
+          const amenitiesMap = {
+            wifi: { icon: "wifi", text: "Wi-Fi miễn phí" },
+            parking: { icon: "parking", text: "Bãi đỗ xe" },
+            pool: { icon: "swimming-pool", text: "Hồ bơi" },
+            spa: { icon: "spa", text: "Spa" },
+            gym: { icon: "dumbbell", text: "Phòng gym" },
+            breakfast: { icon: "utensils", text: "Bữa sáng" },
+          };
+
+          return amenities
+            .map(
+              (amenity) => `
+                    <div class="col-6 mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="amenity-icon">
+                                <i class="fas fa-${
+                                  amenitiesMap[amenity]?.icon || "check"
+                                } text-primary"></i>
+                            </div>
+                            <span>${
+                              amenitiesMap[amenity]?.text || amenity
+                            }</span>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+        }
+
+        initGallery() {
+          const mainImage = document.getElementById("mainGalleryImage");
+          const thumbnails = document.querySelectorAll(".gallery-thumb");
+
+          thumbnails.forEach((thumb) => {
+            thumb.addEventListener("click", () => {
+              // Update main image
+              mainImage.src = thumb.src;
+
+              // Update active thumbnail
+              thumbnails.forEach((t) => t.classList.remove("active"));
+              thumb.classList.add("active");
+            });
+          });
+        }
+
+        showBookingForm(hotelId) {
+          const hotel = this.hotels.find((h) => h.id == hotelId);
+          if (!hotel) return;
+
+          const modal = new bootstrap.Modal(
+            document.getElementById("bookingModal")
+          );
+          const modalBody = document.querySelector("#bookingModal .modal-body");
+
+          const price = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(hotel.price_per_night);
+
+          modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h6 class="mb-3">${hotel.name}</h6>
+                            <form id="hotelBookingForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Điện thoại <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">CMND/CCCD</label>
+                                        <input type="text" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú đặc biệt</label>
+                                    <textarea class="form-control" rows="3" 
+                                              placeholder="Yêu cầu về phòng, giờ check-in sớm, ..."></textarea>
+                                </div>
+                                
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" required>
+                                    <label class="form-check-label small">
+                                        Tôi đồng ý với <a href="terms.html" target="_blank">Điều khoản đặt phòng</a>
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-check-circle me-2"></i>Xác nhận đặt phòng
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title mb-3">Thông tin đặt phòng</h6>
+                                    <div class="mb-3">
+                                        <small class="text-muted d-block">Khách sạn</small>
+                                        <strong>${hotel.name}</strong>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted d-block">Ngày nhận phòng</small>
+                                        <strong>${$(
+                                          "#checkInDate"
+                                        ).val()}</strong>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted d-block">Ngày trả phòng</small>
+                                        <strong>${$(
+                                          "#checkOutDate"
+                                        ).val()}</strong>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted d-block">Số phòng & Khách</small>
+                                        <strong>${
+                                          $("#roomGuests").val() === "2"
+                                            ? "1 phòng, 2 khách"
+                                            : "1 phòng, 1 khách"
+                                        }</strong>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Tổng thanh toán</span>
+                                        <span>${price}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+          // Handle booking form submission
+          document
+            .getElementById("hotelBookingForm")
+            ?.addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.processBooking(hotel);
+              modal.hide();
+            });
+
+          modal.show();
+        }
+
+        processBooking(hotel) {
+          // In real app, this would send data to your backend API
+          alert(
+            `Đặt phòng thành công tại ${hotel.name}! Chúng tôi sẽ liên hệ với bạn để xác nhận.`
+          );
+
+          // Show success message
+          const bookingModal = new bootstrap.Modal(
+            document.getElementById("bookingModal")
+          );
+          bookingModal.hide();
+
+          // You could redirect to a confirmation page or show success modal
+        }
+
+        searchHotels() {
+          const location = document.getElementById("searchLocation").value;
+          const checkIn = $("#checkInDate").val();
+          const checkOut = $("#checkOutDate").val();
+
+          // Update search location text
+          document.getElementById("searchLocationText").textContent = location
+            ? `Kết quả tìm kiếm tại "${location}"`
+            : "";
+
+          // In real app, you would send these parameters to your API
+          console.log("Searching hotels with:", {
+            location,
+            checkIn,
+            checkOut,
+          });
+
+          // For demo, just reload hotels
+          this.loadHotels();
+        }
+
+        applyFilters() {
+          // Get filter values
+          const minPrice =
+            parseInt(document.getElementById("minPriceInput").value) || 0;
+          const maxPrice =
+            parseInt(document.getElementById("maxPriceInput").value) || 5000000;
+
+          // Get star ratings
+          const starRatings = [];
+          document
+            .querySelectorAll("#starRatingFilters .filter-option")
+            .forEach((option) => {
+              const checkbox = option.querySelector('input[type="checkbox"]');
+              if (checkbox.checked) {
+                starRatings.push(parseInt(option.dataset.rating));
+              }
+            });
+
+          // Get amenities
+          const amenities = [];
+          ["wifi", "parking", "pool", "spa", "gym", "breakfast"].forEach(
+            (amenity) => {
+              if (document.getElementById(amenity)?.checked) {
+                amenities.push(amenity);
+              }
+            }
+          );
+
+          // Get hotel type
+          let hotelType = "all";
+          ["hotelTypeResort", "hotelTypeBoutique", "hotelTypeBudget"].forEach(
+            (type) => {
+              if (document.getElementById(type)?.checked) {
+                hotelType = type.replace("hotelType", "").toLowerCase();
+              }
+            }
+          );
+
+          // Update filters
+          this.filters = {
+            minPrice,
+            maxPrice,
+            starRating: starRatings,
+            amenities,
+            hotelType,
+          };
+
+          // Apply filters
+          this.filterHotels();
+        }
+
+        filterHotels() {
+          this.filteredHotels = this.hotels.filter((hotel) => {
+            // Price filter
+            if (
+              hotel.price_per_night < this.filters.minPrice ||
+              hotel.price_per_night > this.filters.maxPrice
+            ) {
+              return false;
+            }
+
+            // Star rating filter
+            if (
+              this.filters.starRating.length > 0 &&
+              !this.filters.starRating.includes(hotel.stars)
+            ) {
+              return false;
+            }
+
+            // Amenities filter
+            if (this.filters.amenities.length > 0) {
+              const hasAllAmenities = this.filters.amenities.every((amenity) =>
+                hotel.amenities.includes(amenity)
+              );
+              if (!hasAllAmenities) return false;
+            }
+
+            // Hotel type filter (simplified for demo)
+            if (this.filters.hotelType !== "all") {
+              // In real app, you would have a hotel type property
+              // For demo, we'll skip this filter
+            }
+
+            return true;
+          });
+
+          // Reset to first page
+          this.currentPage = 1;
+
+          // Update UI
+          this.updateHotelsList();
+          this.updateResultsCount();
+        }
+
+        resetFilters() {
+          // Reset form inputs
+          document.getElementById("minPriceInput").value = "";
+          document.getElementById("maxPriceInput").value = "";
+          document.getElementById("priceRange").value = 5000000;
+
+          // Reset checkboxes
+          document
+            .querySelectorAll('input[type="checkbox"]')
+            .forEach((cb) => (cb.checked = false));
+          document.querySelectorAll('input[type="radio"]').forEach((rb) => {
+            if (rb.id === "hotelTypeAll") rb.checked = true;
+            else rb.checked = false;
+          });
+
+          // Remove active class from filter options
+          document.querySelectorAll(".filter-option").forEach((option) => {
+            option.classList.remove("active");
+          });
+
+          // Reset filters
+          this.filters = {
+            minPrice: 0,
+            maxPrice: 5000000,
+            starRating: [],
+            amenities: [],
+            hotelType: "all",
+          };
+
+          // Reset hotel list
+          this.filteredHotels = [...this.hotels];
+          this.currentPage = 1;
+
+          // Update UI
+          this.updateHotelsList();
+          this.updateResultsCount();
+          this.updatePriceLabels();
+        }
+
+        sortHotels(sortBy) {
+          switch (sortBy) {
+            case "price_asc":
+              this.filteredHotels.sort(
+                (a, b) => a.price_per_night - b.price_per_night
+              );
+              break;
+            case "price_desc":
+              this.filteredHotels.sort(
+                (a, b) => b.price_per_night - a.price_per_night
+              );
+              break;
+            case "rating_desc":
+              this.filteredHotels.sort((a, b) => b.rating - a.rating);
+              break;
+            case "stars_desc":
+              this.filteredHotels.sort((a, b) => b.stars - a.stars);
+              break;
+            default:
+              // recommended - keep original order
+              break;
+          }
+
+          this.currentPage = 1;
+          this.updateHotelsList();
+        }
+
+        updateResultsCount() {
+          const count = this.filteredHotels.length;
+          document.getElementById(
+            "hotelsCount"
+          ).textContent = `${count} khách sạn được tìm thấy`;
+        }
+
+        showNoHotelsFound() {
+          document.getElementById("hotelsGrid").innerHTML = "";
+          document.getElementById("noHotelsFound").classList.remove("d-none");
+          document.getElementById("hotelPagination").classList.add("d-none");
+        }
+
+        updatePagination() {
+          const totalPages = Math.ceil(
+            this.filteredHotels.length / this.itemsPerPage
+          );
+          const pagination = document.getElementById("hotelPagination");
+          const paginationList = pagination.querySelector("ul");
+
+          if (totalPages <= 1) {
+            pagination.classList.add("d-none");
+            return;
+          }
+
+          pagination.classList.remove("d-none");
+          paginationList.innerHTML = "";
+
+          // Previous button
+          const prevLi = document.createElement("li");
+          prevLi.className = `page-item ${
+            this.currentPage === 1 ? "disabled" : ""
+          }`;
+          prevLi.innerHTML = `
+                    <a class="page-link" href="#" aria-label="Previous" data-page="${
+                      this.currentPage - 1
+                    }">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                `;
+          paginationList.appendChild(prevLi);
+
+          // Page numbers
+          for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${
+              i === this.currentPage ? "active" : ""
+            }`;
+            li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+            paginationList.appendChild(li);
+          }
+
+          // Next button
+          const nextLi = document.createElement("li");
+          nextLi.className = `page-item ${
+            this.currentPage === totalPages ? "disabled" : ""
+          }`;
+          nextLi.innerHTML = `
+                    <a class="page-link" href="#" aria-label="Next" data-page="${
+                      this.currentPage + 1
+                    }">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                `;
+          paginationList.appendChild(nextLi);
+
+          // Add event listeners
+          this.addPaginationListeners();
+        }
+
+        addPaginationListeners() {
+          document
+            .querySelectorAll("#hotelPagination .page-link")
+            .forEach((link) => {
+              link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const page = parseInt(link.dataset.page);
+                if (page && page !== this.currentPage) {
+                  this.currentPage = page;
+                  this.updateHotelsList();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              });
+            });
+        }
+
+        updatePriceLabels() {
+          const minPriceLabel = document.getElementById("minPriceLabel");
+          const maxPriceLabel = document.getElementById("maxPriceLabel");
+
+          const formattedMaxPrice = new Intl.NumberFormat("vi-VN").format(
+            this.filters.maxPrice
+          );
+          maxPriceLabel.textContent = `${formattedMaxPrice} VND`;
+
+          const formattedMinPrice = new Intl.NumberFormat("vi-VN").format(
+            this.filters.minPrice
+          );
+          minPriceLabel.textContent = `${formattedMinPrice} VND`;
+        }
+      }
+
+      // Make hotelManager globally accessible for modal callbacks
+      window.hotelManager = new HotelManager();
+    </script>
+  </body>
+</html>

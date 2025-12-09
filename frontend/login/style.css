@@ -1,0 +1,379 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* BODY */
+body {
+  background: #f1f4f7;
+}
+
+/* HEADER */
+.topbar {
+  background: #083d6b;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  color: white;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.menu {
+  margin-left: 40px;
+  flex: 1;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 14px;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+/* mũi tên cho đăng ký */
+.header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 22px;
+}
+.header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #083d6b;
+}
+/* BACK BUTTON */
+.back-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    text-decoration: none;
+    color: #6b7280;
+}
+
+.back-btn:hover {
+    color: orange;
+}
+
+/* LABEL */
+.register-box label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.required {
+    color: red;
+}
+
+/* INPUT */
+.register-box input {
+    width: 100%;
+    margin-top: 6px;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.register-box input:focus {
+    border-color: #ff9c27;
+}
+
+/* BUTTON */
+.actions button {
+    width: 100%;
+    background: #ff9c27;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    margin-top: 16px;
+    transition: 0.3s;
+}
+
+.actions button:hover {
+    background: #e6891a;
+}
+.header .back-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  text-decoration: none;
+  color: #6b7280;
+}
+
+.header .back-btn:hover {
+  color: orange;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.account {
+  font-weight: bold;
+}
+
+/* LOGIN AREA */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px);
+}
+
+.login-box {
+  position: relative;
+  background: white;
+  width: 380px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* BACK BUTTON */
+.login-box .back-btn {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  font-size: 22px;
+  text-decoration: none;
+  color: #083d6b;
+}
+
+.back-btn:hover {
+  color: orange;
+}
+
+/* TITLE */
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #083d6b;
+}
+
+/* FORM */
+.login-box label {
+  font-size: 14px;
+  display: block;
+  margin-top: 12px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: #ff9c27;
+}
+
+/* LINKS */
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.login-links a {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+/* BUTTON */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #f7931e;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.login-btn:hover {
+  background: #e67e00;
+}
+
+/* REGISTER BUTTON */
+.register-btn {
+  background: #083d6b;
+}
+
+.register-btn:hover {
+  background: #062f55;
+}
+
+/* DIVIDER */
+.divider {
+  text-align: center;
+  margin: 15px 0;
+  color: gray;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #ccc;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* ===== REGISTER PAGE FIX ===== */
+
+body.register-page {
+  background: #edf1f5;
+}
+
+/* BOX ĐĂNG KÝ */
+.register-box {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  margin: 60px auto;
+}
+
+/* HEADER */
+.register-box .header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.register-box h2 {
+  font-size: 22px;
+  color: #083d6b;
+  font-weight: bold;
+}
+
+/* NÚT BACK */
+.register-box .back-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  text-decoration: none;
+  color: #6b7280;
+}
+
+.register-box .back-btn:hover {
+  color: orange;
+}
+
+/* INPUT GROUP - MẬT KHẨU */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding-right: 38px;
+}
+
+.eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* CAPTCHA */
+.captcha {
+  margin-top: 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+}
+
+.captcha-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.captcha-right {
+  text-align: right;
+  font-size: 11px;
+  color: #666;
+}
+
+.captcha img {
+  width: 42px;
+}
+
+/* NÚT ĐĂNG KÝ */
+.register-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 6px;
+  border: none;
+  background: #ff9c27;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.register-btn:hover {
+  background: #e6891a;
+}

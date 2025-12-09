@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết Tour - TourDuLich.com</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Navigation (Same as index.html) -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top"
+    >
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <img
+            src="images/logo.png"
+            alt="Logo"
+            height="40"
+            class="d-inline-block align-text-top"
+          />
+          <span class="brand-text"
+            >TourDuLich<span class="text-primary">.com</span></span
+          >
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tours.html">Tour du lịch</a>
+            </li>
+            <!-- Rest of navigation same as index.html -->
+          </ul>
+          <div class="d-flex">
+            <a href="login.html" class="btn btn-outline-primary me-2">
+              <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="register.html" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div style="margin-top: 76px">
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Đang tải thông tin tour...</p>
+      </div>
+
+      <!-- Tour Detail -->
+      <div id="tourDetail" class="d-none">
+        <!-- Hero Section -->
+        <section class="hero-section position-relative">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-8 mx-auto">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="index.html">Trang chủ</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                      <a href="tours.html">Tour du lịch</a>
+                    </li>
+                    <li class="breadcrumb-item active" id="tourBreadcrumb">
+                      Chi tiết tour
+                    </li>
+                  </ol>
+                </nav>
+
+                <!-- Tour Images -->
+                <div class="tour-images mb-4">
+                  <div class="row g-2">
+                    <div class="col-md-8">
+                      <a href="#" data-lightbox="tour-images" id="mainImage">
+                        <img
+                          src=""
+                          class="img-fluid rounded-3 main-image"
+                          alt="Tour Image"
+                          style="height: 400px; width: 100%; object-fit: cover"
+                        />
+                      </a>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="row g-2" id="thumbnailGallery">
+                        <!-- Thumbnails will be loaded here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tour Header -->
+                <div class="tour-header mb-4">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h1 class="fw-bold mb-2" id="tourName"></h1>
+                      <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        <span class="me-4" id="tourDestination"></span>
+                        <i class="fas fa-clock text-primary me-2"></i>
+                        <span id="tourDuration"></span>
+                      </div>
+                      <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-success" id="tourStatus"></span>
+                        <span class="badge bg-info" id="tourCapacity"></span>
+                        <span class="badge bg-warning" id="tourPopular"></span>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <h3 class="text-primary mb-2" id="tourPrice"></h3>
+                      <small class="text-muted">/người</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tour Content -->
+        <section class="py-5">
+          <div class="container">
+            <div class="row">
+              <!-- Left Column: Tour Info -->
+              <div class="col-lg-8">
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs mb-4" id="tourTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link active"
+                      id="overview-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#overview"
+                      type="button"
+                    >
+                      Tổng quan
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="itinerary-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#itinerary"
+                      type="button"
+                    >
+                      Lịch trình
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="services-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#services"
+                      type="button"
+                    >
+                      Dịch vụ
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="policies-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#policies"
+                      type="button"
+                    >
+                      Chính sách
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="reviews-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#reviews"
+                      type="button"
+                    >
+                      Đánh giá
+                    </button>
+                  </li>
+                </ul>
+
+                <!-- Tabs Content -->
+                <div class="tab-content" id="tourTabContent">
+                  <!-- Overview Tab -->
+                  <div
+                    class="tab-pane fade show active"
+                    id="overview"
+                    role="tabpanel"
+                  >
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3">Giới thiệu tour</h5>
+                        <div id="tourDescription"></div>
+
+                        <h6 class="mt-4 mb-3">Điểm nổi bật</h6>
+                        <ul class="list-unstyled" id="tourHighlights">
+                          <!-- Highlights will be loaded here -->
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Itinerary Tab -->
+                  <div class="tab-pane fade" id="itinerary" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3">Lịch trình chi tiết</h5>
+                        <div id="tourItinerary"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Services Tab -->
+                  <div class="tab-pane fade" id="services" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <h6 class="mb-3 text-success">
+                              <i class="fas fa-check-circle me-2"></i>Bao gồm
+                            </h6>
+                            <ul class="list-unstyled" id="includedServices">
+                              <!-- Included services will be loaded here -->
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <h6 class="mb-3 text-danger">
+                              <i class="fas fa-times-circle me-2"></i>Không bao
+                              gồm
+                            </h6>
+                            <ul class="list-unstyled" id="excludedServices">
+                              <!-- Excluded services will be loaded here -->
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Policies Tab -->
+                  <div class="tab-pane fade" id="policies" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3">Chính sách & Điều khoản</h5>
+                        <div class="accordion" id="policiesAccordion">
+                          <div class="accordion-item">
+                            <h2 class="accordion-header">
+                              <button
+                                class="accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#cancellationPolicy"
+                              >
+                                Chính sách hủy tour
+                              </button>
+                            </h2>
+                            <div
+                              id="cancellationPolicy"
+                              class="accordion-collapse collapse show"
+                            >
+                              <div class="accordion-body">
+                                <ul>
+                                  <li>Hủy trước 30 ngày: Hoàn 100% giá tour</li>
+                                  <li>
+                                    Hủy trước 15-29 ngày: Hoàn 70% giá tour
+                                  </li>
+                                  <li>
+                                    Hủy trước 7-14 ngày: Hoàn 50% giá tour
+                                  </li>
+                                  <li>Hủy dưới 7 ngày: Không hoàn tiền</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="accordion-item">
+                            <h2 class="accordion-header">
+                              <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#paymentPolicy"
+                              >
+                                Chính sách thanh toán
+                              </button>
+                            </h2>
+                            <div
+                              id="paymentPolicy"
+                              class="accordion-collapse collapse"
+                            >
+                              <div class="accordion-body">
+                                <ul>
+                                  <li>Đặt cọc 30% khi đăng ký tour</li>
+                                  <li>
+                                    Thanh toán 100% trước 7 ngày khởi hành
+                                  </li>
+                                  <li>
+                                    Chấp nhận thanh toán qua chuyển khoản, thẻ
+                                    tín dụng, tiền mặt
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Reviews Tab -->
+                  <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3">Đánh giá từ khách hàng</h5>
+                        <div id="tourReviews">
+                          <div class="text-center py-4">
+                            <p class="text-muted">
+                              Chưa có đánh giá nào. Hãy là người đầu tiên đánh
+                              giá tour này!
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Booking Sidebar -->
+              <div class="col-lg-4">
+                <div class="sticky-top" style="top: 90px">
+                  <!-- Booking Card -->
+                  <div class="card border-0 shadow-lg mb-4">
+                    <div class="card-body p-4">
+                      <h5 class="card-title mb-4">Đặt tour ngay</h5>
+
+                      <!-- Departure Date -->
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Ngày khởi hành</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="departureDate"
+                          min=""
+                        />
+                      </div>
+
+                      <!-- Number of People -->
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Số lượng người</label>
+                        <div class="row g-2">
+                          <div class="col-4">
+                            <label class="form-label small">Người lớn</label>
+                            <select class="form-select" id="adultsCount">
+                              <option value="1">1</option>
+                              <option value="2" selected>2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5+</option>
+                            </select>
+                          </div>
+                          <div class="col-4">
+                            <label class="form-label small">Trẻ em</label>
+                            <select class="form-select" id="childrenCount">
+                              <option value="0" selected>0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                            </select>
+                          </div>
+                          <div class="col-4">
+                            <label class="form-label small">Em bé</label>
+                            <select class="form-select" id="infantsCount">
+                              <option value="0" selected>0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Availability -->
+                      <div class="alert alert-info mb-4" id="availabilityAlert">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-info-circle me-2"></i>
+                          <span>Đang kiểm tra số chỗ...</span>
+                        </div>
+                      </div>
+
+                      <!-- Price Summary -->
+                      <div class="price-summary mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                          <span
+                            >Người lớn (<span id="adultsPriceCount">2</span
+                            >x)</span
+                          >
+                          <span id="adultsTotal">0 VND</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                          <span
+                            >Trẻ em (<span id="childrenPriceCount">0</span
+                            >x)</span
+                          >
+                          <span id="childrenTotal">0 VND</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                          <span
+                            >Em bé (<span id="infantsPriceCount">0</span
+                            >x)</span
+                          >
+                          <span id="infantsTotal">0 VND</span>
+                        </div>
+                        <hr />
+                        <div
+                          class="d-flex justify-content-between fw-bold fs-5"
+                        >
+                          <span>Tổng cộng</span>
+                          <span id="totalPrice">0 VND</span>
+                        </div>
+                      </div>
+
+                      <!-- Booking Button -->
+                      <button
+                        class="btn btn-primary btn-lg w-100 mb-3"
+                        id="bookNowBtn"
+                      >
+                        <i class="fas fa-calendar-check me-2"></i>Đặt tour ngay
+                      </button>
+
+                      <!-- Contact Button -->
+                      <button
+                        class="btn btn-outline-primary w-100"
+                        id="contactBtn"
+                      >
+                        <i class="fas fa-phone-alt me-2"></i>Liên hệ tư vấn
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Tour Info Card -->
+                  <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                      <h6 class="card-title mb-3">Thông tin tour</h6>
+                      <ul class="list-unstyled">
+                        <li class="mb-2">
+                          <i
+                            class="fas fa-map-marker-alt text-primary me-2"
+                          ></i>
+                          <strong>Điểm khởi hành:</strong>
+                          <span id="departurePoint"></span>
+                        </li>
+                        <li class="mb-2">
+                          <i class="fas fa-clock text-primary me-2"></i>
+                          <strong>Giờ khởi hành:</strong>
+                          <span id="departureTime"></span>
+                        </li>
+                        <li class="mb-2">
+                          <i class="fas fa-home text-primary me-2"></i>
+                          <strong>Khách sạn:</strong>
+                          <span>3-4 sao</span>
+                        </li>
+                        <li class="mb-2">
+                          <i class="fas fa-utensils text-primary me-2"></i>
+                          <strong>Bữa ăn:</strong>
+                          <span>Theo chương trình</span>
+                        </li>
+                        <li class="mb-2">
+                          <i class="fas fa-bus text-primary me-2"></i>
+                          <strong>Phương tiện:</strong>
+                          <span>Xe du lịch đời mới</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- Similar Tours -->
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                      <h6 class="card-title mb-3">Tour tương tự</h6>
+                      <div id="similarTours">
+                        <!-- Similar tours will be loaded here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="text-center py-5 d-none">
+        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+        <h5>Không tìm thấy tour</h5>
+        <p class="text-muted mb-4">
+          Tour bạn tìm kiếm không tồn tại hoặc đã bị xóa.
+        </p>
+        <a href="tours.html" class="btn btn-primary">Quay lại danh sách tour</a>
+      </div>
+    </div>
+
+    <!-- Footer (Same as index.html) -->
+    <footer class="bg-dark text-white py-5">
+      <!-- Same footer as index.html -->
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/tour-detail.js"></script>
+  </body>
+</html>

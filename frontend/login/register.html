@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký | Opulent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="register-page">
+
+<div class="register-box">
+
+    <div class="header">
+        <a href="javascript:history.back()" class="back-btn">←</a>
+        <h2>Đăng ký</h2>
+    </div>
+
+    <form>
+
+        <label>Họ tên <span>*</span></label>
+        <input type="text" placeholder="Ví dụ: Nguyen Van A">
+
+        <label>Email / Số điện thoại di động <span>*</span></label>
+        <input type="text" placeholder="Ví dụ: 0901234567 hoặc email@gmail.com">
+
+       <label>Mật khẩu <span class="required">*</span></label>
+<div class="input-group">
+  <input type="password" id="pass1">
+  <span class="eye" onclick="toggle('pass1')">👁</span>
+</div>
+
+<label>Nhập lại mật khẩu <span class="required">*</span></label>
+<div class="input-group">
+  <input type="password" id="pass2">
+  <span class="eye" onclick="toggle('pass2')">👁</span>
+</div>
+
+        <button class="register-btn">Đăng ký</button>
+
+    </form>
+
+</div>
+
+<script>
+function toggle(id){
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

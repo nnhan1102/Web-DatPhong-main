@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Phòng Khách Sạn</title>
+
+  <style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  a { text-decoration: none; color: inherit; }
+
+  /* Header */
+  .header {
+    width: 100%; padding: 15px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: sticky; top: 0; z-index: 1000;
+  }
+  .logo { font-size: 24px; font-weight: bold; color: #00AEEF; }
+  .nav a { margin-left: 20px; font-size: 16px; color: #333; }
+  .nav a:hover { color: #00AEEF; }
+
+  /* Hero Banner */
+  .hero { position: relative; width: 100%; height: 450px; overflow: hidden; }
+  .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(60%); position: absolute; z-index: 1; }
+  .hero::after { content: ""; position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
+  .hero-content { position: relative; z-index: 2; text-align: center; color:white; padding-top:80px; }
+  .hero h1 { font-size: 36px; margin-bottom:10px;}
+  .hero p { font-size:18px; margin-bottom:25px;}
+
+  /* Search Box */
+  .search-box {
+    background:white; padding:20px; border-radius:10px;
+    display:flex; gap:10px; align-items:center;
+    width:700px; margin:auto;
+  }
+  .search-box input {
+    padding:10px; border-radius:6px; border:1px solid #ccc; flex:1;
+  }
+  .search-box button{
+    padding:12px 20px;border:none;background:#00AEEF;color:white;border-radius:6px;cursor:pointer;
+  }
+  .search-box button:hover{ background:#008ac0;}
+
+  /* Suggest */
+  .suggest{ padding:40px;}
+  .suggest h2{ margin-bottom:20px;font-size:24px;}
+  .card-list{ display:grid;grid-template-columns:repeat(3,1fr);gap:25px;}
+  .card{
+    background:white;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,0.1);
+    overflow:hidden;transition:.2s;
+  }
+  .card:hover{ transform:translateY(-5px);box-shadow:0 6px 16px rgba(0,0,0,0.15);}
+  .card img{ width:100%;height:180px;object-fit:cover;}
+  .card h3{ padding:10px;font-size:18px;color:#333;}
+  .card p{ padding:0 10px 15px;color:#00AEEF;font-weight:bold;}
+
+  /* Footer */
+  .footer{ text-align:center;padding:20px;background:#f2f2f2;margin-top:40px;}
+
+  /* Combo */
+  .combo-today{ padding:40px 8%; background:#fff;}
+  .combo-header h2{ font-size:28px;font-weight:bold;}
+  .combo-header p{ color:#555;margin:5px 0 15px;}
+  .combo-banner{ position:relative;margin-top:20px;border-radius:14px;overflow:hidden;}
+  .combo-banner img{ width:100%;height:320px;object-fit:cover;filter:brightness(0.85);}
+  .combo-info{
+    position:absolute;right:40px;top:50%;transform:translateY(-50%);
+    color:white;text-align:right;
+  }
+  .combo-info .sale{ background:#e53935;padding:6px 12px;border-radius:6px;font-size:14px;}
+  .combo-info h3{ font-size:26px;margin:10px 0;}
+  .combo-info .price{ font-size:22px;font-weight:bold;}
+  .combo-info button{
+    background:#ff9800;color:white;border:none;padding:10px 20px;border-radius:20px;
+    cursor:pointer;margin-top:10px;
+  }
+  .combo-info button:hover{ background:#e68900;}
+
+  /* Season */
+  .season{ padding:40px 8%;background:#f9f9f9;}
+  .season h2{ font-size:28px;}
+  .season p { color:#666;margin-bottom:20px;}
+  .season-list{ display:grid;grid-template-columns:repeat(4, 1fr);gap:15px;}
+  .season-item{
+    position:relative;border-radius:12px;overflow:hidden;cursor:pointer;transition:.3s;
+  }
+  .season-item img{ width:100%;height:200px;object-fit:cover;}
+  .season-item h3,.season-item span {
+    position:absolute;left:12px;color:white;text-shadow:0 2px 6px rgba(0,0,0,0.6);
+  }
+  .season-item h3{ bottom:30px;}
+  .season-item span{ bottom:12px;font-size:13px;}
+  .season-item:hover{ transform:scale(1.03);}
+
+  /* Destinations */
+  .destinations{ padding:40px 8%;}
+  .destinations h2{ font-size:28px;}
+  .destinations p { color:#666;margin-bottom:20px;}
+  .destination-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:200px;gap:15px;
+  }
+  .place{ position:relative;overflow:hidden;border-radius:12px;cursor:pointer;}
+  .place img{ width:100%;height:100%;object-fit:cover;transition:.4s;}
+  .place:hover img{ transform:scale(1.1);}
+  .place h3,.place span {
+    position:absolute;left:15px;color:white;text-shadow:0 2px 6px rgba(0,0,0,0.6);
+  }
+  .place h3{ bottom:35px;}
+  .place span{ bottom:15px;font-size:13px;}
+  .place.large{ grid-column:span 2;grid-row:span 2;}
+
+  /* Responsive */
+  @media (max-width:992px){
+    .season-list{ grid-template-columns:repeat(2,1fr);}
+    .destination-grid{ grid-template-columns:repeat(2,1fr);}
+    .combo-info{ right:15px;text-align:center;}
+  }
+  @media (max-width:576px){
+    .season-list,.destination-grid{ grid-template-columns:1fr;}
+    .combo-info h3{ font-size:20px;}
+    .combo-info .price{ font-size:18px;}
+  }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="logo">Opulent</div>
+    <nav class="nav">
+      <a href="#">Khách sạn</a>
+      <a href="#">Combo</a>
+      <a href="#">Tour</a>
+      <a href="#">Vé máy bay</a>
+      <a href="#">Ưu đãi</a>
+      <a href="../frontend/login/login.html">Đăng nhập</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img src="../image/anh52.jpg" class="hero-img">
+    <div class="hero-content">
+      <h1>Đặt phòng khách sạn giá tốt nhất</h1>
+      <p>Tìm ưu đãi độc quyền chỉ có tại Opulent</p>
+      <div class="search-box">
+        <input type="text" placeholder="Bạn muốn đi đâu?" />
+        <input type="date" id="checkin" />
+        <input type="date" id="checkout" />
+        <button>Tìm kiếm</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="combo-today">
+    <div class="combo-header">
+      <h2>Combo tốt nhất hôm nay</h2>
+      <p>Nhanh tay đặt ngay. Để mai sẽ lỡ</p>
+    </div>
+    <div class="combo-banner">
+      <img src="../image/anh82.jpg">
+      <div class="combo-info">
+        <span class="sale">Combo tiết kiệm đến 38%</span>
+        <h3>COMBO 3N2Đ SINGAPORE</h3>
+        <p class="price">5.599.000đ / khách</p>
+        <button>Xem ngay</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="season">
+    <h2>Mùa thu gõ cửa – Đi thôi!</h2>
+    <p>Đặc quyền chọn lọc, dịch vụ tận tâm cho kỳ nghỉ nhẹ nhàng tinh tế.</p>
+    <div class="season-list">
+      <div class="season-item"><img src="../image/anh66.jpg"><h3>Luxury Resort</h3><span>18 khách sạn</span></div>
+      <div class="season-item"><img src="../image/anh88.jpg"><h3>Du Xuân</h3><span>100 khách sạn</span></div>
+      <div class="season-item"><img src="../image/anh101.jpg"><h3>Khoáng Nóng</h3><span>23 khách sạn</span></div>
+      <div class="season-item"><img src="../image/anh103.jpg"><h3>Gift Voucher</h3><span>Trải nghiệm hành trình</span></div>
+    </div>
+  </section>
+
+  <section class="suggest">
+    <h2>Gợi ý dành cho bạn</h2>
+    <div class="card-list">
+      <div class="card"><img src="../image/anh94.jpg"><h3>Khách sạn Đà Nẵng</h3><p>Giá từ 500.000đ</p></div>
+      <div class="card"><img src="../image/anh95.jpg"><h3>Khách sạn Nha Trang</h3><p>Giá từ 650.000đ</p></div>
+      <div class="card"><img src="../image/anh96.jpg"><h3>Khách sạn Phú Quốc</h3><p>Giá từ 800.000đ</p></div>
+    </div>
+  </section>
+
+  <section class="destinations">
+    <h2>Điểm đến yêu thích trong nước</h2>
+    <p>Lên rừng xuống biển. Trọn vẹn Việt Nam</p>
+    <div class="destination-grid">
+      <div class="place large"><img src="../image/anh104.jpg"><div><h3>Phú Quốc</h3><span>922 khách sạn</span></div></div>
+      <div class="place"><img src="../image/anh105.jpg"><h3>Đà Lạt</h3><span>1182 khách sạn</span></div>
+      <div class="place"><img src="../image/anh106.jpg"><h3>Quy Nhơn</h3><span>334 khách sạn</span></div>
+      <div class="place"><img src="../image/anh107.jpeg"><h3>Vũng Tàu</h3><span>706 khách sạn</span></div>
+      <div class="place"><img src="../image/anh108.jpg"><h3>Nha Trang</h3><span>1024 khách sạn</span></div>
+      <div class="place"><img src="../image/anh109.jpg"><h3>Phan Thiết</h3><span>494 khách sạn</span></div>
+    </div>
+  </section>
+
+  <section class="destinations abroad">
+    <h2>Điểm đến yêu thích nước ngoài</h2>
+    <p>Bao la thế giới. Bốn bể là nhà</p>
+    <div class="destination-grid">
+      <div class="place"><img src="../image/anh110.jpg"><h3>Singapore</h3><span>727 khách sạn</span></div>
+      <div class="place"><img src="../image/anh111.jpg"><h3>Bangkok</h3><span>4210 khách sạn</span></div>
+      <div class="place"><img src="../image/anh112.jpg"><h3>Tokyo</h3><span>3871 khách sạn</span></div>
+      <div class="place"><img src="../image/anh113.jpg"><h3>Thượng Hải</h3><span>3548 khách sạn</span></div>
+      <div class="place"><img src="../image/anh114.jpg"><h3>Maldives</h3><span>849 khách sạn</span></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Opulent - Đặt phòng nhanh chóng, tiện lợi</p>
+  </footer>
+
+  <script>
+    const checkin=document.getElementById("checkin");
+    const checkout=document.getElementById("checkout");
+
+    checkin.addEventListener("change",function(){
+      const nextDay=new Date(this.value);
+      nextDay.setDate(nextDay.getDate()+1);
+      const minCheckout=nextDay.toISOString().split("T")[0];
+      checkout.min=minCheckout;
+      if(checkout.value < minCheckout) checkout.value="";
+      checkout.focus();
+    });
+  </script>
+
+</body>
+</html>

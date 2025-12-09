@@ -1,0 +1,22 @@
+# backend/.htaccess
+RewriteEngine On
+RewriteBase /ivivu-clone/backend/api/
+
+# Chỉ cho phép truy cập từ các file PHP trong thư mục api
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico)$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Định tuyến tất cả request đến index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Bảo vệ thư mục config
+<FilesMatch "^(config|database)\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Thiết lập headers cho API
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
