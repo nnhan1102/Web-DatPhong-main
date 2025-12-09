@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel - Opulent</title>
+    <title>Admin Panel - Khách sạn Opulent</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -20,8 +20,8 @@
       <aside class="sidebar">
         <div class="sidebar-header">
           <div class="logo">
-            <i class="fas fa-plane-departure"></i>
-            <h2>Opulent</h2>
+            <i class="fas fa-hotel"></i>
+            <h2>Opulent Hotel</h2>
           </div>
         </div>
 
@@ -33,34 +33,40 @@
                 <span>Dashboard</span>
               </a>
             </li>
-            <li data-section="tours">
+            <li data-section="rooms">
               <a href="#">
-                <i class="fas fa-map-marked-alt"></i>
-                <span>Quản lý Tour</span>
+                <i class="fas fa-bed"></i>
+                <span>Quản lý Phòng</span>
+              </a>
+            </li>
+            <li data-section="room-types">
+              <a href="#">
+                <i class="fas fa-list"></i>
+                <span>Loại Phòng</span>
               </a>
             </li>
             <li data-section="bookings">
               <a href="#">
                 <i class="fas fa-calendar-check"></i>
-                <span>Quản lý Đặt Tour</span>
+                <span>Đặt Phòng</span>
               </a>
             </li>
             <li data-section="customers">
               <a href="#">
                 <i class="fas fa-users"></i>
-                <span>Quản lý Khách hàng</span>
+                <span>Khách hàng</span>
               </a>
             </li>
-            <li data-section="hotels">
+            <li data-section="services">
               <a href="#">
-                <i class="fas fa-hotel"></i>
-                <span>Quản lý Đặt Phòng</span>
+                <i class="fas fa-concierge-bell"></i>
+                <span>Dịch vụ</span>
               </a>
             </li>
-            <li data-section="categories">
+            <li data-section="staff">
               <a href="#">
-                <i class="fas fa-tags"></i>
-                <span>Danh mục</span>
+                <i class="fas fa-user-tie"></i>
+                <span>Nhân viên</span>
               </a>
             </li>
             <li data-section="reports">
@@ -94,7 +100,7 @@
         <header class="main-header">
           <div class="header-left">
             <h1 id="page-title">Dashboard</h1>
-            <p id="page-subtitle">Tổng quan hệ thống</p>
+            <p id="page-subtitle">Tổng quan hệ thống khách sạn</p>
           </div>
           <div class="header-right">
             <div class="date-time">
@@ -113,11 +119,11 @@
           <div class="stats-cards">
             <div class="stat-card">
               <div class="stat-icon" style="background-color: #4e73df">
-                <i class="fas fa-map-marked-alt"></i>
+                <i class="fas fa-bed"></i>
               </div>
               <div class="stat-info">
-                <h3 id="total-tours">0</h3>
-                <p>Tổng số tour</p>
+                <h3 id="total-rooms">0</h3>
+                <p>Tổng số phòng</p>
               </div>
             </div>
             <div class="stat-card">
@@ -125,8 +131,8 @@
                 <i class="fas fa-calendar-check"></i>
               </div>
               <div class="stat-info">
-                <h3 id="total-bookings">0</h3>
-                <p>Đặt tour hôm nay</p>
+                <h3 id="today-bookings">0</h3>
+                <p>Đặt phòng hôm nay</p>
               </div>
             </div>
             <div class="stat-card">
@@ -143,8 +149,26 @@
                 <i class="fas fa-money-bill-wave"></i>
               </div>
               <div class="stat-info">
-                <h3 id="total-revenue">0đ</h3>
+                <h3 id="monthly-revenue">0đ</h3>
                 <p>Doanh thu tháng</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #6f42c1">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="occupancy-rate">0%</h3>
+                <p>Tỷ lệ lấp đầy</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #20c997">
+                <i class="fas fa-concierge-bell"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="service-revenue">0đ</h3>
+                <p>Doanh thu dịch vụ</p>
               </div>
             </div>
           </div>
@@ -155,25 +179,37 @@
               <canvas id="revenueChart"></canvas>
             </div>
             <div class="chart-card">
-              <h3>Tour được đặt nhiều nhất</h3>
-              <canvas id="popularToursChart"></canvas>
+              <h3>Tỷ lệ lấp đầy phòng</h3>
+              <canvas id="occupancyChart"></canvas>
             </div>
           </div>
 
-          <div class="recent-activity">
-            <h3>Hoạt động gần đây</h3>
-            <div class="activity-list" id="recent-activities">
-              <!-- Activities will be loaded here -->
+          <div class="row">
+            <div class="col-6">
+              <div class="recent-activity">
+                <h3>Check-in hôm nay</h3>
+                <div class="activity-list" id="today-checkins">
+                  <!-- Check-ins will be loaded here -->
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="recent-activity">
+                <h3>Check-out hôm nay</h3>
+                <div class="activity-list" id="today-checkouts">
+                  <!-- Check-outs will be loaded here -->
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- Tours Management Section -->
-        <section class="content-section" id="tours-section">
+        <!-- Rooms Management Section -->
+        <section class="content-section" id="rooms-section">
           <div class="section-header">
-            <h2>Quản lý Tour</h2>
-            <button class="btn btn-primary" id="add-tour-btn">
-              <i class="fas fa-plus"></i> Thêm tour mới
+            <h2>Quản lý Phòng</h2>
+            <button class="btn btn-primary" id="add-room-btn">
+              <i class="fas fa-plus"></i> Thêm phòng mới
             </button>
           </div>
 
@@ -181,19 +217,28 @@
             <div class="filter-group">
               <input
                 type="text"
-                id="tour-search"
-                placeholder="Tìm kiếm tour..."
+                id="room-search"
+                placeholder="Tìm theo số phòng..."
               />
             </div>
             <div class="filter-group">
-              <select id="tour-status-filter">
+              <select id="room-status-filter">
                 <option value="">Tất cả trạng thái</option>
-                <option value="active">Đang hoạt động</option>
-                <option value="inactive">Ngừng hoạt động</option>
-                <option value="sold_out">Hết chỗ</option>
+                <option value="available">Có sẵn</option>
+                <option value="occupied">Đã đặt</option>
+                <option value="maintenance">Bảo trì</option>
+                <option value="cleaning">Đang dọn</option>
               </select>
             </div>
-            <button class="btn btn-secondary" id="apply-filters">Lọc</button>
+            <div class="filter-group">
+              <select id="room-type-filter">
+                <option value="">Tất cả loại phòng</option>
+                <!-- Room types will be loaded dynamically -->
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="apply-room-filters">
+              Lọc
+            </button>
           </div>
 
           <div class="table-container">
@@ -201,36 +246,52 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Hình ảnh</th>
-                  <th>Tên tour</th>
-                  <th>Điểm đến</th>
-                  <th>Giá</th>
-                  <th>Giảm giá</th>
-                  <th>Số chỗ</th>
+                  <th>Số phòng</th>
+                  <th>Loại phòng</th>
+                  <th>Tầng</th>
+                  <th>View</th>
+                  <th>Giá cơ bản</th>
+                  <th>Sức chứa</th>
                   <th>Trạng thái</th>
-                  <th>Ngày tạo</th>
+                  <th>Tiện nghi</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
-              <tbody id="tours-table-body">
+              <tbody id="rooms-table-body">
                 <tr>
                   <td colspan="10" class="loading-row">Đang tải dữ liệu...</td>
                 </tr>
               </tbody>
             </table>
           </div>
+        </section>
 
-          <div class="pagination" id="tours-pagination">
-            <!-- Pagination will be loaded here -->
+        <!-- Room Types Section -->
+        <section class="content-section" id="room-types-section">
+          <div class="section-header">
+            <h2>Quản lý Loại Phòng</h2>
+            <button class="btn btn-primary" id="add-room-type-btn">
+              <i class="fas fa-plus"></i> Thêm loại phòng
+            </button>
+          </div>
+
+          <div class="cards-container">
+            <!-- Room types will be loaded as cards -->
+            <div id="room-types-container">
+              <div class="loading">Đang tải loại phòng...</div>
+            </div>
           </div>
         </section>
 
         <!-- Bookings Management Section -->
         <section class="content-section" id="bookings-section">
           <div class="section-header">
-            <h2>Quản lý Đặt Tour</h2>
+            <h2>Quản lý Đặt Phòng</h2>
             <div class="header-actions">
-              <button class="btn btn-secondary" id="export-bookings">
+              <button class="btn btn-primary" id="add-booking-btn">
+                <i class="fas fa-plus"></i> Thêm đặt phòng
+              </button>
+              <button class="btn btn-secondary" id="export-bookings-btn">
                 <i class="fas fa-download"></i> Xuất Excel
               </button>
             </div>
@@ -241,7 +302,7 @@
               <input
                 type="text"
                 id="booking-search"
-                placeholder="Mã đặt tour..."
+                placeholder="Mã đặt phòng, tên khách..."
               />
             </div>
             <div class="filter-group">
@@ -249,15 +310,22 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="pending">Chờ xác nhận</option>
                 <option value="confirmed">Đã xác nhận</option>
+                <option value="checked_in">Đã nhận phòng</option>
+                <option value="checked_out">Đã trả phòng</option>
                 <option value="cancelled">Đã hủy</option>
-                <option value="completed">Hoàn thành</option>
               </select>
             </div>
             <div class="filter-group">
-              <input type="date" id="booking-date-filter" />
+              <input type="date" id="booking-date-from" placeholder="Từ ngày" />
+            </div>
+            <div class="filter-group">
+              <input type="date" id="booking-date-to" placeholder="Đến ngày" />
             </div>
             <button class="btn btn-secondary" id="apply-booking-filters">
               Lọc
+            </button>
+            <button class="btn btn-outline" id="reset-booking-filters">
+              Xóa lọc
             </button>
           </div>
 
@@ -266,10 +334,12 @@
               <thead>
                 <tr>
                   <th>Mã đặt</th>
-                  <th>Tour</th>
                   <th>Khách hàng</th>
-                  <th>Ngày đi</th>
-                  <th>Số người</th>
+                  <th>Phòng</th>
+                  <th>Ngày nhận</th>
+                  <th>Ngày trả</th>
+                  <th>Số đêm</th>
+                  <th>Số khách</th>
                   <th>Tổng tiền</th>
                   <th>Thanh toán</th>
                   <th>Trạng thái</th>
@@ -279,10 +349,14 @@
               </thead>
               <tbody id="bookings-table-body">
                 <tr>
-                  <td colspan="10" class="loading-row">Đang tải dữ liệu...</td>
+                  <td colspan="12" class="loading-row">Đang tải dữ liệu...</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="pagination" id="bookings-pagination">
+            <!-- Pagination will be loaded here -->
           </div>
         </section>
 
@@ -290,6 +364,30 @@
         <section class="content-section" id="customers-section">
           <div class="section-header">
             <h2>Quản lý Khách hàng</h2>
+            <button class="btn btn-secondary" id="export-customers-btn">
+              <i class="fas fa-download"></i> Xuất Excel
+            </button>
+          </div>
+
+          <div class="filters">
+            <div class="filter-group">
+              <input
+                type="text"
+                id="customer-search"
+                placeholder="Tìm theo tên, email, SĐT..."
+              />
+            </div>
+            <div class="filter-group">
+              <select id="customer-type-filter">
+                <option value="">Tất cả loại</option>
+                <option value="customer">Khách hàng</option>
+                <option value="corporate">Doanh nghiệp</option>
+                <option value="vip">VIP</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="apply-customer-filters">
+              Lọc
+            </button>
           </div>
 
           <div class="table-container">
@@ -300,65 +398,47 @@
                   <th>Họ tên</th>
                   <th>Email</th>
                   <th>Số điện thoại</th>
-                  <th>Địa chỉ</th>
-                  <th>Số tour đã đặt</th>
+                  <th>Loại KH</th>
+                  <th>Số lần đặt</th>
                   <th>Tổng chi tiêu</th>
+                  <th>Điểm tích lũy</th>
                   <th>Ngày đăng ký</th>
+                  <th>Trạng thái</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody id="customers-table-body">
                 <tr>
-                  <td colspan="9" class="loading-row">Đang tải dữ liệu...</td>
+                  <td colspan="11" class="loading-row">Đang tải dữ liệu...</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
-        <!-- Thêm section này sau section Quản lý Khách hàng -->
-        <section class="content-section" id="hotels-section">
+
+        <!-- Services Management Section -->
+        <section class="content-section" id="services-section">
           <div class="section-header">
-            <h2>Quản lý Đặt Phòng</h2>
-            <div class="header-actions">
-              <button class="btn btn-secondary" id="export-bookings">
-                <i class="fas fa-download"></i> Xuất Excel
-              </button>
-              <button class="btn btn-primary" id="add-hotel-booking-btn">
-                <i class="fas fa-plus"></i> Thêm đặt phòng
-              </button>
-            </div>
+            <h2>Quản lý Dịch vụ</h2>
+            <button class="btn btn-primary" id="add-service-btn">
+              <i class="fas fa-plus"></i> Thêm dịch vụ
+            </button>
           </div>
 
-          <div class="filters">
-            <div class="filter-group">
-              <input
-                type="text"
-                id="hotel-booking-search"
-                placeholder="Tìm theo mã đặt, tên khách..."
-              />
+          <div class="cards-container">
+            <!-- Services will be loaded as cards -->
+            <div id="services-container">
+              <div class="loading">Đang tải dịch vụ...</div>
             </div>
-            <div class="filter-group">
-              <select id="hotel-booking-status-filter">
-                <option value="">Tất cả trạng thái</option>
-                <option value="pending">Chờ xác nhận</option>
-                <option value="confirmed">Đã xác nhận</option>
-                <option value="checked_in">Đã nhận phòng</option>
-                <option value="checked_out">Đã trả phòng</option>
-                <option value="cancelled">Đã hủy</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <input
-                type="date"
-                id="hotel-checkin-filter"
-                placeholder="Ngày nhận phòng"
-              />
-            </div>
-            <button class="btn btn-secondary" id="apply-hotel-filters">
-              Lọc
-            </button>
-            <button class="btn btn-outline" id="reset-hotel-filters">
-              Xóa lọc
+          </div>
+        </section>
+
+        <!-- Staff Management Section -->
+        <section class="content-section" id="staff-section">
+          <div class="section-header">
+            <h2>Quản lý Nhân viên</h2>
+            <button class="btn btn-primary" id="add-staff-btn">
+              <i class="fas fa-plus"></i> Thêm nhân viên
             </button>
           </div>
 
@@ -366,131 +446,159 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Mã đặt</th>
-                  <th>Khách sạn</th>
-                  <th>Khách hàng</th>
-                  <th>Loại phòng</th>
-                  <th>Ngày nhận</th>
-                  <th>Ngày trả</th>
-                  <th>Số đêm</th>
-                  <th>Số phòng</th>
-                  <th>Số người</th>
-                  <th>Tổng tiền</th>
+                  <th>Mã NV</th>
+                  <th>Họ tên</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Chức vụ</th>
+                  <th>Phòng ban</th>
+                  <th>Ngày vào làm</th>
                   <th>Trạng thái</th>
-                  <th>Ngày đặt</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
-              <tbody id="hotel-bookings-table-body">
+              <tbody id="staff-table-body">
                 <tr>
-                  <td colspan="13" class="loading-row">Đang tải dữ liệu...</td>
+                  <td colspan="9" class="loading-row">Đang tải dữ liệu...</td>
                 </tr>
               </tbody>
             </table>
           </div>
+        </section>
 
-          <div class="pagination" id="hotel-bookings-pagination">
-            <!-- Pagination will be loaded here -->
+        <!-- Reports Section -->
+        <section class="content-section" id="reports-section">
+          <div class="section-header">
+            <h2>Báo cáo & Thống kê</h2>
+            <div class="header-actions">
+              <div class="report-period">
+                <select id="report-period">
+                  <option value="today">Hôm nay</option>
+                  <option value="yesterday">Hôm qua</option>
+                  <option value="week">Tuần này</option>
+                  <option value="month" selected>Tháng này</option>
+                  <option value="quarter">Quý này</option>
+                  <option value="year">Năm nay</option>
+                  <option value="custom">Tùy chọn</option>
+                </select>
+                <div id="custom-date-range" style="display: none">
+                  <input type="date" id="report-date-from" />
+                  <span>đến</span>
+                  <input type="date" id="report-date-to" />
+                </div>
+              </div>
+              <button class="btn btn-secondary" id="export-report-btn">
+                <i class="fas fa-download"></i> Xuất báo cáo
+              </button>
+            </div>
+          </div>
+
+          <div class="report-cards">
+            <div class="report-card">
+              <h3>Doanh thu</h3>
+              <div class="report-value" id="report-revenue">0đ</div>
+              <div class="report-change" id="revenue-change">
+                +0% so với kỳ trước
+              </div>
+            </div>
+            <div class="report-card">
+              <h3>Tổng đặt phòng</h3>
+              <div class="report-value" id="report-bookings">0</div>
+              <div class="report-change" id="bookings-change">
+                +0% so với kỳ trước
+              </div>
+            </div>
+            <div class="report-card">
+              <h3>Khách hàng mới</h3>
+              <div class="report-value" id="report-new-customers">0</div>
+              <div class="report-change" id="customers-change">
+                +0% so với kỳ trước
+              </div>
+            </div>
+            <div class="report-card">
+              <h3>Tỷ lệ lấp đầy</h3>
+              <div class="report-value" id="report-occupancy">0%</div>
+              <div class="report-change" id="occupancy-change">
+                +0% so với kỳ trước
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-container">
+            <div class="chart-card">
+              <h3>Doanh thu theo loại phòng</h3>
+              <canvas id="revenueByRoomTypeChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Phương thức thanh toán</h3>
+              <canvas id="paymentMethodChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card full-width">
+            <h3>Doanh thu theo tháng (năm nay)</h3>
+            <canvas id="yearlyRevenueChart"></canvas>
           </div>
         </section>
-        <!-- Tour Modal -->
-        <div class="modal" id="tour-modal">
-          <div class="modal-content large">
+
+        <!-- Room Modal -->
+        <div class="modal" id="room-modal">
+          <div class="modal-content">
             <div class="modal-header">
-              <h3 id="modal-title">Thêm tour mới</h3>
+              <h3 id="room-modal-title">Thêm phòng mới</h3>
               <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-              <form id="tour-form">
-                <input type="hidden" id="tour-id" />
+              <form id="room-form">
+                <input type="hidden" id="room-id" />
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="tour-name">Tên tour *</label>
-                    <input type="text" id="tour-name" required />
+                    <label for="room-number">Số phòng *</label>
+                    <input type="text" id="room-number" required />
                   </div>
                   <div class="form-group">
-                    <label for="tour-slug">Slug</label>
-                    <input type="text" id="tour-slug" />
+                    <label for="room-type-id">Loại phòng *</label>
+                    <select id="room-type-id" required>
+                      <option value="">Chọn loại phòng</option>
+                      <!-- Room types will be loaded dynamically -->
+                    </select>
                   </div>
                 </div>
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="tour-destination">Điểm đến *</label>
-                    <input type="text" id="tour-destination" required />
+                    <label for="room-floor">Tầng</label>
+                    <input type="number" id="room-floor" min="1" max="50" />
                   </div>
                   <div class="form-group">
-                    <label for="tour-departure">Nơi khởi hành</label>
-                    <input type="text" id="tour-departure" />
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="tour-duration-days">Số ngày *</label>
-                    <input
-                      type="number"
-                      id="tour-duration-days"
-                      required
-                      min="1"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="tour-duration-nights">Số đêm</label>
-                    <input type="number" id="tour-duration-nights" min="0" />
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="tour-price-adult">Giá người lớn (VNĐ) *</label>
-                    <input
-                      type="number"
-                      id="tour-price-adult"
-                      required
-                      min="0"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="tour-price-child">Giá trẻ em</label>
-                    <input type="number" id="tour-price-child" min="0" />
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="tour-discount">Giảm giá (%)</label>
-                    <input type="number" id="tour-discount" min="0" max="100" />
-                  </div>
-                  <div class="form-group">
-                    <label for="tour-slots">Số chỗ còn nhận *</label>
-                    <input type="number" id="tour-slots" required min="0" />
+                    <label for="room-view">Hướng view</label>
+                    <select id="room-view">
+                      <option value="city">Thành phố</option>
+                      <option value="sea">Biển</option>
+                      <option value="garden">Vườn</option>
+                      <option value="pool">Hồ bơi</option>
+                    </select>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="tour-featured-image">URL hình ảnh chính</label>
-                  <input type="text" id="tour-featured-image" />
-                </div>
-
-                <div class="form-group">
-                  <label for="tour-short-desc">Mô tả ngắn *</label>
-                  <textarea id="tour-short-desc" rows="3" required></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="tour-full-desc">Mô tả chi tiết</label>
-                  <textarea id="tour-full-desc" rows="5"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="tour-status">Trạng thái</label>
-                  <select id="tour-status">
-                    <option value="active">Đang hoạt động</option>
-                    <option value="inactive">Ngừng hoạt động</option>
-                    <option value="sold_out">Hết chỗ</option>
+                  <label for="room-status">Trạng thái</label>
+                  <select id="room-status">
+                    <option value="available">Có sẵn</option>
+                    <option value="occupied">Đã đặt</option>
+                    <option value="maintenance">Bảo trì</option>
+                    <option value="cleaning">Đang dọn</option>
                   </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="room-image">URL hình ảnh</label>
+                  <input
+                    type="text"
+                    id="room-image"
+                    placeholder="https://example.com/image.jpg"
+                  />
                 </div>
 
                 <div class="form-actions">
@@ -498,7 +606,130 @@
                     Hủy
                   </button>
                   <button type="submit" class="btn btn-primary">
-                    Lưu tour
+                    Lưu phòng
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div class="modal" id="booking-modal">
+          <div class="modal-content large">
+            <div class="modal-header">
+              <h3 id="booking-modal-title">Thêm đặt phòng mới</h3>
+              <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="booking-form">
+                <input type="hidden" id="booking-id" />
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="booking-customer-id">Khách hàng *</label>
+                    <select id="booking-customer-id" required>
+                      <option value="">Chọn khách hàng</option>
+                      <!-- Customers will be loaded dynamically -->
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="booking-room-id">Phòng *</label>
+                    <select id="booking-room-id" required>
+                      <option value="">Chọn phòng</option>
+                      <!-- Available rooms will be loaded dynamically -->
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="check-in">Ngày nhận phòng *</label>
+                    <input type="date" id="check-in" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="check-out">Ngày trả phòng *</label>
+                    <input type="date" id="check-out" required />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="num-guests">Số khách *</label>
+                    <input
+                      type="number"
+                      id="num-guests"
+                      min="1"
+                      max="10"
+                      required
+                      value="2"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="booking-promo">Mã khuyến mãi</label>
+                    <input type="text" id="booking-promo" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="special-requests">Yêu cầu đặc biệt</label>
+                  <textarea
+                    id="special-requests"
+                    rows="3"
+                    placeholder="Yêu cầu về giường, dịch vụ..."
+                  ></textarea>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="payment-method">Phương thức thanh toán</label>
+                    <select id="payment-method">
+                      <option value="cash">Tiền mặt</option>
+                      <option value="credit_card">Thẻ tín dụng</option>
+                      <option value="momo">Momo</option>
+                      <option value="vnpay">VNPay</option>
+                      <option value="zalopay">ZaloPay</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="payment-status">Trạng thái thanh toán</label>
+                    <select id="payment-status">
+                      <option value="pending">Chưa thanh toán</option>
+                      <option value="paid">Đã thanh toán</option>
+                      <option value="refunded">Đã hoàn tiền</option>
+                      <option value="failed">Thanh toán thất bại</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="booking-status">Trạng thái đặt phòng</label>
+                  <select id="booking-status">
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="checked_in">Đã nhận phòng</option>
+                    <option value="checked_out">Đã trả phòng</option>
+                    <option value="cancelled">Đã hủy</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Dịch vụ bổ sung</label>
+                  <div id="services-selection">
+                    <!-- Services will be loaded dynamically -->
+                  </div>
+                </div>
+
+                <div class="price-summary">
+                  <h4>Tổng cộng: <span id="total-price">0</span> VNĐ</h4>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary close-modal">
+                    Hủy
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu đặt phòng
                   </button>
                 </div>
               </form>
@@ -507,647 +738,12 @@
         </div>
       </main>
     </div>
-    <!-- Thêm modal này sau modal Tour -->
-    <div class="modal" id="hotel-booking-modal">
-      <div class="modal-content large">
-        <div class="modal-header">
-          <h3 id="hotel-modal-title">Thêm đặt phòng mới</h3>
-          <button class="close-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form id="hotel-booking-form">
-            <input type="hidden" id="hotel-booking-id" />
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="hotel-name">Tên khách sạn *</label>
-                <input type="text" id="hotel-name" required />
-              </div>
-              <div class="form-group">
-                <label for="customer-name">Tên khách hàng *</label>
-                <input type="text" id="customer-name" required />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="customer-phone">Số điện thoại *</label>
-                <input type="tel" id="customer-phone" required />
-              </div>
-              <div class="form-group">
-                <label for="customer-email">Email</label>
-                <input type="email" id="customer-email" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="room-type">Loại phòng *</label>
-                <select id="room-type" required>
-                  <option value="">Chọn loại phòng</option>
-                  <option value="standard">Phòng Standard</option>
-                  <option value="deluxe">Phòng Deluxe</option>
-                  <option value="suite">Phòng Suite</option>
-                  <option value="family">Phòng Gia đình</option>
-                  <option value="villa">Villa</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="room-price">Giá phòng/đêm (VNĐ) *</label>
-                <input type="number" id="room-price" required min="0" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="checkin-date">Ngày nhận phòng *</label>
-                <input type="date" id="checkin-date" required />
-              </div>
-              <div class="form-group">
-                <label for="checkout-date">Ngày trả phòng *</label>
-                <input type="date" id="checkout-date" required />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="number-of-rooms">Số phòng *</label>
-                <input
-                  type="number"
-                  id="number-of-rooms"
-                  required
-                  min="1"
-                  value="1"
-                />
-              </div>
-              <div class="form-group">
-                <label for="number-of-guests">Số người *</label>
-                <input
-                  type="number"
-                  id="number-of-guests"
-                  required
-                  min="1"
-                  value="2"
-                />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="number-of-nights">Số đêm</label>
-                <input type="number" id="number-of-nights" readonly />
-              </div>
-              <div class="form-group">
-                <label for="total-amount">Tổng tiền (VNĐ)</label>
-                <input type="text" id="total-amount" readonly />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="special-requests">Yêu cầu đặc biệt</label>
-              <textarea
-                id="special-requests"
-                rows="3"
-                placeholder="Yêu cầu về giường, thức ăn, dịch vụ..."
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="payment-status">Trạng thái thanh toán</label>
-              <select id="payment-status">
-                <option value="pending">Chưa thanh toán</option>
-                <option value="partial">Thanh toán một phần</option>
-                <option value="paid">Đã thanh toán</option>
-                <option value="refunded">Đã hoàn tiền</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="booking-status">Trạng thái đặt phòng</label>
-              <select id="booking-status">
-                <option value="pending">Chờ xác nhận</option>
-                <option value="confirmed">Đã xác nhận</option>
-                <option value="checked_in">Đã nhận phòng</option>
-                <option value="checked_out">Đã trả phòng</option>
-                <option value="cancelled">Đã hủy</option>
-              </select>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn btn-secondary close-modal">
-                Hủy
-              </button>
-              <button type="submit" class="btn btn-primary">
-                Lưu đặt phòng
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../assets/js/admin.js"></script>
-    <script>
-      // Base URL cho API
-      const API_BASE_URL = "http://localhost/ivivu-clone/backend/api";
-
-      // Khởi tạo admin
-      document.addEventListener("DOMContentLoaded", function () {
-        initAdmin();
-        loadDashboardData();
-      });
-
-      function initAdmin() {
-        // Navigation
-        const menuItems = document.querySelectorAll(".sidebar-menu li");
-        menuItems.forEach((item) => {
-          item.addEventListener("click", function () {
-            menuItems.forEach((i) => i.classList.remove("active"));
-            this.classList.add("active");
-
-            const section = this.getAttribute("data-section");
-            showSection(section);
-          });
-        });
-
-        // Modals
-        document.querySelectorAll(".close-modal").forEach((btn) => {
-          btn.addEventListener("click", closeAllModals);
-        });
-
-        document
-          .getElementById("add-tour-btn")
-          .addEventListener("click", function () {
-            openTourModal();
-          });
-
-        // Tour form
-        document
-          .getElementById("tour-form")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-            saveTour();
-          });
-
-        // Auto generate slug
-        document
-          .getElementById("tour-name")
-          .addEventListener("input", function () {
-            const name = this.value;
-            const slug = name
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/(^-|-$)/g, "");
-            document.getElementById("tour-slug").value = slug;
-          });
-      }
-
-      function showSection(section) {
-        // Hide all sections
-        document.querySelectorAll(".content-section").forEach((sec) => {
-          sec.classList.remove("active");
-        });
-
-        // Show selected section
-        document.getElementById(`${section}-section`).classList.add("active");
-
-        // Update page title
-        const titles = {
-          dashboard: "Dashboard",
-          tours: "Quản lý Tour",
-          bookings: "Quản lý Đặt Tour",
-          customers: "Quản lý Khách hàng",
-        };
-
-        document.getElementById("page-title").textContent =
-          titles[section] || section;
-
-        // Load section data
-        switch (section) {
-          case "dashboard":
-            loadDashboardData();
-            break;
-          case "tours":
-            loadTours();
-            break;
-          case "bookings":
-            loadBookings();
-            break;
-          case "customers":
-            loadCustomers();
-            break;
-        }
-      }
-
-      async function loadDashboardData() {
-        try {
-          // Load stats
-          const response = await fetch(`${API_BASE_URL}/dashboard`);
-          const data = await response.json();
-
-          if (data.success) {
-            document.getElementById("total-tours").textContent =
-              data.data.total_tours || 0;
-            document.getElementById("total-bookings").textContent =
-              data.data.today_bookings || 0;
-            document.getElementById("total-customers").textContent =
-              data.data.total_customers || 0;
-            document.getElementById("total-revenue").textContent =
-              formatCurrency(data.data.monthly_revenue || 0);
-          }
-
-          // Load charts
-          renderCharts(data.data?.charts || {});
-
-          // Load activities
-          loadRecentActivities();
-        } catch (error) {
-          console.error("Error loading dashboard:", error);
-          showToast("Lỗi tải dữ liệu dashboard", "error");
-        }
-      }
-
-      async function loadTours() {
-        try {
-          const response = await fetch(`${API_BASE_URL}/tours`);
-          const data = await response.json();
-
-          if (data.success) {
-            renderToursTable(data.data);
-          }
-        } catch (error) {
-          console.error("Error loading tours:", error);
-          showToast("Lỗi tải danh sách tour", "error");
-        }
-      }
-
-      function renderToursTable(tours) {
-        const tbody = document.getElementById("tours-table-body");
-
-        if (!tours || tours.length === 0) {
-          tbody.innerHTML =
-            '<tr><td colspan="10" class="no-data">Không có tour nào</td></tr>';
-          return;
-        }
-
-        let html = "";
-
-        tours.forEach((tour) => {
-          const finalPrice =
-            tour.price_adult * (1 - tour.discount_percent / 100);
-          const statusClass = `status-${tour.status}`;
-          const statusText =
-            {
-              active: "Hoạt động",
-              inactive: "Ngừng HĐ",
-              sold_out: "Hết chỗ",
-            }[tour.status] || tour.status;
-
-          html += `
-                    <tr>
-                        <td>${tour.id}</td>
-                        <td>
-                            <img src="${
-                              tour.featured_image ||
-                              "https://via.placeholder.com/50"
-                            }" 
-                                 alt="${tour.name}" class="table-image">
-                        </td>
-                        <td>${tour.name}</td>
-                        <td>${tour.destination}</td>
-                        <td>${formatCurrency(finalPrice)}</td>
-                        <td>${tour.discount_percent}%</td>
-                        <td>${tour.available_slots}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${formatDate(tour.created_at)}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn edit-btn" onclick="editTour(${
-                                  tour.id
-                                })">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn delete-btn" onclick="deleteTour(${
-                                  tour.id
-                                })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-        });
-
-        tbody.innerHTML = html;
-      }
-
-      function openTourModal(tourId = null) {
-        const modal = document.getElementById("tour-modal");
-        const title = document.getElementById("modal-title");
-        const form = document.getElementById("tour-form");
-
-        if (tourId) {
-          title.textContent = "Chỉnh sửa tour";
-          loadTourData(tourId);
-        } else {
-          title.textContent = "Thêm tour mới";
-          form.reset();
-          document.getElementById("tour-id").value = "";
-        }
-
-        modal.classList.add("active");
-      }
-
-      async function loadTourData(tourId) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/tours/${tourId}`);
-          const data = await response.json();
-
-          if (data.success) {
-            const tour = data.data;
-            document.getElementById("tour-id").value = tour.id;
-            document.getElementById("tour-name").value = tour.name;
-            document.getElementById("tour-slug").value = tour.slug;
-            document.getElementById("tour-destination").value =
-              tour.destination;
-            document.getElementById("tour-departure").value =
-              tour.departure_location;
-            document.getElementById("tour-duration-days").value =
-              tour.duration_days;
-            document.getElementById("tour-duration-nights").value =
-              tour.duration_nights;
-            document.getElementById("tour-price-adult").value =
-              tour.price_adult;
-            document.getElementById("tour-price-child").value =
-              tour.price_child || 0;
-            document.getElementById("tour-discount").value =
-              tour.discount_percent;
-            document.getElementById("tour-slots").value = tour.available_slots;
-            document.getElementById("tour-featured-image").value =
-              tour.featured_image || "";
-            document.getElementById("tour-short-desc").value =
-              tour.short_description;
-            document.getElementById("tour-full-desc").value = tour.description;
-            document.getElementById("tour-status").value = tour.status;
-          }
-        } catch (error) {
-          console.error("Error loading tour data:", error);
-          showToast("Lỗi tải dữ liệu tour", "error");
-        }
-      }
-
-      async function saveTour() {
-        const tourId = document.getElementById("tour-id").value;
-        const isEdit = !!tourId;
-
-        const tourData = {
-          name: document.getElementById("tour-name").value,
-          slug: document.getElementById("tour-slug").value,
-          destination: document.getElementById("tour-destination").value,
-          departure_location: document.getElementById("tour-departure").value,
-          duration_days: parseInt(
-            document.getElementById("tour-duration-days").value
-          ),
-          duration_nights: parseInt(
-            document.getElementById("tour-duration-nights").value
-          ),
-          price_adult: parseFloat(
-            document.getElementById("tour-price-adult").value
-          ),
-          price_child: parseFloat(
-            document.getElementById("tour-price-child").value
-          ),
-          discount_percent: parseInt(
-            document.getElementById("tour-discount").value
-          ),
-          available_slots: parseInt(
-            document.getElementById("tour-slots").value
-          ),
-          featured_image: document.getElementById("tour-featured-image").value,
-          short_description: document.getElementById("tour-short-desc").value,
-          description: document.getElementById("tour-full-desc").value,
-          status: document.getElementById("tour-status").value,
-        };
-
-        try {
-          const url = `${API_BASE_URL}/tours${isEdit ? "/" + tourId : ""}`;
-          const method = isEdit ? "PUT" : "POST";
-
-          const response = await fetch(url, {
-            method: method,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(tourData),
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            showToast(
-              isEdit ? "Cập nhật tour thành công" : "Thêm tour thành công",
-              "success"
-            );
-            closeAllModals();
-            loadTours();
-
-            if (!isEdit) {
-              loadDashboardData(); // Refresh dashboard stats
-            }
-          } else {
-            showToast(result.message || "Có lỗi xảy ra", "error");
-          }
-        } catch (error) {
-          console.error("Error saving tour:", error);
-          showToast("Lỗi lưu tour", "error");
-        }
-      }
-
-      async function deleteTour(tourId) {
-        if (!confirm("Bạn có chắc chắn muốn xóa tour này?")) {
-          return;
-        }
-
-        try {
-          const response = await fetch(`${API_BASE_URL}/tours/${tourId}`, {
-            method: "DELETE",
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            showToast("Xóa tour thành công", "success");
-            loadTours();
-            loadDashboardData();
-          } else {
-            showToast(result.message || "Có lỗi xảy ra", "error");
-          }
-        } catch (error) {
-          console.error("Error deleting tour:", error);
-          showToast("Lỗi xóa tour", "error");
-        }
-      }
-
-      function editTour(tourId) {
-        openTourModal(tourId);
-      }
-
-      // Utility functions
-      function formatCurrency(amount) {
-        return new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(amount);
-      }
-
-      function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("vi-VN");
-      }
-
-      function showToast(message, type = "success") {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        toast.classList.add("show");
-
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 3000);
-      }
-
-      function closeAllModals() {
-        document.querySelectorAll(".modal").forEach((modal) => {
-          modal.classList.remove("active");
-        });
-      }
-
-      function renderCharts(chartData) {
-        // Revenue Chart
-        const revenueCtx = document
-          .getElementById("revenueChart")
-          .getContext("2d");
-        new Chart(revenueCtx, {
-          type: "line",
-          data: {
-            labels: chartData.months || [
-              "Tháng 1",
-              "Tháng 2",
-              "Tháng 3",
-              "Tháng 4",
-              "Tháng 5",
-              "Tháng 6",
-            ],
-            datasets: [
-              {
-                label: "Doanh thu (triệu VNĐ)",
-                data: chartData.revenue || [12, 19, 15, 25, 22, 30],
-                borderColor: "#3498db",
-                backgroundColor: "rgba(52, 152, 219, 0.1)",
-                borderWidth: 2,
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: "top",
-              },
-            },
-          },
-        });
-
-        // Popular Tours Chart
-        const toursCtx = document
-          .getElementById("popularToursChart")
-          .getContext("2d");
-        new Chart(toursCtx, {
-          type: "bar",
-          data: {
-            labels: chartData.popular_tours_names || [
-              "Tour A",
-              "Tour B",
-              "Tour C",
-              "Tour D",
-              "Tour E",
-            ],
-            datasets: [
-              {
-                label: "Số lượt đặt",
-                data: chartData.popular_tours_counts || [65, 59, 80, 81, 56],
-                backgroundColor: [
-                  "rgba(52, 152, 219, 0.7)",
-                  "rgba(46, 204, 113, 0.7)",
-                  "rgba(155, 89, 182, 0.7)",
-                  "rgba(241, 196, 15, 0.7)",
-                  "rgba(230, 126, 34, 0.7)",
-                ],
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-          },
-        });
-      }
-
-      async function loadRecentActivities() {
-        // Simulate loading activities
-        const activities = [
-          {
-            type: "booking",
-            message: "Đặt tour Đà Lạt mới",
-            time: "5 phút trước",
-          },
-          {
-            type: "tour",
-            message: "Tour Phú Quốc đã được cập nhật",
-            time: "1 giờ trước",
-          },
-          {
-            type: "customer",
-            message: "Khách hàng mới đăng ký",
-            time: "2 giờ trước",
-          },
-        ];
-
-        const container = document.getElementById("recent-activities");
-        let html = "";
-
-        activities.forEach((activity) => {
-          const icon =
-            {
-              booking: "fas fa-calendar-plus",
-              tour: "fas fa-map-marked-alt",
-              customer: "fas fa-user-plus",
-            }[activity.type] || "fas fa-info-circle";
-
-          html += `
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="${icon}"></i>
-                        </div>
-                        <div class="activity-info">
-                            <p>${activity.message}</p>
-                            <span class="activity-time">${activity.time}</span>
-                        </div>
-                    </div>
-                `;
-        });
-
-        container.innerHTML = html;
-      }
     </script>
   </body>
 </html>

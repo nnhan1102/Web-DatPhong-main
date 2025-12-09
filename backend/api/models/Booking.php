@@ -1,497 +1,478 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-
 class Booking {
     private $conn;
-    private $table_name = "bookings";
+    private $table = 'bookings';
+    private $bookingServicesTable = 'booking_services';
 
-    // Booking properties
     public $id;
     public $booking_code;
-    public $user_id;
-    public $tour_id;
-    public $booking_date;
-    public $departure_date;
-    public $num_adults;
-    public $num_children;
-    public $num_infants;
+    public $customer_id;
+    public $room_id;
+    public $check_in;
+    public $check_out;
+    public $num_guests;
     public $total_price;
+    public $status;
+    public $special_requests;
     public $payment_method;
     public $payment_status;
-    public $booking_status;
-    public $customer_notes;
-    public $admin_notes;
     public $created_at;
-    public $updated_at;
 
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
+    public function __construct($db) {
+        $this->conn = $db;
     }
 
-    // Generate unique booking code
+    // Tạo mã booking
     private function generateBookingCode() {
-        return 'BK' . date('Ymd') . strtoupper(substr(md5(uniqid()), 0, 6));
+        $prefix = 'BK';
+        $date = date('Ymd');
+        $random = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
+        return $prefix . $date . $random;
     }
 
-    // Create new booking
-    public function create() {
-        try {
-            // Generate booking code
-            $this->booking_code = $this->generateBookingCode();
+    // Tạo booking mới
+    public function create($data) {
+        // Tạo booking code
+        $booking_code = $this->generateBookingCode();
+        
+        $query = "INSERT INTO {$this->table} 
+                  (booking_code, customer_id, room_id, check_in, check_out, 
+                   num_guests, total_price, special_requests, payment_method, payment_status, status) 
+                  VALUES (:booking_code, :customer_id, :room_id, :check_in, :check_out, 
+                          :num_guests, :total_price, :special_requests, :payment_method, :payment_status, :status)";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':booking_code', $booking_code);
+        $stmt->bindParam(':customer_id', $data['customer_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':room_id', $data['room_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':check_in', $data['check_in']);
+        $stmt->bindParam(':check_out', $data['check_out']);
+        $stmt->bindParam(':num_guests', $data['num_guests'], PDO::PARAM_INT);
+        $stmt->bindParam(':total_price', $data['total_price']);
+        $stmt->bindParam(':special_requests', $data['special_requests']);
+        $stmt->bindParam(':payment_method', $data['payment_method']);
+        $stmt->bindParam(':payment_status', $data['payment_status'] ?? 'pending');
+        $stmt->bindParam(':status', $data['status'] ?? 'pending');
+        
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            $this->booking_code = $booking_code;
             
-            // Validate tour availability
-            $tourModel = new Tour();
-            $tourModel->id = $this->tour_id;
-            $availability = $tourModel->checkAvailability($this->departure_date);
-            
-            if (!$availability['available']) {
-                throw new Exception("Tour is fully booked for the selected date");
+            // Thêm dịch vụ nếu có
+            if (!empty($data['services'])) {
+                $this->addServices($this->id, $data['services']);
             }
             
-            if (($this->num_adults + $this->num_children + $this->num_infants) > $availability['available_slots']) {
-                throw new Exception("Not enough available slots for the selected date");
-            }
-            
-            // Calculate total price
-            $tourModel->readOne();
-            $this->total_price = ($this->num_adults * $tourModel->price_adult) +
-                               ($this->num_children * $tourModel->price_child) +
-                               ($this->num_infants * $tourModel->price_infant);
-            
-            $query = "INSERT INTO " . $this->table_name . "
-                     (booking_code, user_id, tour_id, booking_date, departure_date,
-                      num_adults, num_children, num_infants, total_price, 
-                      payment_method, payment_status, booking_status, 
-                      customer_notes, admin_notes)
-                     VALUES
-                     (:booking_code, :user_id, :tour_id, :booking_date, :departure_date,
-                      :num_adults, :num_children, :num_infants, :total_price,
-                      :payment_method, :payment_status, :booking_status,
-                      :customer_notes, :admin_notes)";
+            return true;
+        }
+        return false;
+    }
+
+    // Thêm dịch vụ vào booking
+    private function addServices($booking_id, $services) {
+        foreach ($services as $service) {
+            $query = "INSERT INTO {$this->bookingServicesTable} 
+                      (booking_id, service_id, quantity, price, service_date) 
+                      VALUES (:booking_id, :service_id, :quantity, :price, :service_date)";
             
             $stmt = $this->conn->prepare($query);
             
-            // Sanitize inputs
-            $this->customer_notes = htmlspecialchars(strip_tags($this->customer_notes));
-            $this->admin_notes = htmlspecialchars(strip_tags($this->admin_notes));
-            $this->payment_method = $this->payment_method ?: 'cash';
-            $this->payment_status = $this->payment_status ?: 'pending';
-            $this->booking_status = $this->booking_status ?: 'pending';
-            $this->booking_date = $this->booking_date ?: date('Y-m-d');
+            $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
+            $stmt->bindParam(':service_id', $service['service_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':quantity', $service['quantity'], PDO::PARAM_INT);
+            $stmt->bindParam(':price', $service['price']);
+            $stmt->bindParam(':service_date', $service['service_date'] ?? null);
             
-            // Bind parameters
-            $stmt->bindParam(':booking_code', $this->booking_code);
-            $stmt->bindParam(':user_id', $this->user_id);
-            $stmt->bindParam(':tour_id', $this->tour_id);
-            $stmt->bindParam(':booking_date', $this->booking_date);
-            $stmt->bindParam(':departure_date', $this->departure_date);
-            $stmt->bindParam(':num_adults', $this->num_adults);
-            $stmt->bindParam(':num_children', $this->num_children);
-            $stmt->bindParam(':num_infants', $this->num_infants);
-            $stmt->bindParam(':total_price', $this->total_price);
-            $stmt->bindParam(':payment_method', $this->payment_method);
-            $stmt->bindParam(':payment_status', $this->payment_status);
-            $stmt->bindParam(':booking_status', $this->booking_status);
-            $stmt->bindParam(':customer_notes', $this->customer_notes);
-            $stmt->bindParam(':admin_notes', $this->admin_notes);
+            $stmt->execute();
+        }
+    }
+
+    // Lấy tất cả bookings
+    public function getAll($page = 1, $limit = 20, $filters = []) {
+        $offset = ($page - 1) * $limit;
+        
+        $whereClause = "WHERE 1=1";
+        $params = [];
+        
+        if (!empty($filters['status'])) {
+            $whereClause .= " AND b.status = :status";
+            $params[':status'] = $filters['status'];
+        }
+        
+        if (!empty($filters['payment_status'])) {
+            $whereClause .= " AND b.payment_status = :payment_status";
+            $params[':payment_status'] = $filters['payment_status'];
+        }
+        
+        if (!empty($filters['customer_id'])) {
+            $whereClause .= " AND b.customer_id = :customer_id";
+            $params[':customer_id'] = $filters['customer_id'];
+        }
+        
+        if (!empty($filters['room_id'])) {
+            $whereClause .= " AND b.room_id = :room_id";
+            $params[':room_id'] = $filters['room_id'];
+        }
+        
+        if (!empty($filters['check_in_from'])) {
+            $whereClause .= " AND b.check_in >= :check_in_from";
+            $params[':check_in_from'] = $filters['check_in_from'];
+        }
+        
+        if (!empty($filters['check_in_to'])) {
+            $whereClause .= " AND b.check_in <= :check_in_to";
+            $params[':check_in_to'] = $filters['check_in_to'];
+        }
+        
+        if (!empty($filters['search'])) {
+            $whereClause .= " AND (b.booking_code LIKE :search OR u.full_name LIKE :search OR u.email LIKE :search)";
+            $params[':search'] = "%{$filters['search']}%";
+        }
+        
+        // Query tổng số records
+        $countQuery = "SELECT COUNT(*) as total 
+                      FROM {$this->table} b
+                      LEFT JOIN users u ON b.customer_id = u.id
+                      $whereClause";
+        
+        $stmt = $this->conn->prepare($countQuery);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->execute();
+        $totalResult = $stmt->fetch(PDO::FETCH_ASSOC);
+        $total = $totalResult['total'];
+        
+        // Query dữ liệu
+        $query = "SELECT b.*, 
+                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
+                         r.room_number, rt.type_name as room_type,
+                         (SELECT SUM(bs.price * bs.quantity) 
+                          FROM booking_services bs 
+                          WHERE bs.booking_id = b.id) as services_total
+                  FROM {$this->table} b
+                  LEFT JOIN users u ON b.customer_id = u.id
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
+                  $whereClause
+                  ORDER BY b.created_at DESC
+                  LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Tính tổng tiền (phòng + dịch vụ)
+        foreach ($bookings as &$booking) {
+            $booking['services_total'] = (float)$booking['services_total'] ?? 0;
+            $booking['grand_total'] = $booking['total_price'] + $booking['services_total'];
+        }
+        
+        return [
+            'data' => $bookings,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
+            'total_pages' => ceil($total / $limit)
+        ];
+    }
+
+    // Lấy booking theo ID
+    public function getById($id) {
+        $query = "SELECT b.*, 
+                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone, u.address as customer_address,
+                         r.room_number, r.floor, r.view_type, r.image_url as room_image,
+                         rt.type_name as room_type, rt.base_price as room_price, rt.capacity,
+                         (SELECT SUM(bs.price * bs.quantity) 
+                          FROM booking_services bs 
+                          WHERE bs.booking_id = b.id) as services_total
+                  FROM {$this->table} b
+                  LEFT JOIN users u ON b.customer_id = u.id
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
+                  WHERE b.id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($booking) {
+            $booking['services_total'] = (float)$booking['services_total'] ?? 0;
+            $booking['grand_total'] = $booking['total_price'] + $booking['services_total'];
             
-            if ($stmt->execute()) {
-                $this->id = $this->conn->lastInsertId();
-                
-                // Update tour booking count
-                $tourModel->updateBookingCount($this->num_adults + $this->num_children + $this->num_infants);
-                
-                return $this->id;
-            }
-            
+            // Lấy dịch vụ
+            $booking['services'] = $this->getBookingServices($id);
+        }
+        
+        return $booking;
+    }
+
+    // Lấy booking theo mã
+    public function getByCode($booking_code) {
+        $query = "SELECT b.*, 
+                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
+                         r.room_number,
+                         rt.type_name as room_type
+                  FROM {$this->table} b
+                  LEFT JOIN users u ON b.customer_id = u.id
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
+                  WHERE b.booking_code = :booking_code";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':booking_code', $booking_code);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy dịch vụ của booking
+    private function getBookingServices($booking_id) {
+        $query = "SELECT bs.*, s.service_name, s.category
+                  FROM {$this->bookingServicesTable} bs
+                  LEFT JOIN services s ON bs.service_id = s.id
+                  WHERE bs.booking_id = :booking_id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Cập nhật booking
+    public function update($id, $data) {
+        $setClause = [];
+        $params = [':id' => $id];
+        
+        if (isset($data['status'])) {
+            $setClause[] = "status = :status";
+            $params[':status'] = $data['status'];
+        }
+        
+        if (isset($data['payment_status'])) {
+            $setClause[] = "payment_status = :payment_status";
+            $params[':payment_status'] = $data['payment_status'];
+        }
+        
+        if (isset($data['payment_method'])) {
+            $setClause[] = "payment_method = :payment_method";
+            $params[':payment_method'] = $data['payment_method'];
+        }
+        
+        if (isset($data['special_requests'])) {
+            $setClause[] = "special_requests = :special_requests";
+            $params[':special_requests'] = $data['special_requests'];
+        }
+        
+        if (isset($data['check_in'])) {
+            $setClause[] = "check_in = :check_in";
+            $params[':check_in'] = $data['check_in'];
+        }
+        
+        if (isset($data['check_out'])) {
+            $setClause[] = "check_out = :check_out";
+            $params[':check_out'] = $data['check_out'];
+        }
+        
+        if (isset($data['num_guests'])) {
+            $setClause[] = "num_guests = :num_guests";
+            $params[':num_guests'] = $data['num_guests'];
+        }
+        
+        if (isset($data['total_price'])) {
+            $setClause[] = "total_price = :total_price";
+            $params[':total_price'] = $data['total_price'];
+        }
+        
+        if (empty($setClause)) {
             return false;
-            
-        } catch (Exception $e) {
-            throw new Exception("Create booking failed: " . $e->getMessage());
         }
+        
+        $query = "UPDATE {$this->table} 
+                  SET " . implode(', ', $setClause) . " 
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        return $stmt->execute();
     }
 
-    // Read all bookings with pagination and filters
-    public function readAll($page = 1, $limit = 10, $filters = []) {
-        try {
-            $offset = ($page - 1) * $limit;
-            $whereClause = "WHERE 1=1";
-            $params = [];
-            
-            // Apply filters
-            if (!empty($filters['booking_status'])) {
-                $whereClause .= " AND b.booking_status = :booking_status";
-                $params[':booking_status'] = $filters['booking_status'];
-            }
-            
-            if (!empty($filters['payment_status'])) {
-                $whereClause .= " AND b.payment_status = :payment_status";
-                $params[':payment_status'] = $filters['payment_status'];
-            }
-            
-            if (!empty($filters['user_id'])) {
-                $whereClause .= " AND b.user_id = :user_id";
-                $params[':user_id'] = $filters['user_id'];
-            }
-            
-            if (!empty($filters['tour_id'])) {
-                $whereClause .= " AND b.tour_id = :tour_id";
-                $params[':tour_id'] = $filters['tour_id'];
-            }
-            
-            if (!empty($filters['booking_code'])) {
-                $whereClause .= " AND b.booking_code LIKE :booking_code";
-                $params[':booking_code'] = '%' . $filters['booking_code'] . '%';
-            }
-            
-            if (!empty($filters['start_date'])) {
-                $whereClause .= " AND DATE(b.created_at) >= :start_date";
-                $params[':start_date'] = $filters['start_date'];
-            }
-            
-            if (!empty($filters['end_date'])) {
-                $whereClause .= " AND DATE(b.created_at) <= :end_date";
-                $params[':end_date'] = $filters['end_date'];
-            }
-            
-            if (!empty($filters['search'])) {
-                $whereClause .= " AND (b.booking_code LIKE :search OR u.full_name LIKE :search OR u.email LIKE :search OR t.name LIKE :search)";
-                $params[':search'] = '%' . $filters['search'] . '%';
-            }
-            
-            // Get total count for pagination
-            $countQuery = "SELECT COUNT(*) as total 
-                          FROM " . $this->table_name . " b
-                          LEFT JOIN users u ON b.user_id = u.id
-                          LEFT JOIN tours t ON b.tour_id = t.id
-                          " . $whereClause;
-            
-            $countStmt = $this->conn->prepare($countQuery);
-            foreach ($params as $key => $value) {
-                $countStmt->bindValue($key, $value);
-            }
-            $countStmt->execute();
-            $totalCount = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
-            
-            // Get bookings with limit and offset
-            $query = "SELECT b.*, 
-                     u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
-                     t.name as tour_name, t.destination as tour_destination, t.price_adult, t.price_child, t.price_infant
-                     FROM " . $this->table_name . " b
-                     LEFT JOIN users u ON b.user_id = u.id
-                     LEFT JOIN tours t ON b.tour_id = t.id
-                     " . $whereClause . "
-                     ORDER BY b.created_at DESC
-                     LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->conn->prepare($query);
-            
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            return [
-                'bookings' => $bookings,
-                'total' => $totalCount,
-                'page' => $page,
-                'limit' => $limit,
-                'total_pages' => ceil($totalCount / $limit)
-            ];
-            
-        } catch (Exception $e) {
-            throw new Exception("Read bookings failed: " . $e->getMessage());
-        }
+    // Xóa booking (soft delete)
+    public function delete($id) {
+        // Chỉ cho phép xóa nếu booking ở trạng thái pending hoặc cancelled
+        $query = "UPDATE {$this->table} 
+                  SET status = 'cancelled' 
+                  WHERE id = :id AND status IN ('pending', 'confirmed')";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
-    // Read single booking by ID
-    public function readOne() {
-        try {
-            $query = "SELECT b.*, 
-                     u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone, u.address as customer_address,
-                     t.name as tour_name, t.description as tour_description, t.destination as tour_destination,
-                     t.duration_days, t.duration_nights, t.departure_point, t.departure_time, t.return_time,
-                     t.price_adult, t.price_child, t.price_infant, t.included_services, t.excluded_services,
-                     t.itinerary, t.images
-                     FROM " . $this->table_name . " b
-                     LEFT JOIN users u ON b.user_id = u.id
-                     LEFT JOIN tours t ON b.tour_id = t.id
-                     WHERE b.id = :id";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $this->id);
-            $stmt->execute();
-            
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($row) {
-                $this->booking_code = $row['booking_code'];
-                $this->user_id = $row['user_id'];
-                $this->tour_id = $row['tour_id'];
-                $this->booking_date = $row['booking_date'];
-                $this->departure_date = $row['departure_date'];
-                $this->num_adults = $row['num_adults'];
-                $this->num_children = $row['num_children'];
-                $this->num_infants = $row['num_infants'];
-                $this->total_price = $row['total_price'];
-                $this->payment_method = $row['payment_method'];
-                $this->payment_status = $row['payment_status'];
-                $this->booking_status = $row['booking_status'];
-                $this->customer_notes = $row['customer_notes'];
-                $this->admin_notes = $row['admin_notes'];
-                $this->created_at = $row['created_at'];
-                $this->updated_at = $row['updated_at'];
-                
-                return $row; // Return full data with joins
-            }
-            
-            return false;
-            
-        } catch (Exception $e) {
-            throw new Exception("Read booking failed: " . $e->getMessage());
-        }
+    // Kiểm tra booking có tồn tại không
+    public function exists($id) {
+        $query = "SELECT id FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 
-    // Update booking
-    public function update() {
-        try {
-            $query = "UPDATE " . $this->table_name . "
-                     SET departure_date = :departure_date,
-                         num_adults = :num_adults,
-                         num_children = :num_children,
-                         num_infants = :num_infants,
-                         total_price = :total_price,
-                         payment_method = :payment_method,
-                         payment_status = :payment_status,
-                         booking_status = :booking_status,
-                         customer_notes = :customer_notes,
-                         admin_notes = :admin_notes,
-                         updated_at = NOW()
-                     WHERE id = :id";
-            
-            $stmt = $this->conn->prepare($query);
-            
-            // Sanitize inputs
-            $this->customer_notes = htmlspecialchars(strip_tags($this->customer_notes));
-            $this->admin_notes = htmlspecialchars(strip_tags($this->admin_notes));
-            
-            // Bind parameters
-            $stmt->bindParam(':departure_date', $this->departure_date);
-            $stmt->bindParam(':num_adults', $this->num_adults);
-            $stmt->bindParam(':num_children', $this->num_children);
-            $stmt->bindParam(':num_infants', $this->num_infants);
-            $stmt->bindParam(':total_price', $this->total_price);
-            $stmt->bindParam(':payment_method', $this->payment_method);
-            $stmt->bindParam(':payment_status', $this->payment_status);
-            $stmt->bindParam(':booking_status', $this->booking_status);
-            $stmt->bindParam(':customer_notes', $this->customer_notes);
-            $stmt->bindParam(':admin_notes', $this->admin_notes);
-            $stmt->bindParam(':id', $this->id);
-            
-            return $stmt->execute();
-            
-        } catch (Exception $e) {
-            throw new Exception("Update booking failed: " . $e->getMessage());
-        }
+    // Lấy bookings của customer
+    public function getByCustomer($customer_id, $limit = 10) {
+        $query = "SELECT b.*, 
+                         r.room_number,
+                         rt.type_name as room_type
+                  FROM {$this->table} b
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
+                  WHERE b.customer_id = :customer_id
+                  ORDER BY b.created_at DESC
+                  LIMIT :limit";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':customer_id', $customer_id, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Cancel booking
-    public function cancel() {
-        try {
-            $query = "UPDATE " . $this->table_name . "
-                     SET booking_status = 'cancelled',
-                         updated_at = NOW()
-                     WHERE id = :id AND booking_status != 'cancelled'";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $this->id);
-            
-            if ($stmt->execute() && $stmt->rowCount() > 0) {
-                // Update tour booking count (subtract)
-                $bookingData = $this->readOne();
-                if ($bookingData) {
-                    $tourModel = new Tour();
-                    $tourModel->id = $this->tour_id;
-                    $totalPassengers = $bookingData['num_adults'] + $bookingData['num_children'] + $bookingData['num_infants'];
-                    $tourModel->updateBookingCount(-$totalPassengers);
-                }
-                
-                return true;
-            }
-            
-            return false;
-            
-        } catch (Exception $e) {
-            throw new Exception("Cancel booking failed: " . $e->getMessage());
-        }
+    // Tính số đêm
+    public function calculateNights($check_in, $check_out) {
+        $start = new DateTime($check_in);
+        $end = new DateTime($check_out);
+        $interval = $start->diff($end);
+        return $interval->days;
     }
 
-    // Update payment status
-    public function updatePaymentStatus($status) {
-        try {
-            $query = "UPDATE " . $this->table_name . "
-                     SET payment_status = :status,
-                         updated_at = NOW()
-                     WHERE id = :id";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':id', $this->id);
-            
-            return $stmt->execute();
-            
-        } catch (Exception $e) {
-            throw new Exception("Update payment status failed: " . $e->getMessage());
+    // Kiểm tra availability
+    public function checkRoomAvailability($room_id, $check_in, $check_out, $exclude_booking_id = null) {
+        $query = "SELECT COUNT(*) as count 
+                  FROM {$this->table} 
+                  WHERE room_id = :room_id
+                  AND (:check_in < check_out AND :check_out > check_in)
+                  AND status NOT IN ('cancelled', 'checked_out')";
+        
+        $params = [
+            ':room_id' => $room_id,
+            ':check_in' => $check_in,
+            ':check_out' => $check_out
+        ];
+        
+        if ($exclude_booking_id) {
+            $query .= " AND id != :exclude_booking_id";
+            $params[':exclude_booking_id'] = $exclude_booking_id;
         }
+        
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['count'] == 0;
     }
 
-    // Get booking by booking code
-    public function getByBookingCode($bookingCode) {
-        try {
-            $query = "SELECT b.*, 
-                     u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
-                     t.name as tour_name, t.destination as tour_destination
-                     FROM " . $this->table_name . " b
-                     LEFT JOIN users u ON b.user_id = u.id
-                     LEFT JOIN tours t ON b.tour_id = t.id
-                     WHERE b.booking_code = :booking_code";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':booking_code', $bookingCode);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-            
-        } catch (Exception $e) {
-            throw new Exception("Get booking by code failed: " . $e->getMessage());
+    // Lấy thống kê booking
+    public function getStats($start_date = null, $end_date = null) {
+        $stats = [];
+        
+        $whereClause = "WHERE status != 'cancelled'";
+        $params = [];
+        
+        if ($start_date) {
+            $whereClause .= " AND created_at >= :start_date";
+            $params[':start_date'] = $start_date;
         }
-    }
-
-    // Get user's bookings
-    public function getUserBookings($userId, $page = 1, $limit = 10) {
-        try {
-            $offset = ($page - 1) * $limit;
-            
-            $query = "SELECT b.*, 
-                     t.name as tour_name, t.destination as tour_destination, t.images as tour_images
-                     FROM " . $this->table_name . " b
-                     LEFT JOIN tours t ON b.tour_id = t.id
-                     WHERE b.user_id = :user_id
-                     ORDER BY b.created_at DESC
-                     LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $userId);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-        } catch (Exception $e) {
-            throw new Exception("Get user bookings failed: " . $e->getMessage());
+        
+        if ($end_date) {
+            $whereClause .= " AND created_at <= :end_date";
+            $params[':end_date'] = $end_date;
         }
-    }
-
-    // Get booking statistics
-    public function getStatistics($startDate = null, $endDate = null) {
-        try {
-            $whereClause = "WHERE booking_status != 'cancelled'";
-            $params = [];
-            
-            if ($startDate) {
-                $whereClause .= " AND DATE(created_at) >= :start_date";
-                $params[':start_date'] = $startDate;
-            }
-            
-            if ($endDate) {
-                $whereClause .= " AND DATE(created_at) <= :end_date";
-                $params[':end_date'] = $endDate;
-            }
-            
-            $query = "SELECT 
-                     COUNT(*) as total_bookings,
-                     SUM(CASE WHEN payment_status = 'paid' THEN total_price ELSE 0 END) as total_revenue,
-                     AVG(CASE WHEN payment_status = 'paid' THEN total_price END) as avg_booking_value,
-                     SUM(num_adults + num_children + num_infants) as total_passengers,
-                     COUNT(DISTINCT user_id) as unique_customers,
-                     SUM(CASE WHEN booking_status = 'confirmed' THEN 1 ELSE 0 END) as confirmed_bookings,
-                     SUM(CASE WHEN booking_status = 'pending' THEN 1 ELSE 0 END) as pending_bookings,
-                     SUM(CASE WHEN booking_status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_bookings
-                     FROM " . $this->table_name . " 
-                     $whereClause";
-            
-            $stmt = $this->conn->prepare($query);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-            
-        } catch (Exception $e) {
-            throw new Exception("Get booking statistics failed: " . $e->getMessage());
+        
+        // Tổng số booking
+        $query = "SELECT COUNT(*) as total FROM {$this->table} $whereClause";
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
         }
-    }
-
-    // Get upcoming departures
-    public function getUpcomingDepartures($limit = 10) {
-        try {
-            $currentDate = date('Y-m-d');
-            
-            $query = "SELECT b.*, 
-                     u.full_name as customer_name, u.phone as customer_phone,
-                     t.name as tour_name, t.destination as tour_destination
-                     FROM " . $this->table_name . " b
-                     LEFT JOIN users u ON b.user_id = u.id
-                     LEFT JOIN tours t ON b.tour_id = t.id
-                     WHERE b.departure_date >= :current_date
-                     AND b.booking_status IN ('confirmed', 'pending')
-                     ORDER BY b.departure_date ASC
-                     LIMIT :limit";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':current_date', $currentDate);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-        } catch (Exception $e) {
-            throw new Exception("Get upcoming departures failed: " . $e->getMessage());
+        
+        $stmt->execute();
+        $stats['total_bookings'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        // Doanh thu
+        $query = "SELECT SUM(total_price) as revenue 
+                  FROM {$this->table} 
+                  WHERE payment_status = 'paid' $whereClause";
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
         }
-    }
-
-    // Check booking status by code
-    public function checkStatus($bookingCode) {
-        try {
-            $booking = $this->getByBookingCode($bookingCode);
-            
-            if (!$booking) {
-                return [
-                    'exists' => false,
-                    'message' => 'Booking not found'
-                ];
-            }
-            
-            return [
-                'exists' => true,
-                'booking_code' => $booking['booking_code'],
-                'booking_status' => $booking['booking_status'],
-                'payment_status' => $booking['payment_status'],
-                'tour_name' => $booking['tour_name'],
-                'departure_date' => $booking['departure_date'],
-                'total_price' => $booking['total_price']
-            ];
-            
-        } catch (Exception $e) {
-            throw new Exception("Check booking status failed: " . $e->getMessage());
+        
+        $stmt->execute();
+        $stats['revenue'] = (float)$stmt->fetch(PDO::FETCH_ASSOC)['revenue'] ?? 0;
+        
+        // Booking theo status
+        $query = "SELECT status, COUNT(*) as count 
+                  FROM {$this->table} 
+                  $whereClause
+                  GROUP BY status";
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
         }
+        
+        $stmt->execute();
+        $stats['bookings_by_status'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Booking theo payment method
+        $query = "SELECT payment_method, COUNT(*) as count 
+                  FROM {$this->table} 
+                  $whereClause
+                  GROUP BY payment_method";
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        $stats['bookings_by_payment_method'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Booking theo tháng
+        $query = "SELECT DATE_FORMAT(created_at, '%Y-%m') as month, 
+                         COUNT(*) as count,
+                         SUM(CASE WHEN payment_status = 'paid' THEN total_price ELSE 0 END) as revenue
+                  FROM {$this->table} 
+                  GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+                  ORDER BY month DESC
+                  LIMIT 6";
+        $stmt = $this->conn->query($query);
+        $stats['monthly_stats'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $stats;
     }
 }
-?>
