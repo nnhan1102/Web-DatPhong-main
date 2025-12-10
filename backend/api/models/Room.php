@@ -1,4 +1,8 @@
 <?php
+namespace Models;
+
+use PDO;
+
 class Room {
     private $conn;
     private $table = 'rooms';

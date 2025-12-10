@@ -1,5 +1,205 @@
-// Base URL cho API
+// Base URL cho API. Khi backend chưa sẵn sàng hoặc chưa đăng nhập,
+// bật USE_MOCK_DATA để hiển thị dữ liệu mẫu và tránh lỗi popup.
 const API_BASE_URL = "http://localhost/hotel_opulent/backend/api";
+const USE_MOCK_DATA = false;
+
+// Dữ liệu mẫu cho chế độ offline/không đăng nhập
+const MOCK_DATA = {
+  dashboard: {
+    overview: {
+      total_rooms: 12,
+      today_bookings: 3,
+      total_customers: 25,
+      monthly_revenue: 54000000,
+      service_revenue: 8000000,
+    },
+    occupancy_stats: {
+      current_occupancy_rate: 62,
+      occupancy_by_type: [
+        { type_name: "Deluxe", total_rooms: 5, occupied_rooms: 3 },
+        { type_name: "Suite", total_rooms: 3, occupied_rooms: 2 },
+        { type_name: "Standard", total_rooms: 4, occupied_rooms: 2 },
+      ],
+    },
+    time_stats: {
+      monthly_revenue: [
+        { month: "01", revenue: 12000000 },
+        { month: "02", revenue: 9000000 },
+        { month: "03", revenue: 15000000 },
+        { month: "04", revenue: 11000000 },
+        { month: "05", revenue: 7000000 },
+        { month: "06", revenue: 0 },
+      ],
+    },
+    recent_activities: {
+      today_checkins: [
+        {
+          customer_name: "Nguyễn Văn A",
+          room_number: "101",
+          num_guests: 2,
+          check_in: new Date().toISOString(),
+        },
+      ],
+      today_checkouts: [
+        {
+          customer_name: "Trần Thị B",
+          room_number: "203",
+          total_price: 2200000,
+          check_out: new Date().toISOString(),
+        },
+      ],
+    },
+    revenue_by_type: [
+      { type_name: "Deluxe", revenue: 18000000 },
+      { type_name: "Suite", revenue: 22000000 },
+      { type_name: "Standard", revenue: 8000000 },
+    ],
+    payment_methods: [
+      { method: "Tiền mặt", count: 6 },
+      { method: "Thẻ", count: 4 },
+      { method: "VNPay", count: 2 },
+    ],
+    yearly_revenue: [
+      { month: "01", revenue: 12000000 },
+      { month: "02", revenue: 9000000 },
+      { month: "03", revenue: 15000000 },
+      { month: "04", revenue: 11000000 },
+      { month: "05", revenue: 7000000 },
+      { month: "06", revenue: 0 },
+    ],
+  },
+  rooms: [
+    {
+      id: 1,
+      room_number: "101",
+      type_name: "Deluxe",
+      room_type_id: 1,
+      floor: 1,
+      view_type: "city",
+      base_price: 1500000,
+      capacity: 2,
+      status: "available",
+      amenities: JSON.stringify(["Wifi", "TV", "Mini bar"]),
+    },
+    {
+      id: 2,
+      room_number: "203",
+      type_name: "Suite",
+      room_type_id: 2,
+      floor: 2,
+      view_type: "sea",
+      base_price: 3200000,
+      capacity: 3,
+      status: "occupied",
+      amenities: JSON.stringify(["Wifi", "TV", "Bồn tắm"]),
+    },
+  ],
+  roomTypes: [
+    {
+      id: 1,
+      type_name: "Deluxe",
+      description: "Phòng deluxe tiện nghi",
+      base_price: 1500000,
+      capacity: 2,
+      amenities: JSON.stringify(["Wifi", "TV", "Mini bar"]),
+    },
+    {
+      id: 2,
+      type_name: "Suite",
+      description: "Phòng suite cao cấp",
+      base_price: 3200000,
+      capacity: 3,
+      amenities: JSON.stringify(["Wifi", "Bồn tắm", "Ban công"]),
+    },
+  ],
+  bookings: [
+    {
+      id: 1,
+      booking_code: "BK001",
+      customer_name: "Nguyễn Văn A",
+      room_number: "101",
+      check_in: new Date().toISOString(),
+      check_out: new Date(Date.now() + 86400000).toISOString(),
+      num_guests: 2,
+      total_price: 1500000,
+      payment_status: "paid",
+      status: "checked_in",
+      created_at: new Date().toISOString(),
+    },
+  ],
+  customers: [
+    {
+      id: 1,
+      full_name: "Nguyễn Văn A",
+      email: "a@example.com",
+      phone: "0900000001",
+      user_type: "customer",
+      total_bookings: 3,
+      total_spent: 4500000,
+      loyalty_points: 120,
+      created_at: new Date().toISOString(),
+      status: "active",
+    },
+  ],
+  services: [
+    {
+      id: 1,
+      service_name: "Đưa đón sân bay",
+      price: 500000,
+      description: "Xe 4 chỗ",
+      category: "transport",
+      status: "available",
+    },
+    {
+      id: 2,
+      service_name: "Buffet sáng",
+      price: 150000,
+      description: "Ăn sáng tại nhà hàng",
+      category: "food",
+      status: "available",
+    },
+  ],
+  staff: [
+    {
+      id: 1,
+      staff_code: "NV001",
+      full_name: "Lê Văn Nhân",
+      email: "nhan@example.com",
+      phone: "090900900",
+      position: "Lễ tân",
+      department: "reception",
+      hire_date: new Date().toISOString(),
+    },
+  ],
+  reports: {
+    revenue: 54000000,
+    bookings: 12,
+    new_customers: 6,
+    occupancy_rate: 62,
+    revenue_change: 5,
+    bookings_change: -3,
+    customers_change: 10,
+    occupancy_change: 2,
+    revenue_by_type: [
+      { type_name: "Deluxe", revenue: 18000000 },
+      { type_name: "Suite", revenue: 22000000 },
+      { type_name: "Standard", revenue: 8000000 },
+    ],
+    payment_methods: [
+      { method: "cash", count: 6 },
+      { method: "credit_card", count: 4 },
+      { method: "vnpay", count: 2 },
+    ],
+    yearly_revenue: [
+      { month: "01", revenue: 12000000 },
+      { month: "02", revenue: 9000000 },
+      { month: "03", revenue: 15000000 },
+      { month: "04", revenue: 11000000 },
+      { month: "05", revenue: 7000000 },
+      { month: "06", revenue: 0 },
+    ],
+  },
+};
 
 // Khởi tạo admin
 document.addEventListener("DOMContentLoaded", function () {
@@ -146,6 +346,30 @@ function updateDateTime() {
 }
 
 async function loadDashboardData() {
+  if (USE_MOCK_DATA) {
+    const data = { success: true, data: MOCK_DATA.dashboard };
+    if (data.success) {
+      document.getElementById("total-rooms").textContent =
+        data.data.overview?.total_rooms || 0;
+      document.getElementById("today-bookings").textContent =
+        data.data.overview?.today_bookings || 0;
+      document.getElementById("total-customers").textContent =
+        data.data.overview?.total_customers || 0;
+      document.getElementById("monthly-revenue").textContent = formatCurrency(
+        data.data.overview?.monthly_revenue || 0
+      );
+      document.getElementById("occupancy-rate").textContent =
+        (data.data.occupancy_stats?.current_occupancy_rate || 0) + "%";
+      document.getElementById("service-revenue").textContent = formatCurrency(
+        data.data.overview?.service_revenue || 0
+      );
+      loadTodayCheckins(data.data.recent_activities?.today_checkins || []);
+      loadTodayCheckouts(data.data.recent_activities?.today_checkouts || []);
+      renderDashboardCharts(data.data);
+    }
+    return;
+  }
+
   try {
     // Load stats from API
     const response = await fetch(
@@ -184,9 +408,20 @@ async function loadDashboardData() {
 }
 
 function renderDashboardCharts(data) {
+  if (typeof Chart === "undefined") {
+    console.error("Chart.js chưa được tải");
+    return;
+  }
+  // Helper to safely destroy old charts
+  const safeDestroy = (chartInstance) => {
+    if (chartInstance && typeof chartInstance.destroy === "function") {
+      chartInstance.destroy();
+    }
+  };
+
   // Revenue Chart
   const revenueCtx = document.getElementById("revenueChart").getContext("2d");
-  if (window.revenueChart) window.revenueChart.destroy();
+  safeDestroy(window.revenueChart);
 
   const revenueData = data.time_stats?.monthly_revenue || [];
   const months = revenueData.map((item) => item.month);
@@ -232,7 +467,7 @@ function renderDashboardCharts(data) {
   const occupancyCtx = document
     .getElementById("occupancyChart")
     .getContext("2d");
-  if (window.occupancyChart) window.occupancyChart.destroy();
+  safeDestroy(window.occupancyChart);
 
   const occupancyData = data.occupancy_stats?.occupancy_by_type || [];
   const roomTypes = occupancyData.map((item) => item.type_name);
@@ -343,6 +578,11 @@ function loadTodayCheckouts(checkouts) {
 }
 
 async function loadRooms() {
+  if (USE_MOCK_DATA) {
+    renderRoomsTable(MOCK_DATA.rooms);
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/rooms.php?action=getAll`);
     const data = await response.json();
@@ -353,6 +593,18 @@ async function loadRooms() {
   } catch (error) {
     console.error("Error loading rooms:", error);
     showToast("Lỗi tải danh sách phòng", "error");
+  }
+}
+
+// Helper parse amenities from API (stringified JSON or array)
+function parseAmenities(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
   }
 }
 
@@ -384,6 +636,8 @@ function renderRoomsTable(rooms) {
         pool: "Hồ bơi",
       }[room.view_type] || room.view_type;
 
+    const amenitiesList = parseAmenities(room.amenities);
+
     html += `
                     <tr>
                         <td>${room.id}</td>
@@ -394,11 +648,7 @@ function renderRoomsTable(rooms) {
                         <td>${formatCurrency(room.base_price || 0)}</td>
                         <td>${room.capacity || 2} người</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${
-                          room.amenities
-                            ? JSON.parse(room.amenities).join(", ")
-                            : "Không có"
-                        }</td>
+                        <td>${amenitiesList.length ? amenitiesList.join(", ") : "Không có"}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn edit-btn" onclick="editRoom(${
@@ -421,6 +671,16 @@ function renderRoomsTable(rooms) {
 }
 
 async function loadRoomTypesForFilter() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("room-type-filter");
+    let html = '<option value="">Tất cả loại phòng</option>';
+    MOCK_DATA.roomTypes.forEach((type) => {
+      html += `<option value="${type.id}">${type.type_name}</option>`;
+    });
+    select.innerHTML = html;
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/room-types.php?action=getAll`
@@ -443,6 +703,11 @@ async function loadRoomTypesForFilter() {
 }
 
 async function loadRoomTypes() {
+  if (USE_MOCK_DATA) {
+    renderRoomTypesCards(MOCK_DATA.roomTypes);
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/room-types.php?action=getAll`
@@ -468,7 +733,7 @@ function renderRoomTypesCards(types) {
 
   let html = "";
   types.forEach((type) => {
-    const amenities = type.amenities ? JSON.parse(type.amenities) : [];
+    const amenities = parseAmenities(type.amenities);
 
     html += `
                     <div class="room-type-card">
@@ -521,6 +786,11 @@ function renderRoomTypesCards(types) {
 }
 
 async function loadBookings() {
+  if (USE_MOCK_DATA) {
+    renderBookingsTable(MOCK_DATA.bookings);
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/bookings.php?action=getAll`);
     const data = await response.json();
@@ -609,6 +879,11 @@ function renderBookingsTable(bookings) {
 }
 
 async function loadCustomers() {
+  if (USE_MOCK_DATA) {
+    renderCustomersTable(MOCK_DATA.customers);
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/customers.php?action=getAll`);
     const data = await response.json();
@@ -686,6 +961,11 @@ function renderCustomersTable(customers) {
 }
 
 async function loadServices() {
+  if (USE_MOCK_DATA) {
+    renderServicesCards(MOCK_DATA.services);
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/services.php?action=getAll`);
     const data = await response.json();
@@ -762,6 +1042,11 @@ function renderServicesCards(services) {
 }
 
 async function loadStaff() {
+  if (USE_MOCK_DATA) {
+    renderStaffTable(MOCK_DATA.staff);
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/staff.php?action=getAll`);
     const data = await response.json();
@@ -826,6 +1111,12 @@ function renderStaffTable(staffList) {
 }
 
 async function loadReportData(period) {
+  if (USE_MOCK_DATA) {
+    updateReportCards(MOCK_DATA.reports);
+    renderReportCharts(MOCK_DATA.reports);
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/reports.php?action=getReport&period=${period}`
@@ -869,11 +1160,21 @@ function updateReportCards(reportData) {
 }
 
 function renderReportCharts(reportData) {
+  if (typeof Chart === "undefined") {
+    console.error("Chart.js chưa được tải");
+    return;
+  }
+  const safeDestroy = (chartInstance) => {
+    if (chartInstance && typeof chartInstance.destroy === "function") {
+      chartInstance.destroy();
+    }
+  };
+
   // Revenue by room type chart
   const revenueByTypeCtx = document
     .getElementById("revenueByRoomTypeChart")
     .getContext("2d");
-  if (window.revenueByTypeChart) window.revenueByTypeChart.destroy();
+  safeDestroy(window.revenueByTypeChart);
 
   window.revenueByTypeChart = new Chart(revenueByTypeCtx, {
     type: "doughnut",
@@ -907,7 +1208,7 @@ function renderReportCharts(reportData) {
   const paymentMethodCtx = document
     .getElementById("paymentMethodChart")
     .getContext("2d");
-  if (window.paymentMethodChart) window.paymentMethodChart.destroy();
+  safeDestroy(window.paymentMethodChart);
 
   window.paymentMethodChart = new Chart(paymentMethodCtx, {
     type: "pie",
@@ -940,7 +1241,7 @@ function renderReportCharts(reportData) {
   const yearlyRevenueCtx = document
     .getElementById("yearlyRevenueChart")
     .getContext("2d");
-  if (window.yearlyRevenueChart) window.yearlyRevenueChart.destroy();
+  safeDestroy(window.yearlyRevenueChart);
 
   window.yearlyRevenueChart = new Chart(yearlyRevenueCtx, {
     type: "bar",
@@ -991,6 +1292,18 @@ function openRoomModal(roomId = null) {
 }
 
 async function loadRoomTypesForSelect() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("room-type-id");
+    let html = '<option value="">Chọn loại phòng</option>';
+    MOCK_DATA.roomTypes.forEach((type) => {
+      html += `<option value="${type.id}">${type.type_name} (${formatCurrency(
+        type.base_price
+      )}/đêm)</option>`;
+    });
+    select.innerHTML = html;
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/room-types.php?action=getAll`
@@ -1015,6 +1328,21 @@ async function loadRoomTypesForSelect() {
 }
 
 async function loadRoomData(roomId) {
+  if (USE_MOCK_DATA) {
+    const room = MOCK_DATA.rooms.find((r) => r.id == roomId);
+    if (room) {
+      document.getElementById("room-id").value = room.id;
+      document.getElementById("room-number").value = room.room_number;
+      document.getElementById("room-type-id").value = room.room_type_id;
+      document.getElementById("room-floor").value = room.floor || "";
+      document.getElementById("room-view").value = room.view_type;
+      document.getElementById("room-status").value = room.status;
+      document.getElementById("room-image").value = room.image_url || "";
+      await loadRoomTypesForSelect();
+    }
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/rooms.php?action=get&id=${roomId}`
@@ -1054,6 +1382,16 @@ async function saveRoom() {
   };
 
   try {
+    if (USE_MOCK_DATA) {
+      showToast(
+        "Chế độ demo: thao tác đã được giả lập, không gọi server",
+        "info"
+      );
+      closeAllModals();
+      loadRooms();
+      return;
+    }
+
     const url = `${API_BASE_URL}/rooms.php?action=${
       isEdit ? "update" : "create"
     }`;
@@ -1088,6 +1426,13 @@ async function saveRoom() {
 
 function deleteRoom(roomId) {
   if (!confirm("Bạn có chắc chắn muốn xóa phòng này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa phòng", "info");
+    loadRooms();
+    loadDashboardData();
     return;
   }
 
@@ -1132,6 +1477,16 @@ function openBookingModal(bookingId = null) {
 }
 
 async function loadCustomersForSelect() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("booking-customer-id");
+    let html = '<option value="">Chọn khách hàng</option>';
+    MOCK_DATA.customers.forEach((customer) => {
+      html += `<option value="${customer.id}">${customer.full_name} (${customer.email})</option>`;
+    });
+    select.innerHTML = html;
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/customers.php?action=getAll`);
     const data = await response.json();
@@ -1152,6 +1507,23 @@ async function loadCustomersForSelect() {
 }
 
 async function loadAvailableRooms() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("booking-room-id");
+    let html = '<option value="">Chọn phòng</option>';
+    MOCK_DATA.rooms
+      .filter((room) => room.status === "available")
+      .forEach((room) => {
+        html += `<option value="${room.id}" data-price="${room.base_price}">
+                            Phòng ${room.room_number} - ${
+          room.type_name
+        } (${formatCurrency(room.base_price)}/đêm)
+                        </option>`;
+      });
+    select.innerHTML = html;
+    select.addEventListener("change", calculateTotalPrice);
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/rooms.php?action=getAvailable`
@@ -1181,6 +1553,38 @@ async function loadAvailableRooms() {
 }
 
 async function loadServicesForSelect() {
+  if (USE_MOCK_DATA) {
+    const container = document.getElementById("services-selection");
+    let html = "";
+    MOCK_DATA.services.forEach((service) => {
+      if (service.status === "available") {
+        html += `
+                                <div class="service-checkbox">
+                                    <input type="checkbox" id="service-${
+                                      service.id
+                                    }" value="${service.id}" data-price="${
+          service.price
+        }">
+                                    <label for="service-${service.id}">
+                                        ${
+                                          service.service_name
+                                        } - ${formatCurrency(service.price)}
+                                        <small>${service.description}</small>
+                                    </label>
+                                </div>
+                            `;
+      }
+    });
+
+    container.innerHTML = html || "<p>Không có dịch vụ nào khả dụng</p>";
+    document
+      .querySelectorAll('#services-selection input[type="checkbox"]')
+      .forEach((checkbox) => {
+        checkbox.addEventListener("change", calculateTotalPrice);
+      });
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/services.php?action=getAll`);
     const data = await response.json();
@@ -1374,6 +1778,17 @@ async function saveBooking() {
     });
 
   try {
+    if (USE_MOCK_DATA) {
+      showToast(
+        "Chế độ demo: thao tác đã được giả lập, không gọi server",
+        "info"
+      );
+      closeAllModals();
+      loadBookings();
+      loadDashboardData();
+      return;
+    }
+
     const url = `${API_BASE_URL}/bookings.php?action=${
       isEdit ? "update" : "create"
     }`;

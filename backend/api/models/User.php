@@ -1,4 +1,8 @@
 <?php
+namespace Models;
+
+use PDO;
+
 class User {
     private $conn;
     private $table = 'users';

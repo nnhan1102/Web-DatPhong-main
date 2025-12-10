@@ -1,4 +1,8 @@
 <?php
+namespace Models;
+
+use PDO;
+
 class Staff {
     private $conn;
     private $table = 'staff';

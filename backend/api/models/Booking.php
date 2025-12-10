@@ -1,4 +1,8 @@
 <?php
+namespace Models;
+
+use PDO;
+
 class Booking {
     private $conn;
     private $table = 'bookings';

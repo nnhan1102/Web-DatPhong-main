@@ -1,4 +1,8 @@
 <?php
+namespace Models;
+
+use PDO;
+
 class Service {
     private $conn;
     private $table = 'services';
