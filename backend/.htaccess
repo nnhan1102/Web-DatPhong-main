@@ -20,3 +20,16 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+# trúc sửa đoạn này nhóe ====
+Header set Access-Control-Allow-Credentials "true"
+
+# Xử lý preflight requests
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Rewrite cho API (nếu dùng index.php làm router)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+# ====================

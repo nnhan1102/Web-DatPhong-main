@@ -183,9 +183,9 @@
   <section class="suggest">
     <h2>Gợi ý dành cho bạn</h2>
     <div class="card-list">
-      <div class="card"><img src="../image/anh94.jpg"><h3>Khách sạn Đà Nẵng</h3><p>Giá từ 500.000đ</p></div>
-      <div class="card"><img src="../image/anh95.jpg"><h3>Khách sạn Nha Trang</h3><p>Giá từ 650.000đ</p></div>
-      <div class="card"><img src="../image/anh96.jpg"><h3>Khách sạn Phú Quốc</h3><p>Giá từ 800.000đ</p></div>
+      <div class="card" onclick="redirectToHotels('Đà Nẵng')"><img src="../image/anh94.jpg"><h3>Khách sạn Đà Nẵng</h3><p>Giá từ 500.000đ</p></div>
+      <div class="card" onclick="redirectToHotels('Nha Trang')"><img src="../image/anh95.jpg"><h3>Khách sạn Nha Trang</h3><p>Giá từ 650.000đ</p></div>
+      <div class="card" onclick="redirectToHotels('Phú Quốc')"><img src="../image/anh96.jpg"><h3>Khách sạn Phú Quốc</h3><p>Giá từ 800.000đ</p></div>
     </div>
   </section>
 
@@ -193,12 +193,38 @@
     <h2>Điểm đến yêu thích trong nước</h2>
     <p>Lên rừng xuống biển. Trọn vẹn Việt Nam</p>
     <div class="destination-grid">
-      <div class="place large"><img src="../image/anh104.jpg"><div><h3>Phú Quốc</h3><span>922 khách sạn</span></div></div>
-      <div class="place"><img src="../image/anh105.jpg"><h3>Đà Lạt</h3><span>1182 khách sạn</span></div>
-      <div class="place"><img src="../image/anh106.jpg"><h3>Quy Nhơn</h3><span>334 khách sạn</span></div>
-      <div class="place"><img src="../image/anh107.jpeg"><h3>Vũng Tàu</h3><span>706 khách sạn</span></div>
-      <div class="place"><img src="../image/anh108.jpg"><h3>Nha Trang</h3><span>1024 khách sạn</span></div>
-      <div class="place"><img src="../image/anh109.jpg"><h3>Phan Thiết</h3><span>494 khách sạn</span></div>
+      <div class="place large" onclick="redirectToHotels('Phú Quốc')">
+        <img src="../image/anh104.jpg">
+        <div>
+          <h3>Phú Quốc</h3
+            ><span>922 khách sạn</span>
+        </div>
+      </div>
+      <div class="place" onclick="redirectToHotels('Đà Lạt')">
+        <img src="../image/anh105.jpg">
+        <h3>Đà Lạt</h3>
+        <span>1182 khách sạn</span>
+      </div>
+      <div class="place" onclick="redirectToHotels('Quy Nhơn')">
+        <img src="../image/anh106.jpg">
+        <h3>Quy Nhơn</h3>
+        <span>334 khách sạn</span>
+      </div>
+      <div class="place" onclick="redirectToHotels('Vũng Tàu')" >
+        <img src="../image/anh107.jpeg">
+        <h3>Vũng Tàu</h3>
+        <span>706 khách sạn</span>
+      </div>
+      <div class="place" onclick="redirectToHotels('Nha Trang')" >
+        <img src="../image/anh108.jpg">
+        <h3>Nha Trang</h3>
+        <span>1024 khách sạn</span>
+      </div>
+      <div class="place" onclick="redirectToHotels('Phan Thiết')" >
+        <img src="../image/anh109.jpg">
+        <h3>Phan Thiết</h3>
+        <span>494 khách sạn</span>
+      </div>
     </div>
   </section>
 
@@ -230,6 +256,10 @@
       if(checkout.value < minCheckout) checkout.value="";
       checkout.focus();
     });
+    function redirectToHotels(city) {
+    // Chuyển đến hotels.html với tham số city
+    window.location.href = `../frontend/hotels.html?city=${encodeURIComponent(city)}`;
+}
   </script>
 
 </body>
