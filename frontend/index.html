@@ -130,7 +130,7 @@
   <header class="header">
     <div class="logo">Opulent</div>
     <nav class="nav">
-      <a href="#">Khách sạn</a>
+      <a href="hotels.html">Khách sạn</a>
       <a href="#">Combo</a>
       <a href="#">Tour</a>
       <a href="#">Vé máy bay</a>
@@ -232,11 +232,11 @@
     <h2>Điểm đến yêu thích nước ngoài</h2>
     <p>Bao la thế giới. Bốn bể là nhà</p>
     <div class="destination-grid">
-      <div class="place"><img src="../image/anh110.jpg"><h3>Singapore</h3><span>727 khách sạn</span></div>
-      <div class="place"><img src="../image/anh111.jpg"><h3>Bangkok</h3><span>4210 khách sạn</span></div>
-      <div class="place"><img src="../image/anh112.jpg"><h3>Tokyo</h3><span>3871 khách sạn</span></div>
-      <div class="place"><img src="../image/anh113.jpg"><h3>Thượng Hải</h3><span>3548 khách sạn</span></div>
-      <div class="place"><img src="../image/anh114.jpg"><h3>Maldives</h3><span>849 khách sạn</span></div>
+      <div class="place" onclick="redirectToForeign('Singapore')"><img src="../image/anh110.jpg"><h3>Singapore</h3><span>727 khách sạn</span></div>
+      <div class="place" onclick="redirectToForeign('Bangkok')"><img src="../image/anh111.jpg"><h3>Bangkok</h3><span>4210 khách sạn</span></div>
+      <div class="place" onclick="redirectToForeign('Tokyo')"><img src="../image/anh112.jpg"><h3>Tokyo</h3><span>3871 khách sạn</span></div>
+      <div class="place" onclick="redirectToForeign('Thượng Hải')"><img src="../image/anh113.jpg"><h3>Thượng Hải</h3><span>3548 khách sạn</span></div>
+      <div class="place" onclick="redirectToForeign('Maldives')"><img src="../image/anh114.jpg"><h3>Maldives</h3><span>849 khách sạn</span></div>
     </div>
   </section>
 
@@ -259,6 +259,10 @@
     function redirectToHotels(city) {
     // Chuyển đến hotels.html với tham số city
     window.location.href = `../frontend/hotels.html?city=${encodeURIComponent(city)}`;
+}
+    function redirectToForeign(city) {
+    // Chuyển đến foreign.html với tham số city
+    window.location.href = `../frontend/foreign.html?city=${encodeURIComponent(city)}`;
 }
   </script>
 
