@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="vi">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Combo - Opulent</title>
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="assets/css/combo.css">
+	<style>
+		/* small helper for hiding sections */
+		.hidden { display: none; }
+		.page-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+	</style>
+</head>
+<body>
+	<header class="site-header">
+		<div class="container header-row">
+			<div class="header-left">
+				<img src="../image/logo.png" alt="Logo Opulent" class="logo-img"/>
+				<a class="brand" href="index.html">Opulent</a>
+			</div>
+
+			<nav class="main-nav">
+                <a href="index.html">Trang chủ</a>
+				<a href="index.html">Khách sạn</a>
+				<a href="combo.html">Combo</a>
+				<a href="#">Ưu đãi</a>
+			</nav>
+
+			<div class="header-actions">
+				<a class="btn btn-outline" href="login/login.html">Đăng nhập</a>
+				<a class="btn btn-primary" href="login/register.html">Đăng ký</a>
+			</div>
+		</div>
+	</header>
+
+	<main class="container combos-page" id="page-root">
+		<!-- page title removed as requested -->
+
+		<!-- List view -->
+		<section id="list-view" class="combo-list">
+			<article class="combo-card">
+				<img src="../image/anh101.jpg" alt="Combo 1" class="combo-img">
+				<div class="combo-body">
+					<h3>Combo Weekend Thư Giãn</h3>
+					<p>Bao gồm phòng, bữa sáng, và trải nghiệm vui chơi trong khuôn viên.</p>
+					<button class="btn btn-primary">Xem ngay</button>
+				</div>
+			</article>
+		</section>
+
+		<!-- Detail view (hidden by default) -->
+		<section id="detail-view" class="hidden">
+			<h3 id="detail-title">Chi tiết Combo</h3>
+			<div class="detail-section">
+				<h4>Giới thiệu</h4>
+				<p id="detail-intro">&nbsp;</p>
+			</div>
+
+			<div class="detail-section">
+				<h4>Hoạt động / Vui chơi</h4>
+				<ul id="detail-activities"></ul>
+			</div>
+
+			<div class="detail-section">
+				<h4>Ưu đãi</h4>
+				<ul id="detail-offers"></ul>
+			</div>
+
+			<div class="detail-section">
+				<h4>Hình ảnh</h4>
+				<div id="detail-gallery" class="detail-gallery"></div>
+			</div>
+
+		</section>
+
+		<!-- Offers view (hidden by default) -->
+		<section id="offers-view" class="hidden">
+			<p><button class="btn btn-secondary" data-action="back">Quay lại</button></p>
+		</section>
+
+	</main>
+
+	<footer class="site-footer">
+		<div class="footer-inner container">
+			<div class="footer-col about">
+				<h4>TourDuLich.com</h4>
+				<p>Đặt phòng khách sạn nhanh chóng, giá tốt nhất với hơn 10,000 khách sạn trên toàn quốc.</p>
+				<div class="socials">
+					<span>f</span>
+					<span>t</span>
+					<span>ig</span>
+					<span>yt</span>
+				</div>
+			</div>
+			<div class="footer-col links">
+				<h5>Khách sạn</h5>
+				<ul>
+					<li>Hà Nội</li>
+					<li>Đà Nẵng</li>
+					<li>TP.HCM</li>
+					<li>Phú Quốc</li>
+				</ul>
+			</div>
+			<div class="footer-col support">
+				<h5>Hỗ trợ</h5>
+				<ul>
+					<li>Câu hỏi thường gặp</li>
+					<li>Liên hệ đặt phòng</li>
+					<li>Điều khoản đặt phòng</li>
+					<li>Chính sách bảo mật</li>
+				</ul>
+			</div>
+			<div class="footer-col contact">
+				<h5>Hỗ trợ 24/7</h5>
+				<p>Gọi ngay để được tư vấn và đặt phòng</p>
+				<div class="hotline">1900 1234</div>
+				<p class="muted">Miễn phí cuộc gọi</p>
+				<div class="signup">
+					<input type="email" placeholder="Email nhận ưu đãi">
+					<a href="register.html" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom container">
+			<div class="copyright">© 2025 TourDuLich.com. All rights reserved.</div>
+			<div class="payments"><img src="../image/payments.png" alt="Payment Methods"></div>
+		</div>
+	</footer>
+
+	<script>
+		// simple page switcher within single file
+		(function(){
+			const listView = document.getElementById('list-view');
+			const detailView = document.getElementById('detail-view');
+			const offersView = document.getElementById('offers-view');
+			const title = document.getElementById('page-title');
+
+			function show(view){
+				listView.classList.add('hidden');
+				detailView.classList.add('hidden');
+				offersView.classList.add('hidden');
+				view.classList.remove('hidden');
+				if(view === listView) title.textContent = 'Combo nổi bật';
+				if(view === offersView) title.textContent = 'Các ưu đãi Combo';
+				window.scrollTo(0,0);
+			}
+
+			document.addEventListener('click', function(e){
+				const btn = e.target.closest('button[data-action]');
+				if(!btn) return;
+				const action = btn.getAttribute('data-action');
+				if(action === 'open'){
+					const target = btn.getAttribute('data-target');
+					if(target === 'detail'){
+						const comboId = btn.getAttribute('data-combo');
+						if(comboId && combos[comboId]){
+							renderDetail(comboId);
+						}
+						show(detailView);
+					}
+					if(target === 'offers') show(offersView);
+				}
+				if(action === 'back') show(listView);
+			});
+
+			// render detail for a specific combo id
+			const combos = {
+				singapore: {
+					title: 'COMBO 3N2Đ SINGAPORE',
+					intro: 'Gói 3 ngày 2 đêm tại Singapore bao gồm vé máy bay khứ hồi (hạng phổ thông), khách sạn 3-4 sao, bữa sáng mỗi ngày và chuyến tham quan đảo Sentosa.',
+					activities: [
+						'Tham quan Sentosa (Universal Studios, SEA Aquarium)',
+						'City tour: Marina Bay Sands, Gardens by the Bay, Merlion',
+						'Mua sắm tại Orchard Road'
+					],
+					offers: [
+						'Giảm 5% khi đặt trước 14 ngày',
+						'Trả góp 0% qua thẻ tín dụng đối tác',
+						'Miễn phí đưa đón sân bay cho nhóm 2 khách'
+					],
+					images: [
+						'../image/anh110.jpg',
+						'../image/anh115.jpg',
+						'../image/anh116.jpg'
+					]
+				}
+			};
+
+			function renderDetail(comboId){
+				const data = combos[comboId];
+				if(!data) return;
+				document.getElementById('detail-title').textContent = data.title;
+				document.getElementById('detail-intro').textContent = data.intro;
+				const act = document.getElementById('detail-activities'); act.innerHTML = '';
+				data.activities.forEach(a=>{ const li=document.createElement('li'); li.textContent=a; act.appendChild(li); });
+				const offs = document.getElementById('detail-offers'); offs.innerHTML='';
+				data.offers.forEach(o=>{ const li=document.createElement('li'); li.textContent=o; offs.appendChild(li); });
+				const gal = document.getElementById('detail-gallery'); gal.innerHTML='';
+				data.images.forEach(src=>{ const img=document.createElement('img'); img.src=src; img.alt='ảnh combo'; gal.appendChild(img); });
+			}
+
+			// initial state: prefer URL param, then hash, then sessionStorage fallback
+			const params = new URLSearchParams(window.location.search);
+			let requested = params.get('combo');
+			if(!requested){
+				const hash = (window.location.hash || '').replace(/^#/, '');
+				if(hash) requested = hash;
+			}
+			// fallback: check sessionStorage (set by index page when redirecting)
+			if(!requested){
+				try{
+					const stored = sessionStorage.getItem('requestedCombo');
+					if(stored) {
+						requested = stored;
+						sessionStorage.removeItem('requestedCombo');
+					}
+				}catch(e){
+					console.warn('sessionStorage read failed', e);
+				}
+			}
+
+			// debug info to help trace why it might not open detail
+			console.log('combo debug — href:', window.location.href);
+			console.log('combo debug — search:', window.location.search);
+			console.log('combo debug — hash:', window.location.hash);
+			console.log('combo debug — sessionRequested:', requested);
+
+			// NOTE: removed automatic referrer fallback — keep default behavior showing the list
+
+			if(requested && combos[requested]){
+				// ensure hash is set so user can bookmark/link directly
+				if(window.location.hash.replace(/^#/, '') !== requested){
+					try{ window.history.replaceState(null, '', window.location.pathname + window.location.search + '#' + requested); }catch(e){ window.location.hash = requested; }
+				}
+				renderDetail(requested);
+				show(detailView);
+			} else {
+				// default: show list
+				show(listView);
+			}
+
+			// replace broken images with an inline placeholder SVG to avoid 404 icons
+			document.querySelectorAll('img').forEach(img=>{
+				img.addEventListener('error', function(){
+					this.onerror=null;
+					this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="%23f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="16">Ảnh không có sẵn</text></svg>';
+				});
+			});
+		})();
+	</script>
+
+</body>
+</html>

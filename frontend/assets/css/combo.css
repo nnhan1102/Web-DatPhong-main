@@ -1,0 +1,112 @@
+/* Combo page theme overrides to match site look */
+:root{
+	--primary:#00AEEF;
+	--accent:#ff9800;
+	--muted:#666;
+	--card-bg:#ffffff;
+	--card-border:#eef2f4;
+	--radius:10px;
+}
+
+/* Page background: soft sea-blue gradient to match primary theme */
+body{
+    background: linear-gradient(180deg, #f6fbff 0%, #e6f9ff 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.combos-page{ padding:36px 8%; font-family: Arial, Helvetica, sans-serif; color:#222; }
+.page-title-row h2{ font-size:36px; margin:0 0 18px; color:#111; }
+
+/* Detail combo main title styling */
+#detail-title{
+	text-align:center;
+	color:var(--primary);
+	font-size:44px;
+	font-weight:800;
+	letter-spacing:1px;
+	margin:18px 0 22px;
+}
+
+@media (max-width:600px){
+	#detail-title{ font-size:28px; }
+}
+
+/* Site header to match the main theme */
+.site-header{ background: #fff; border-bottom:1px solid #eef2f4; position:sticky; top:0; z-index:1000; }
+.site-header .container.header-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:12px 8%; }
+.header-left{ display:flex; align-items:center; gap:12px; }
+.logo-img{ width:48px; height:48px; object-fit:contain; }
+.brand{ font-size:24px; font-weight:700; color:var(--primary); text-decoration:none; }
+.main-nav{ display:flex; gap:18px; align-items:center; }
+.main-nav a{ color:#222; font-weight:600; padding:8px 6px; }
+.main-nav a:hover{ color:var(--primary); }
+.header-actions{ display:flex; gap:10px; align-items:center; }
+.btn-outline{ background:transparent; color:var(--primary); border:1px solid var(--primary); padding:8px 14px; border-radius:8px; }
+.btn-outline:hover{ background:rgba(0,174,239,0.06); }
+.btn-primary{ background:var(--primary); color:#fff; padding:8px 14px; border-radius:8px; }
+
+
+.combo-list{ display:flex; gap:22px; flex-wrap:wrap; }
+.combo-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius); overflow:hidden; width:320px; box-shadow:0 6px 18px rgba(15,23,42,0.04); transition:transform .18s ease,box-shadow .18s ease; }
+.combo-card:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(15,23,42,0.06); }
+.combo-img{ width:100%; height:200px; object-fit:cover; display:block; }
+.combo-body{ padding:18px 16px; }
+.combo-body h3{ margin:0 0 8px 0; font-size:18px; color:#111; }
+.combo-body p{ margin:0 0 14px 0; color:var(--muted); line-height:1.5; }
+
+.btn{ display:inline-block; padding:10px 16px; border-radius:20px; text-decoration:none; font-weight:600; cursor:pointer; border:0; }
+.btn-primary{ background:var(--primary); color:#fff; }
+.btn-secondary{ background:#f5f6f7; color:#222; border:1px solid #e6e9eb; }
+
+.detail-section{ background:var(--card-bg); padding:20px; border-radius:var(--radius); border:1px solid var(--card-border); margin-bottom:18px; }
+.detail-section h3, .detail-section h4{ margin:0 0 12px 0; font-size:20px; color:#111; }
+.detail-section p{ color:var(--muted); line-height:1.6; }
+
+.detail-gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:12px; }
+.detail-gallery img{ width:100%; height:120px; object-fit:cover; border-radius:8px; }
+
+.offers-list{ display:flex; flex-direction:column; gap:14px; }
+.offer-row{ display:flex; gap:16px; align-items:center; background:var(--card-bg); padding:12px; border-radius:8px; border:1px solid var(--card-border); }
+.offer-row img{ width:160px; height:90px; object-fit:cover; border-radius:8px; }
+
+.page-footer-note{ margin-top:20px; color:var(--muted); font-size:14px; }
+
+@media (max-width:1000px){
+	.detail-gallery{ grid-template-columns:repeat(2,1fr); }
+	.offer-row img{ width:140px; height:78px; }
+}
+@media (max-width:600px){
+	.combos-page{ padding:20px; }
+	.combo-list{ flex-direction:column; align-items:stretch; }
+	.combo-card{ width:100%; }
+	.detail-gallery{ grid-template-columns:repeat(1,1fr); }
+}
+
+/* Footer styles (dark) */
+.site-footer{ background:#1f2629; color:#cfd6d8; padding-top:34px; margin-top:36px; }
+.site-footer .footer-inner{ display:flex; gap:28px; padding:28px 8%; }
+.site-footer .footer-col{ flex:1; min-width:180px; }
+.site-footer h4{ color:#fff; margin-bottom:12px; font-size:20px; }
+.site-footer h5{ color:#fff; margin-bottom:10px; font-size:16px; }
+.site-footer p{ color:var(--muted); margin-bottom:12px; }
+.site-footer .socials span{ display:inline-block; width:28px; height:28px; line-height:28px; text-align:center; border-radius:4px; background:#2b3537; margin-right:8px; color:#fff; }
+.site-footer ul{ list-style:none; padding:0; margin:0; color:var(--muted); }
+.site-footer ul li{ margin-bottom:8px; }
+.site-footer .hotline{ color:#ffcc33; font-weight:800; font-size:20px; margin:6px 0; }
+.site-footer .signup{ display:flex; gap:8px; margin-top:8px; align-items:center; }
+.site-footer .signup input{ flex:1; padding:12px 14px; border-radius:10px; border:0; background:#ffffff; color:#111; box-shadow:0 2px 8px rgba(0,0,0,0.12); font-size:14px; height:44px; }
+.site-footer .signup input::placeholder{ color:#8b98a0; }
+.site-footer .signup input:focus{ outline:3px solid rgba(0,174,239,0.12); box-shadow:0 4px 12px rgba(0,0,0,0.14); }
+.site-footer .signup .btn{ padding:12px 22px; border-radius:10px; background:var(--primary); color:#fff; min-width:160px; height:44px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 6px 18px rgba(0,174,239,0.16); border:0; white-space:nowrap; }
+.site-footer .signup > .signup-btn{ min-width:220px; padding:12px 22px; }
+.site-footer .signup a.signup-btn{ text-decoration:none; }
+.site-footer .signup .btn:hover{ transform:translateY(-1px); box-shadow:0 10px 22px rgba(0,174,239,0.18); }
+.site-footer .footer-bottom{ border-top:1px solid rgba(255,255,255,0.04); display:flex; justify-content:space-between; align-items:center; padding:18px 8%; margin-top:18px; }
+.site-footer .copyright{ color:rgba(255,255,255,0.6); }
+.site-footer .payments img{ height:28px; opacity:0.9; }
+
+@media (max-width:900px){
+	.site-footer .footer-inner{ flex-direction:column; }
+	.site-footer .footer-bottom{ flex-direction:column; gap:12px; }
+}
