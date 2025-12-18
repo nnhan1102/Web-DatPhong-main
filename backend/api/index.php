@@ -6,6 +6,10 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require_once 'config/database.php';
+require_once 'models/User.php';
+require_once 'models/Room.php';
+require_once 'models/RoomType.php';
+require_once 'models/Booking.php';
 
 // Xử lý CORS preflight request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
