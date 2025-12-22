@@ -31,13 +31,45 @@ try {
                 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 200;
                 $filters = [
-                    'user_type' => 'customer',
+                    'user_type' => $_GET['user_type'] ?? 'customer',
                     'search' => $_GET['search'] ?? null,
                     'status' => $_GET['status'] ?? null,
                 ];
                 $result = $model->getAll($page, $limit, $filters);
                 echo json_encode(['success' => true, 'data' => $result['data']]);
                 break;
+            }
+            if ($action === 'export') {
+                $filters = [
+                    'user_type' => $_GET['user_type'] ?? 'customer',
+                    'search' => $_GET['search'] ?? null,
+                    'status' => $_GET['status'] ?? null,
+                ];
+                $result = $model->getAll(1, 10000, $filters);
+                
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename=customers_' . date('Y-m-d') . '.csv');
+                
+                $output = fopen('php://output', 'w');
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM for Excel
+                
+                fputcsv($output, ['ID', 'Username', 'Họ tên', 'Email', 'Số điện thoại', 'Địa chỉ', 'Loại KH', 'Ngày tạo', 'Trạng thái']);
+                
+                foreach ($result['data'] as $row) {
+                    fputcsv($output, [
+                        $row['id'],
+                        $row['username'],
+                        $row['full_name'],
+                        $row['email'],
+                        $row['phone'],
+                        $row['address'],
+                        $row['user_type'],
+                        $row['created_at'],
+                        $row['status']
+                    ]);
+                }
+                fclose($output);
+                exit;
             }
             if ($action === 'get' && $id) {
                 $record = $model->getById($id);

@@ -282,11 +282,32 @@ function initAdmin() {
       loadBookings();
   });
 
+  // Customer filters
+  document.getElementById("apply-customer-filters")?.addEventListener("click", function() {
+    loadCustomers();
+  });
+
+  document.getElementById("customer-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadCustomers();
+    }
+  });
+
+  document.getElementById("customer-type-filter")?.addEventListener("change", function() {
+    loadCustomers();
+  });
+
   // Export buttons
   document
     .getElementById("export-bookings-btn")
     ?.addEventListener("click", function () {
       exportBookings();
+    });
+
+  document
+    .getElementById("export-customers-btn")
+    ?.addEventListener("click", function () {
+      exportCustomers();
     });
 
   // Report period change
@@ -946,7 +967,14 @@ async function loadCustomers() {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/customers.php?action=getAll`);
+    const search = document.getElementById("customer-search")?.value || "";
+    const type = document.getElementById("customer-type-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/customers.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (type) url += `&user_type=${encodeURIComponent(type)}`;
+
+    const response = await fetch(url);
     const data = await response.json();
 
     if (data.success) {
@@ -956,6 +984,23 @@ async function loadCustomers() {
     console.error("Error loading customers:", error);
     showToast("Lỗi tải danh sách khách hàng", "error");
   }
+}
+
+function exportCustomers() {
+  const search = document.getElementById("customer-search")?.value || "";
+  const type = document.getElementById("customer-type-filter")?.value || "";
+
+  let url = `${API_BASE_URL}/customers.php?action=export`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (type) url += `&user_type=${encodeURIComponent(type)}`;
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.download = `customers_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function renderCustomersTable(customers) {
