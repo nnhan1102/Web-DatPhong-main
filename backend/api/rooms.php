@@ -79,21 +79,29 @@ try {
         case 'POST':
             $data = jsonInput();
             if ($action === 'create') {
-                if ($roomModel->create($data)) {
-                    echo json_encode(['success' => true, 'id' => $roomModel->id]);
-                } else {
+                try {
+                    if ($roomModel->create($data)) {
+                        echo json_encode(['success' => true, 'id' => $roomModel->id]);
+                    } else {
+                        throw new Exception("Thêm phòng thất bại");
+                    }
+                } catch (Exception $e) {
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => 'Create failed']);
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 }
                 break;
             }
 
             if ($action === 'update' && $id) {
-                if ($roomModel->update($id, $data)) {
-                    echo json_encode(['success' => true]);
-                } else {
+                try {
+                    if ($roomModel->update($id, $data)) {
+                        echo json_encode(['success' => true]);
+                    } else {
+                        throw new Exception("Cập nhật thất bại");
+                    }
+                } catch (Exception $e) {
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => 'Update failed']);
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 }
                 break;
             }

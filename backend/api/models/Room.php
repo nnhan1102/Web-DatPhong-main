@@ -145,18 +145,35 @@ class Room {
 
     // Tạo phòng mới
     public function create($data) {
+        // Validate data
+        if (empty($data['room_number']) || empty($data['room_type_id'])) {
+            throw new \Exception("Vui lòng nhập đầy đủ thông tin bắt buộc");
+        }
+
+        if ($this->roomNumberExists($data['room_number'])) {
+            throw new \Exception("Số phòng đã tồn tại");
+        }
+
         $query = "INSERT INTO {$this->table} 
                   (room_number, room_type_id, floor, view_type, status, image_url) 
                   VALUES (:room_number, :room_type_id, :floor, :view_type, :status, :image_url)";
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':room_number', $data['room_number']);
-        $stmt->bindParam(':room_type_id', $data['room_type_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':floor', $data['floor'], PDO::PARAM_INT);
-        $stmt->bindParam(':view_type', $data['view_type']);
-        $stmt->bindParam(':status', $data['status'] ?? 'available');
-        $stmt->bindParam(':image_url', $data['image_url']);
+        // Clean data
+        $room_number = htmlspecialchars(strip_tags($data['room_number']));
+        $room_type_id = (int)$data['room_type_id'];
+        $floor = !empty($data['floor']) ? (int)$data['floor'] : null;
+        $view_type = htmlspecialchars(strip_tags($data['view_type']));
+        $status = htmlspecialchars(strip_tags($data['status'] ?? 'available'));
+        $image_url = !empty($data['image_url']) ? htmlspecialchars(strip_tags($data['image_url'])) : null;
+
+        $stmt->bindParam(':room_number', $room_number);
+        $stmt->bindParam(':room_type_id', $room_type_id, PDO::PARAM_INT);
+        $stmt->bindParam(':floor', $floor, PDO::PARAM_INT);
+        $stmt->bindParam(':view_type', $view_type);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':image_url', $image_url);
         
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -167,37 +184,44 @@ class Room {
 
     // Cập nhật phòng
     public function update($id, $data) {
+        // Validate duplicates if room_number is being changed
+        if (isset($data['room_number'])) {
+            if ($this->roomNumberExists($data['room_number'], $id)) {
+                throw new \Exception("Số phòng đã tồn tại");
+            }
+        }
+
         $setClause = [];
         $params = [':id' => $id];
         
         if (isset($data['room_number'])) {
             $setClause[] = "room_number = :room_number";
-            $params[':room_number'] = $data['room_number'];
+            $params[':room_number'] = htmlspecialchars(strip_tags($data['room_number']));
         }
         
         if (isset($data['room_type_id'])) {
             $setClause[] = "room_type_id = :room_type_id";
-            $params[':room_type_id'] = $data['room_type_id'];
+            $params[':room_type_id'] = (int)$data['room_type_id'];
         }
         
         if (isset($data['floor'])) {
             $setClause[] = "floor = :floor";
-            $params[':floor'] = $data['floor'];
+            $params[':floor'] = !empty($data['floor']) ? (int)$data['floor'] : null;
         }
         
         if (isset($data['view_type'])) {
             $setClause[] = "view_type = :view_type";
-            $params[':view_type'] = $data['view_type'];
+            $params[':view_type'] = htmlspecialchars(strip_tags($data['view_type']));
         }
         
         if (isset($data['status'])) {
             $setClause[] = "status = :status";
-            $params[':status'] = $data['status'];
+            $params[':status'] = htmlspecialchars(strip_tags($data['status']));
         }
         
         if (isset($data['image_url'])) {
             $setClause[] = "image_url = :image_url";
-            $params[':image_url'] = $data['image_url'];
+            $params[':image_url'] = !empty($data['image_url']) ? htmlspecialchars(strip_tags($data['image_url'])) : null;
         }
         
         if (empty($setClause)) {
@@ -211,7 +235,7 @@ class Room {
         $stmt = $this->conn->prepare($query);
         
         foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+            $stmt->bindValue($key, $value); // bindValue works for both string and int based on value type if not specified
         }
         
         return $stmt->execute();

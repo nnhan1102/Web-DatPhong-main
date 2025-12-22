@@ -234,6 +234,17 @@ function initAdmin() {
       openRoomModal();
     });
 
+  // Room filters
+  document.getElementById("apply-room-filters")?.addEventListener("click", function() {
+    loadRooms();
+  });
+  
+  document.getElementById("room-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadRooms();
+    }
+  });
+
   // Booking management
   document
     .getElementById("add-booking-btn")
@@ -584,7 +595,16 @@ async function loadRooms() {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/rooms.php?action=getAll`);
+    const search = document.getElementById("room-search")?.value || "";
+    const status = document.getElementById("room-status-filter")?.value || "";
+    const type = document.getElementById("room-type-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/rooms.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    if (type) url += `&room_type_id=${encodeURIComponent(type)}`;
+
+    const response = await fetch(url);
     const data = await response.json();
 
     if (data.success) {
@@ -1291,6 +1311,10 @@ function openRoomModal(roomId = null) {
   modal.classList.add("active");
 }
 
+function editRoom(roomId) {
+  openRoomModal(roomId);
+}
+
 async function loadRoomTypesForSelect() {
   if (USE_MOCK_DATA) {
     const select = document.getElementById("room-type-id");
@@ -1392,9 +1416,14 @@ async function saveRoom() {
       return;
     }
 
-    const url = `${API_BASE_URL}/rooms.php?action=${
+    let url = `${API_BASE_URL}/rooms.php?action=${
       isEdit ? "update" : "create"
     }`;
+    
+    if (isEdit) {
+      url += `&id=${roomId}`;
+    }
+
     const method = "POST";
 
     const response = await fetch(url, {
