@@ -47,17 +47,17 @@ class Booking {
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':booking_code', $booking_code);
-        $stmt->bindParam(':customer_id', $data['customer_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':room_id', $data['room_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':check_in', $data['check_in']);
-        $stmt->bindParam(':check_out', $data['check_out']);
-        $stmt->bindParam(':num_guests', $data['num_guests'], PDO::PARAM_INT);
-        $stmt->bindParam(':total_price', $data['total_price']);
-        $stmt->bindParam(':special_requests', $data['special_requests']);
-        $stmt->bindParam(':payment_method', $data['payment_method']);
-        $stmt->bindParam(':payment_status', $data['payment_status'] ?? 'pending');
-        $stmt->bindParam(':status', $data['status'] ?? 'pending');
+        $stmt->bindValue(':booking_code', $booking_code);
+        $stmt->bindValue(':customer_id', $data['customer_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':room_id', $data['room_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':check_in', $data['check_in']);
+        $stmt->bindValue(':check_out', $data['check_out']);
+        $stmt->bindValue(':num_guests', $data['num_guests'], PDO::PARAM_INT);
+        $stmt->bindValue(':total_price', $data['total_price']);
+        $stmt->bindValue(':special_requests', $data['special_requests']);
+        $stmt->bindValue(':payment_method', $data['payment_method']);
+        $stmt->bindValue(':payment_status', $data['payment_status'] ?? 'pending');
+        $stmt->bindValue(':status', $data['status'] ?? 'pending');
         
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -82,11 +82,11 @@ class Booking {
             
             $stmt = $this->conn->prepare($query);
             
-            $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
-            $stmt->bindParam(':service_id', $service['service_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':quantity', $service['quantity'], PDO::PARAM_INT);
-            $stmt->bindParam(':price', $service['price']);
-            $stmt->bindParam(':service_date', $service['service_date'] ?? null);
+            $stmt->bindValue(':booking_id', $booking_id, PDO::PARAM_INT);
+            $stmt->bindValue(':service_id', $service['service_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':quantity', $service['quantity'], PDO::PARAM_INT);
+            $stmt->bindValue(':price', $service['price']);
+            $stmt->bindValue(':service_date', $service['service_date'] ?? null);
             
             $stmt->execute();
         }

@@ -264,6 +264,24 @@ function initAdmin() {
       openBookingModal();
     });
 
+  document.getElementById("apply-booking-filters")?.addEventListener("click", function() {
+    loadBookings();
+  });
+
+  document.getElementById("booking-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadBookings();
+    }
+  });
+
+  document.getElementById("reset-booking-filters")?.addEventListener("click", function() {
+      document.getElementById("booking-search").value = "";
+      document.getElementById("booking-status-filter").value = "";
+      document.getElementById("booking-date-from").value = "";
+      document.getElementById("booking-date-to").value = "";
+      loadBookings();
+  });
+
   // Export buttons
   document
     .getElementById("export-bookings-btn")
@@ -824,7 +842,18 @@ async function loadBookings() {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/bookings.php?action=getAll`);
+    const search = document.getElementById("booking-search")?.value || "";
+    const status = document.getElementById("booking-status-filter")?.value || "";
+    const dateFrom = document.getElementById("booking-date-from")?.value || "";
+    const dateTo = document.getElementById("booking-date-to")?.value || "";
+
+    let url = `${API_BASE_URL}/bookings.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    if (dateFrom) url += `&check_in_from=${encodeURIComponent(dateFrom)}`;
+    if (dateTo) url += `&check_in_to=${encodeURIComponent(dateTo)}`;
+
+    const response = await fetch(url);
     const data = await response.json();
 
     if (data.success) {
@@ -1807,6 +1836,26 @@ async function saveBooking() {
     ),
   };
 
+  if (!bookingData.customer_id) {
+    showToast("Vui lòng chọn khách hàng", "error");
+    return;
+  }
+  if (!bookingData.room_id) {
+    showToast("Vui lòng chọn phòng", "error");
+    return;
+  }
+  if (!bookingData.check_in || !bookingData.check_out) {
+    showToast("Vui lòng chọn ngày nhận và trả phòng", "error");
+    return;
+  }
+  if (new Date(bookingData.check_in) >= new Date(bookingData.check_out)) {
+    showToast("Ngày trả phòng phải sau ngày nhận phòng", "error");
+    return;
+  }
+  if (isNaN(bookingData.total_price)) {
+    bookingData.total_price = 0;
+  }
+
   // Get selected services
   const selectedServices = [];
   document
@@ -1815,6 +1864,7 @@ async function saveBooking() {
       selectedServices.push({
         service_id: checkbox.value,
         price: parseFloat(checkbox.getAttribute("data-price")),
+        quantity: 1 // Add default quantity
       });
     });
 
