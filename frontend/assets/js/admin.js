@@ -341,6 +341,12 @@ function initAdmin() {
     ?.addEventListener("click", function () {
       exportCustomers();
     });
+    
+  document
+    .getElementById("export-report-btn")
+    ?.addEventListener("click", function () {
+      exportReport();
+    });
 
   // Report period change
   document
@@ -2482,4 +2488,21 @@ function loadCustomReport() {
     showToast(`Tải báo cáo từ ${fromDate} đến ${toDate}`, "info");
     // Implement custom report loading here
   }
+}
+
+function exportReport() {
+  const period = document.getElementById("report-period").value;
+  let url = `${API_BASE_URL}/export.php?type=reports&period=${period}`;
+  
+  if (period === 'custom') {
+     const from = document.getElementById("report-date-from").value;
+     const to = document.getElementById("report-date-to").value;
+     if (!from || !to) {
+        showToast("Vui lòng chọn khoảng thời gian", "error");
+        return;
+     }
+     url += `&start_date=${from}&end_date=${to}`;
+  }
+  
+  window.open(url, "_blank");
 }
