@@ -245,6 +245,18 @@ function initAdmin() {
     }
   });
 
+  // Room Type management
+  document
+    .getElementById("add-room-type-btn")
+    ?.addEventListener("click", function () {
+      openRoomTypeModal();
+    });
+
+  document.getElementById("room-type-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveRoomType();
+  });
+
   // Booking management
   document
     .getElementById("add-booking-btn")
@@ -1867,15 +1879,151 @@ function exportBookings() {
   window.open(url, "_blank");
 }
 
-// Placeholder functions for future implementation
+// Room Type Functions
+function openRoomTypeModal(typeId = null) {
+  const modal = document.getElementById("room-type-modal");
+  const title = document.getElementById("room-type-modal-title");
+  const form = document.getElementById("room-type-form");
+
+  if (typeId) {
+    title.textContent = "Chỉnh sửa loại phòng";
+    loadRoomTypeData(typeId);
+  } else {
+    title.textContent = "Thêm loại phòng mới";
+    form.reset();
+    document.getElementById("room-type-id").value = "";
+    // Uncheck all amenities
+    document.querySelectorAll('#amenities-container input[type="checkbox"]').forEach(cb => cb.checked = false);
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadRoomTypeData(id) {
+  if (USE_MOCK_DATA) {
+    const type = MOCK_DATA.roomTypes.find((t) => t.id == id);
+    if (type) {
+      fillRoomTypeForm(type);
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/room-types.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      fillRoomTypeForm(data.data);
+    } else {
+        showToast(data.message || "Không tìm thấy loại phòng", "error");
+    }
+  } catch (error) {
+    console.error("Error loading room type:", error);
+    showToast("Lỗi tải thông tin loại phòng", "error");
+  }
+}
+
+function fillRoomTypeForm(type) {
+  document.getElementById("room-type-id").value = type.id;
+  document.getElementById("type-name").value = type.type_name;
+  document.getElementById("base-price").value = type.base_price;
+  document.getElementById("capacity").value = type.capacity;
+  document.getElementById("description").value = type.description || "";
+
+  // Handle amenities
+  const amenities = parseAmenities(type.amenities);
+  document.querySelectorAll('#amenities-container input[type="checkbox"]').forEach(cb => {
+    cb.checked = amenities.includes(cb.value);
+  });
+}
+
+async function saveRoomType() {
+  const id = document.getElementById("room-type-id").value;
+  const isEdit = !!id;
+
+  // Get selected amenities
+  const selectedAmenities = [];
+  document.querySelectorAll('#amenities-container input[type="checkbox"]:checked').forEach(cb => {
+    selectedAmenities.push(cb.value);
+  });
+
+  const roomTypeData = {
+    type_name: document.getElementById("type-name").value,
+    base_price: document.getElementById("base-price").value,
+    capacity: document.getElementById("capacity").value,
+    description: document.getElementById("description").value,
+    amenities: selectedAmenities
+  };
+
+  if (isEdit) {
+      roomTypeData.id = id;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo: thao tác đã được giả lập", "info");
+      closeAllModals();
+      loadRoomTypes();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/room-types.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roomTypeData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật loại phòng thành công" : "Thêm loại phòng thành công", "success");
+      closeAllModals();
+      loadRoomTypes();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving room type:", error);
+    showToast("Lỗi lưu loại phòng", "error");
+  }
+}
+
 function editRoomType(id) {
-  showToast("Tính năng đang phát triển", "info");
+  openRoomTypeModal(id);
 }
 
 function deleteRoomType(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa loại phòng này?")) {
-    showToast("Xóa loại phòng thành công", "success");
+  if (!confirm("Bạn có chắc chắn muốn xóa loại phòng này?")) {
+    return;
   }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa", "info");
+    loadRoomTypes();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/room-types.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa loại phòng thành công", "success");
+        loadRoomTypes();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting room type:", error);
+      showToast("Lỗi xóa loại phòng", "error");
+    });
 }
 
 function viewBooking(bookingCode) {

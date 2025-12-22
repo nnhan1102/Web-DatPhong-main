@@ -736,6 +736,89 @@
             </div>
           </div>
         </div>
+
+        <!-- Room Type Modal -->
+        <div class="modal" id="room-type-modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="room-type-modal-title">Thêm loại phòng mới</h3>
+              <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="room-type-form">
+                <input type="hidden" id="room-type-id" />
+
+                <div class="form-group">
+                  <label for="type-name">Tên loại phòng *</label>
+                  <input type="text" id="type-name" required />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="base-price">Giá cơ bản (VNĐ) *</label>
+                    <input type="number" id="base-price" min="0" step="1000" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="capacity">Sức chứa (người) *</label>
+                    <input type="number" id="capacity" min="1" max="20" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="description">Mô tả</label>
+                  <textarea id="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Tiện nghi</label>
+                  <div class="amenities-grid" id="amenities-container">
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-wifi" value="Wifi">
+                      <label for="amenity-wifi">Wifi</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-tv" value="TV">
+                      <label for="amenity-tv">TV</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-ac" value="Điều hòa">
+                      <label for="amenity-ac">Điều hòa</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-minibar" value="Mini bar">
+                      <label for="amenity-minibar">Mini bar</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-bathtub" value="Bồn tắm">
+                      <label for="amenity-bathtub">Bồn tắm</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-balcony" value="Ban công">
+                      <label for="amenity-balcony">Ban công</label>
+                    </div>
+                    <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-breakfast" value="Bữa sáng">
+                      <label for="amenity-breakfast">Bữa sáng</label>
+                    </div>
+                     <div class="checkbox-item">
+                      <input type="checkbox" id="amenity-pool" value="Hồ bơi">
+                      <label for="amenity-pool">Hồ bơi</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary close-modal">
+                    Hủy
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu loại phòng
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
 
