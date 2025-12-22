@@ -442,6 +442,28 @@
             </button>
           </div>
 
+          <div class="filters">
+            <div class="filter-group">
+              <input
+                type="text"
+                id="staff-search"
+                placeholder="Tìm theo tên, mã NV, email..."
+              />
+            </div>
+            <div class="filter-group">
+              <select id="staff-dept-filter">
+                <option value="">Tất cả phòng ban</option>
+                <option value="reception">Lễ tân</option>
+                <option value="housekeeping">Buồng phòng</option>
+                <option value="management">Quản lý</option>
+                <option value="support">Hỗ trợ</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="apply-staff-filters">
+              Lọc
+            </button>
+          </div>
+
           <div class="table-container">
             <table class="data-table">
               <thead>
@@ -813,6 +835,141 @@
                   </button>
                   <button type="submit" class="btn btn-primary">
                     Lưu loại phòng
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Modal -->
+        <div class="modal" id="staff-modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="staff-modal-title">Thêm nhân viên mới</h3>
+              <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="staff-form">
+                <input type="hidden" id="staff-id" />
+                <input type="hidden" id="staff-user-id" />
+
+                <div class="form-group">
+                  <label for="staff-name">Họ tên *</label>
+                  <input type="text" id="staff-name" required />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="staff-email">Email *</label>
+                    <input type="email" id="staff-email" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="staff-phone">Số điện thoại</label>
+                    <input type="text" id="staff-phone" />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="staff-position">Chức vụ *</label>
+                    <input type="text" id="staff-position" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="staff-department">Phòng ban *</label>
+                    <select id="staff-department" required>
+                      <option value="">Chọn phòng ban</option>
+                      <option value="reception">Lễ tân</option>
+                      <option value="housekeeping">Buồng phòng</option>
+                      <option value="management">Quản lý</option>
+                      <option value="support">Hỗ trợ</option>
+                      <option value="kitchen">Bếp</option>
+                      <option value="security">An ninh</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="staff-salary">Lương (VNĐ)</label>
+                    <input type="number" id="staff-salary" min="0" step="100000" />
+                  </div>
+                  <div class="form-group">
+                    <label for="staff-hire-date">Ngày vào làm *</label>
+                    <input type="date" id="staff-hire-date" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="staff-address">Địa chỉ</label>
+                  <textarea id="staff-address" rows="2"></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary close-modal">
+                    Hủy
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu nhân viên
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Modal -->
+        <div class="modal" id="service-modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="service-modal-title">Thêm dịch vụ mới</h3>
+              <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="service-form">
+                <input type="hidden" id="service-id" />
+
+                <div class="form-group">
+                  <label for="service-name">Tên dịch vụ *</label>
+                  <input type="text" id="service-name" required />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="service-price">Giá (VNĐ) *</label>
+                    <input type="number" id="service-price" min="0" step="1000" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="service-category">Danh mục *</label>
+                    <select id="service-category" required>
+                      <option value="">Chọn danh mục</option>
+                      <option value="transport">Vận chuyển</option>
+                      <option value="food">Ẩm thực</option>
+                      <option value="spa">Spa & Wellness</option>
+                      <option value="other">Khác</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="service-status">Trạng thái</label>
+                  <select id="service-status">
+                    <option value="available">Có sẵn</option>
+                    <option value="unavailable">Không khả dụng</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="service-description">Mô tả</label>
+                  <textarea id="service-description" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary close-modal">
+                    Hủy
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu dịch vụ
                   </button>
                 </div>
               </form>

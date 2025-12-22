@@ -33,7 +33,13 @@ try {
                     'status' => $_GET['status'] ?? null,
                     'search' => $_GET['search'] ?? null,
                 ];
-                $result = $model->getAll(1, 200, $filters);
+
+                if (isset($_GET['mode']) && $_GET['mode'] === 'admin') {
+                    $result = $model->getAllForAdmin(1, 200, $filters);
+                } else {
+                    $result = $model->getAll(1, 200, $filters);
+                }
+                
                 echo json_encode(['success' => true, 'data' => $result['data']]);
                 break;
             }

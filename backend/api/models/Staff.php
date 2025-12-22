@@ -134,14 +134,14 @@ class Staff {
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':staff_code', $staff_code);
-        $stmt->bindParam(':position', $data['position']);
-        $stmt->bindParam(':department', $data['department']);
-        $stmt->bindParam(':hire_date', $data['hire_date']);
-        $stmt->bindParam(':salary', $data['salary']);
-        $stmt->bindParam(':emergency_contact', $data['emergency_contact']);
-        $stmt->bindParam(':notes', $data['notes']);
+        $stmt->bindValue(':user_id', $data['user_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':staff_code', $staff_code);
+        $stmt->bindValue(':position', $data['position']);
+        $stmt->bindValue(':department', $data['department']);
+        $stmt->bindValue(':hire_date', $data['hire_date']);
+        $stmt->bindValue(':salary', $data['salary'] ?? 0);
+        $stmt->bindValue(':emergency_contact', $data['emergency_contact'] ?? null);
+        $stmt->bindValue(':notes', $data['notes'] ?? null);
         
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();

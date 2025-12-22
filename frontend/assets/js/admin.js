@@ -257,6 +257,18 @@ function initAdmin() {
     saveRoomType();
   });
 
+  // Service Management
+  document
+    .getElementById("add-service-btn")
+    ?.addEventListener("click", function () {
+      openServiceModal();
+    });
+
+  document.getElementById("service-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveService();
+  });
+
   // Booking management
   document
     .getElementById("add-booking-btn")
@@ -295,6 +307,26 @@ function initAdmin() {
 
   document.getElementById("customer-type-filter")?.addEventListener("change", function() {
     loadCustomers();
+  });
+
+  // Staff management
+  document.getElementById("add-staff-btn")?.addEventListener("click", function () {
+    openStaffModal();
+  });
+
+  document.getElementById("apply-staff-filters")?.addEventListener("click", function() {
+    loadStaff();
+  });
+
+  document.getElementById("staff-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadStaff();
+    }
+  });
+
+  document.getElementById("staff-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveStaff();
   });
 
   // Export buttons
@@ -1073,7 +1105,7 @@ async function loadServices() {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/services.php?action=getAll`);
+    const response = await fetch(`${API_BASE_URL}/services.php?action=getAll&mode=admin`);
     const data = await response.json();
 
     if (data.success) {
@@ -1154,7 +1186,14 @@ async function loadStaff() {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/staff.php?action=getAll`);
+    const search = document.getElementById("staff-search")?.value || "";
+    const department = document.getElementById("staff-dept-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/staff.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (department) url += `&department=${encodeURIComponent(department)}`;
+
+    const response = await fetch(url);
     const data = await response.json();
 
     if (data.success) {
@@ -2149,24 +2188,290 @@ function deleteCustomer(id) {
   }
 }
 
+function openServiceModal(serviceId = null) {
+  const modal = document.getElementById("service-modal");
+  const title = document.getElementById("service-modal-title");
+  const form = document.getElementById("service-form");
+
+  if (serviceId) {
+    title.textContent = "Chỉnh sửa dịch vụ";
+    loadServiceData(serviceId);
+  } else {
+    title.textContent = "Thêm dịch vụ mới";
+    form.reset();
+    document.getElementById("service-id").value = "";
+    document.getElementById("service-status").value = "available";
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadServiceData(id) {
+  if (USE_MOCK_DATA) {
+    const service = MOCK_DATA.services.find((s) => s.id == id);
+    if (service) {
+      document.getElementById("service-id").value = service.id;
+      document.getElementById("service-name").value = service.service_name;
+      document.getElementById("service-price").value = service.price;
+      document.getElementById("service-category").value = service.category;
+      document.getElementById("service-status").value = service.status;
+      document.getElementById("service-description").value = service.description || "";
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/services.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const service = data.data;
+      document.getElementById("service-id").value = service.id;
+      document.getElementById("service-name").value = service.service_name;
+      document.getElementById("service-price").value = service.price;
+      document.getElementById("service-category").value = service.category;
+      document.getElementById("service-status").value = service.status;
+      document.getElementById("service-description").value = service.description || "";
+    } else {
+      showToast(data.message || "Không tìm thấy dịch vụ", "error");
+    }
+  } catch (error) {
+    console.error("Error loading service:", error);
+    showToast("Lỗi tải thông tin dịch vụ", "error");
+  }
+}
+
+async function saveService() {
+  const id = document.getElementById("service-id").value;
+  const isEdit = !!id;
+
+  const serviceData = {
+    service_name: document.getElementById("service-name").value,
+    price: document.getElementById("service-price").value,
+    category: document.getElementById("service-category").value,
+    status: document.getElementById("service-status").value,
+    description: document.getElementById("service-description").value,
+  };
+
+  if (isEdit) {
+    serviceData.id = id;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo: thao tác đã được giả lập", "info");
+      closeAllModals();
+      loadServices();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/services.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(serviceData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật dịch vụ thành công" : "Thêm dịch vụ thành công", "success");
+      closeAllModals();
+      loadServices();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving service:", error);
+    showToast("Lỗi lưu dịch vụ", "error");
+  }
+}
+
 function editService(id) {
-  showToast(`Sửa dịch vụ #${id}`, "info");
+  openServiceModal(id);
 }
 
 function deleteService(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
-    showToast("Xóa dịch vụ thành công", "success");
+  if (!confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa", "info");
+    loadServices();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/services.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa dịch vụ thành công", "success");
+        loadServices();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting service:", error);
+      showToast("Lỗi xóa dịch vụ", "error");
+    });
+}
+
+// Staff Functions
+function openStaffModal(staffId = null) {
+  const modal = document.getElementById("staff-modal");
+  const title = document.getElementById("staff-modal-title");
+  const form = document.getElementById("staff-form");
+
+  if (staffId) {
+    title.textContent = "Chỉnh sửa nhân viên";
+    loadStaffData(staffId);
+  } else {
+    title.textContent = "Thêm nhân viên mới";
+    form.reset();
+    document.getElementById("staff-id").value = "";
+    document.getElementById("staff-user-id").value = "";
+  }
+
+  modal.classList.add("active");
+}
+
+function editStaff(staffId) {
+  openStaffModal(staffId);
+}
+
+async function loadStaffData(staffId) {
+  if (USE_MOCK_DATA) {
+    const staff = MOCK_DATA.staff.find((s) => s.id == staffId);
+    if (staff) {
+      document.getElementById("staff-id").value = staff.id;
+      // Mock doesn't track user_id separately usually, but for completeness
+      document.getElementById("staff-user-id").value = staff.user_id || "";
+      document.getElementById("staff-name").value = staff.full_name;
+      document.getElementById("staff-email").value = staff.email;
+      document.getElementById("staff-phone").value = staff.phone || "";
+      document.getElementById("staff-position").value = staff.position;
+      document.getElementById("staff-department").value = staff.department;
+      document.getElementById("staff-salary").value = staff.salary || "";
+      // Format date for input type="date"
+      const hireDate = staff.hire_date ? new Date(staff.hire_date).toISOString().split('T')[0] : "";
+      document.getElementById("staff-hire-date").value = hireDate;
+      document.getElementById("staff-address").value = staff.address || "";
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/staff.php?action=get&id=${staffId}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const staff = data.data;
+      document.getElementById("staff-id").value = staff.id;
+      document.getElementById("staff-user-id").value = staff.user_id;
+      document.getElementById("staff-name").value = staff.full_name;
+      document.getElementById("staff-email").value = staff.email;
+      document.getElementById("staff-phone").value = staff.phone || "";
+      document.getElementById("staff-position").value = staff.position;
+      document.getElementById("staff-department").value = staff.department;
+      document.getElementById("staff-salary").value = staff.salary || "";
+      document.getElementById("staff-hire-date").value = staff.hire_date;
+      document.getElementById("staff-address").value = staff.address || "";
+    } else {
+      showToast(data.message || "Không tìm thấy nhân viên", "error");
+    }
+  } catch (error) {
+    console.error("Error loading staff data:", error);
+    showToast("Lỗi tải dữ liệu nhân viên", "error");
   }
 }
 
-function editStaff(id) {
-  showToast(`Sửa nhân viên #${id}`, "info");
+async function saveStaff() {
+  const staffId = document.getElementById("staff-id").value;
+  const isEdit = !!staffId;
+
+  const staffData = {
+    full_name: document.getElementById("staff-name").value,
+    email: document.getElementById("staff-email").value,
+    phone: document.getElementById("staff-phone").value,
+    position: document.getElementById("staff-position").value,
+    department: document.getElementById("staff-department").value,
+    salary: document.getElementById("staff-salary").value,
+    hire_date: document.getElementById("staff-hire-date").value,
+    address: document.getElementById("staff-address").value,
+    user_id: document.getElementById("staff-user-id").value
+  };
+
+  // Basic validation
+  if (!staffData.full_name || !staffData.email || !staffData.position || !staffData.department) {
+    showToast("Vui lòng điền đầy đủ thông tin bắt buộc", "error");
+    return;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+       showToast("Chế độ demo: thao tác đã được giả lập", "info");
+       closeAllModals();
+       loadStaff();
+       return;
+    }
+
+    let url = `${API_BASE_URL}/staff.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${staffId}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(staffData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật nhân viên thành công" : "Thêm nhân viên thành công", "success");
+      closeAllModals();
+      loadStaff();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving staff:", error);
+    showToast("Lỗi lưu nhân viên", "error");
+  }
 }
 
 function deleteStaff(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
-    showToast("Xóa nhân viên thành công", "success");
+  if (!confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) return;
+
+  if (USE_MOCK_DATA) {
+     showToast("Chế độ demo: giả lập xóa", "info");
+     loadStaff();
+     return;
   }
+
+  fetch(`${API_BASE_URL}/staff.php?action=delete&id=${id}`, {
+    method: "DELETE"
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.success) {
+      showToast("Xóa nhân viên thành công", "success");
+      loadStaff();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast("Lỗi xóa nhân viên", "error");
+  });
 }
 
 function loadCustomReport() {

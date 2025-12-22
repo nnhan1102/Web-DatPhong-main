@@ -150,7 +150,7 @@ class Service {
     public function getById($id) {
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -163,11 +163,11 @@ class Service {
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':service_name', $data['service_name']);
-        $stmt->bindParam(':description', $data['description']);
-        $stmt->bindParam(':price', $data['price']);
-        $stmt->bindParam(':category', $data['category']);
-        $stmt->bindParam(':status', $data['status'] ?? 'available');
+        $stmt->bindValue(':service_name', $data['service_name']);
+        $stmt->bindValue(':description', $data['description']);
+        $stmt->bindValue(':price', $data['price']);
+        $stmt->bindValue(':category', $data['category']);
+        $stmt->bindValue(':status', $data['status'] ?? 'available');
         
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -223,14 +223,12 @@ class Service {
         return $stmt->execute();
     }
 
-    // Xóa dịch vụ (soft delete)
+    // Xóa dịch vụ
     public function delete($id) {
-        $query = "UPDATE {$this->table} 
-                  SET status = 'unavailable' 
-                  WHERE id = :id";
+        $query = "DELETE FROM {$this->table} WHERE id = :id";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 

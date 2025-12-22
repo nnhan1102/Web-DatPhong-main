@@ -11,10 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'config/database.php';
 require_once 'models/Staff.php';
+require_once 'models/User.php';
 use Models\Staff;
+use Models\User;
 
 $db = (new Database())->getConnection();
 $model = new Staff($db);
+$userModel = new User($db);
 
 $action = $_GET['action'] ?? 'getAll';
 $id = $_GET['id'] ?? null;
@@ -54,20 +57,88 @@ try {
         case 'POST':
             $data = jsonInput();
             if ($action === 'create') {
-                if ($model->create($data)) {
-                    echo json_encode(['success' => true, 'id' => $model->id]);
-                } else {
+                $db->beginTransaction();
+                try {
+                    $userId = null;
+                    
+                    // Check if user exists by email
+                    if (!empty($data['email'])) {
+                        $existingUser = $userModel->getByEmail($data['email']);
+                        if ($existingUser) {
+                            $userId = $existingUser['id'];
+                        } else {
+                            // Create new user
+                            $userData = [
+                                'full_name' => $data['full_name'],
+                                'email' => $data['email'],
+                                'phone' => $data['phone'] ?? null,
+                                'address' => $data['address'] ?? null,
+                                'password' => '123456', // Default password
+                                'user_type' => 'staff',
+                                'status' => 'active'
+                            ];
+                            if ($userModel->register($userData)) {
+                                $userId = $userModel->id;
+                            } else {
+                                throw new Exception("Failed to create user account");
+                            }
+                        }
+                    } else {
+                        throw new Exception("Email is required");
+                    }
+                    
+                    $data['user_id'] = $userId;
+                    // Ensure optional fields are present for Staff model
+                    $data['emergency_contact'] = $data['emergency_contact'] ?? null;
+                    $data['notes'] = $data['notes'] ?? null;
+                    $data['salary'] = $data['salary'] ?? 0;
+                    
+                    if ($model->create($data)) {
+                        $db->commit();
+                        echo json_encode(['success' => true, 'id' => $model->id]);
+                    } else {
+                        throw new Exception("Create staff failed");
+                    }
+                } catch (Exception $e) {
+                    $db->rollBack();
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => 'Create failed']);
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 }
                 break;
             }
             if ($action === 'update' && $id) {
-                if ($model->update($id, $data)) {
-                    echo json_encode(['success' => true]);
-                } else {
+                $db->beginTransaction();
+                try {
+                    // Get current staff to find user_id
+                    $currentStaff = $model->getById($id);
+                    if (!$currentStaff) {
+                        throw new Exception("Staff not found");
+                    }
+                    
+                    // Update user info
+                    if (!empty($currentStaff['user_id'])) {
+                        $userUpdateData = [];
+                        if (isset($data['full_name'])) $userUpdateData['full_name'] = $data['full_name'];
+                        if (isset($data['email'])) $userUpdateData['email'] = $data['email'];
+                        if (isset($data['phone'])) $userUpdateData['phone'] = $data['phone'];
+                        if (isset($data['address'])) $userUpdateData['address'] = $data['address'];
+                        
+                        if (!empty($userUpdateData)) {
+                             $userModel->update($currentStaff['user_id'], $userUpdateData);
+                        }
+                    }
+                    
+                    // Update staff info
+                    if ($model->update($id, $data)) {
+                        $db->commit();
+                        echo json_encode(['success' => true]);
+                    } else {
+                        throw new Exception("Update staff failed");
+                    }
+                } catch (Exception $e) {
+                    $db->rollBack();
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => 'Update failed']);
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 }
                 break;
             }

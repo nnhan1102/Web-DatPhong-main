@@ -45,8 +45,12 @@ class User {
         $stmt->bindParam(':full_name', $data['full_name']);
         $stmt->bindParam(':phone', $data['phone']);
         $stmt->bindParam(':address', $data['address']);
-        $stmt->bindParam(':user_type', $data['user_type'] ?? 'customer');
-        $stmt->bindParam(':status', $data['status'] ?? 'active');
+        
+        $user_type = $data['user_type'] ?? 'customer';
+        $status = $data['status'] ?? 'active';
+        
+        $stmt->bindParam(':user_type', $user_type);
+        $stmt->bindParam(':status', $status);
         
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
