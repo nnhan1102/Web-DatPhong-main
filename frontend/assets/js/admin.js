@@ -309,6 +309,16 @@ function initAdmin() {
     loadCustomers();
   });
 
+  // Customer Management
+  document.getElementById("add-customer-btn")?.addEventListener("click", function () {
+    openCustomerModal();
+  });
+
+  document.getElementById("customer-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveCustomer();
+  });
+
   // Staff management
   document.getElementById("add-staff-btn")?.addEventListener("click", function () {
     openStaffModal();
@@ -1080,11 +1090,6 @@ function renderCustomersTable(customers) {
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
                             <div class="action-buttons">
-                                <button class="action-btn view-btn" onclick="viewCustomer(${
-                                  customer.id
-                                })">
-                                    <i class="fas fa-eye"></i>
-                                </button>
                                 <button class="action-btn edit-btn" onclick="editCustomer(${
                                   customer.id
                                 })">
@@ -2180,19 +2185,141 @@ function deleteBooking(id) {
   }
 }
 
-function viewCustomer(id) {
-  showToast(`Xem chi tiết khách hàng #${id}`, "info");
+// Customer Functions
+function openCustomerModal(customerId = null) {
+  const modal = document.getElementById("customer-modal");
+  const title = document.getElementById("customer-modal-title");
+  const form = document.getElementById("customer-form");
+
+  if (customerId) {
+    title.textContent = "Chỉnh sửa khách hàng";
+    loadCustomerData(customerId);
+  } else {
+    title.textContent = "Thêm khách hàng mới";
+    form.reset();
+    document.getElementById("customer-id").value = "";
+    document.getElementById("customer-status").value = "active";
+    document.getElementById("customer-type").value = "customer";
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadCustomerData(id) {
+  if (USE_MOCK_DATA) {
+     // mock data
+     return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/customers.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const customer = data.data;
+      document.getElementById("customer-id").value = customer.id;
+      document.getElementById("customer-name").value = customer.full_name;
+      document.getElementById("customer-email").value = customer.email;
+      document.getElementById("customer-phone").value = customer.phone || "";
+      document.getElementById("customer-address").value = customer.address || "";
+      document.getElementById("customer-type").value = customer.user_type;
+      document.getElementById("customer-status").value = customer.status;
+      document.getElementById("customer-password").value = ""; // Don't show password
+    } else {
+      showToast(data.message || "Không tìm thấy khách hàng", "error");
+    }
+  } catch (error) {
+    console.error("Error loading customer:", error);
+    showToast("Lỗi tải thông tin khách hàng", "error");
+  }
+}
+
+async function saveCustomer() {
+  const id = document.getElementById("customer-id").value;
+  const isEdit = !!id;
+
+  const customerData = {
+    full_name: document.getElementById("customer-name").value,
+    email: document.getElementById("customer-email").value,
+    phone: document.getElementById("customer-phone").value,
+    address: document.getElementById("customer-address").value,
+    user_type: document.getElementById("customer-type").value,
+    status: document.getElementById("customer-status").value,
+  };
+
+  const password = document.getElementById("customer-password").value;
+  if (password) {
+    customerData.password = password;
+  } else if (!isEdit) {
+    // Default password for new customers if not provided
+    customerData.password = "123456";
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo", "info");
+      closeAllModals();
+      loadCustomers();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/customers.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customerData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật khách hàng thành công" : "Thêm khách hàng thành công", "success");
+      closeAllModals();
+      loadCustomers();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving customer:", error);
+    showToast("Lỗi lưu khách hàng", "error");
+  }
 }
 
 function editCustomer(id) {
-  showToast(`Sửa khách hàng #${id}`, "info");
+  openCustomerModal(id);
 }
 
 function deleteCustomer(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
-    showToast("Xóa khách hàng thành công", "success");
+  if (!confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
+    return;
   }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo", "info");
+    loadCustomers();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/customers.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa khách hàng thành công", "success");
+        loadCustomers();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting customer:", error);
+      showToast("Lỗi xóa khách hàng", "error");
+    });
 }
+
 
 function openServiceModal(serviceId = null) {
   const modal = document.getElementById("service-modal");

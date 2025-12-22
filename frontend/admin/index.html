@@ -364,9 +364,14 @@
         <section class="content-section" id="customers-section">
           <div class="section-header">
             <h2>Quản lý Khách hàng</h2>
-            <button class="btn btn-secondary" id="export-customers-btn">
-              <i class="fas fa-download"></i> Xuất Excel
-            </button>
+            <div class="header-actions">
+              <button class="btn btn-primary" id="add-customer-btn">
+                <i class="fas fa-plus"></i> Thêm khách hàng
+              </button>
+              <button class="btn btn-secondary" id="export-customers-btn">
+                <i class="fas fa-download"></i> Xuất Excel
+              </button>
+            </div>
           </div>
 
           <div class="filters">
@@ -835,6 +840,74 @@
                   </button>
                   <button type="submit" class="btn btn-primary">
                     Lưu loại phòng
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Modal -->
+        <div class="modal" id="customer-modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="customer-modal-title">Thêm khách hàng mới</h3>
+              <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="customer-form">
+                <input type="hidden" id="customer-id" />
+
+                <div class="form-group">
+                  <label for="customer-name">Họ tên *</label>
+                  <input type="text" id="customer-name" required />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="customer-email">Email *</label>
+                    <input type="email" id="customer-email" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="customer-phone">Số điện thoại</label>
+                    <input type="text" id="customer-phone" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="customer-address">Địa chỉ</label>
+                  <textarea id="customer-address" rows="2"></textarea>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="customer-type">Loại khách hàng</label>
+                    <select id="customer-type">
+                      <option value="customer">Khách lẻ</option>
+                      <option value="corporate">Doanh nghiệp</option>
+                      <option value="vip">VIP</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="customer-status">Trạng thái</label>
+                    <select id="customer-status">
+                      <option value="active">Hoạt động</option>
+                      <option value="inactive">Ngừng hoạt động</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="customer-password">Mật khẩu <small>(Để trống nếu không đổi)</small></label>
+                  <input type="password" id="customer-password" placeholder="Nhập mật khẩu mới" />
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary close-modal">
+                    Hủy
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu khách hàng
                   </button>
                 </div>
               </form>
