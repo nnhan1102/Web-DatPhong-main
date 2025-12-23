@@ -39,6 +39,7 @@ class Booking {
                       special_requests = :special_requests";
 
         $stmt = $this->conn->prepare($query);
+<<<<<<< HEAD
 
         // Sanitize input
         $this->booking_code = htmlspecialchars(strip_tags($data['booking_code']));
@@ -66,6 +67,21 @@ class Booking {
         $stmt->bindParam(":payment_status", $this->payment_status);
         $stmt->bindParam(":special_requests", $this->special_requests);
 
+=======
+        
+        $stmt->bindValue(':booking_code', $booking_code);
+        $stmt->bindValue(':customer_id', $data['customer_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':room_id', $data['room_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':check_in', $data['check_in']);
+        $stmt->bindValue(':check_out', $data['check_out']);
+        $stmt->bindValue(':num_guests', $data['num_guests'], PDO::PARAM_INT);
+        $stmt->bindValue(':total_price', $data['total_price']);
+        $stmt->bindValue(':special_requests', $data['special_requests']);
+        $stmt->bindValue(':payment_method', $data['payment_method']);
+        $stmt->bindValue(':payment_status', $data['payment_status'] ?? 'pending');
+        $stmt->bindValue(':status', $data['status'] ?? 'pending');
+        
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
             return true;
@@ -95,7 +111,17 @@ class Booking {
             $check_out = new DateTime($row['check_out']);
             $row['nights'] = $check_out->diff($check_in)->days;
             
+<<<<<<< HEAD
             return $row;
+=======
+            $stmt->bindValue(':booking_id', $booking_id, PDO::PARAM_INT);
+            $stmt->bindValue(':service_id', $service['service_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':quantity', $service['quantity'], PDO::PARAM_INT);
+            $stmt->bindValue(':price', $service['price']);
+            $stmt->bindValue(':service_date', $service['service_date'] ?? null);
+            
+            $stmt->execute();
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
         }
         return null;
     }

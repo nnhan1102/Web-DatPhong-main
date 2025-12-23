@@ -114,8 +114,171 @@ function initNavigation() {
     });
   });
 
+<<<<<<< HEAD
   // Test: Force show rooms section for debugging
   console.log("Navigation initialized successfully");
+=======
+  // Modals
+  document.querySelectorAll(".close-modal").forEach((btn) => {
+    btn.addEventListener("click", closeAllModals);
+  });
+
+  // Room management
+  document
+    .getElementById("add-room-btn")
+    ?.addEventListener("click", function () {
+      openRoomModal();
+    });
+
+  // Room filters
+  document.getElementById("apply-room-filters")?.addEventListener("click", function() {
+    loadRooms();
+  });
+  
+  document.getElementById("room-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadRooms();
+    }
+  });
+
+  // Room Type management
+  document
+    .getElementById("add-room-type-btn")
+    ?.addEventListener("click", function () {
+      openRoomTypeModal();
+    });
+
+  document.getElementById("room-type-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveRoomType();
+  });
+
+  // Service Management
+  document
+    .getElementById("add-service-btn")
+    ?.addEventListener("click", function () {
+      openServiceModal();
+    });
+
+  document.getElementById("service-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveService();
+  });
+
+  // Booking management
+  document
+    .getElementById("add-booking-btn")
+    ?.addEventListener("click", function () {
+      openBookingModal();
+    });
+
+  document.getElementById("apply-booking-filters")?.addEventListener("click", function() {
+    loadBookings();
+  });
+
+  document.getElementById("booking-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadBookings();
+    }
+  });
+
+  document.getElementById("reset-booking-filters")?.addEventListener("click", function() {
+      document.getElementById("booking-search").value = "";
+      document.getElementById("booking-status-filter").value = "";
+      document.getElementById("booking-date-from").value = "";
+      document.getElementById("booking-date-to").value = "";
+      loadBookings();
+  });
+
+  // Customer filters
+  document.getElementById("apply-customer-filters")?.addEventListener("click", function() {
+    loadCustomers();
+  });
+
+  document.getElementById("customer-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadCustomers();
+    }
+  });
+
+  document.getElementById("customer-type-filter")?.addEventListener("change", function() {
+    loadCustomers();
+  });
+
+  // Customer Management
+  document.getElementById("add-customer-btn")?.addEventListener("click", function () {
+    openCustomerModal();
+  });
+
+  document.getElementById("customer-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveCustomer();
+  });
+
+  // Staff management
+  document.getElementById("add-staff-btn")?.addEventListener("click", function () {
+    openStaffModal();
+  });
+
+  document.getElementById("apply-staff-filters")?.addEventListener("click", function() {
+    loadStaff();
+  });
+
+  document.getElementById("staff-search")?.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      loadStaff();
+    }
+  });
+
+  document.getElementById("staff-form")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+    saveStaff();
+  });
+
+  // Export buttons
+  document
+    .getElementById("export-bookings-btn")
+    ?.addEventListener("click", function () {
+      exportBookings();
+    });
+
+  document
+    .getElementById("export-customers-btn")
+    ?.addEventListener("click", function () {
+      exportCustomers();
+    });
+    
+  document
+    .getElementById("export-report-btn")
+    ?.addEventListener("click", function () {
+      exportReport();
+    });
+
+  // Report period change
+  document
+    .getElementById("report-period")
+    ?.addEventListener("change", function () {
+      if (this.value === "custom") {
+        document.getElementById("custom-date-range").style.display = "flex";
+      } else {
+        document.getElementById("custom-date-range").style.display = "none";
+        loadReportData(this.value);
+      }
+    });
+
+  // Date range for custom reports
+  document
+    .getElementById("report-date-from")
+    ?.addEventListener("change", function () {
+      loadCustomReport();
+    });
+
+  document
+    .getElementById("report-date-to")
+    ?.addEventListener("change", function () {
+      loadCustomReport();
+    });
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 }
 
 function showSection(section) {
@@ -904,10 +1067,24 @@ function getSelectedAmenities() {
 
 async function saveRoomType(id, data) {
   try {
+<<<<<<< HEAD
     const url = `${API_BASE_URL}/RoomTypeController.php?action=${
       id ? "update&id=" + id : "create"
     }`;
     const method = id ? "PUT" : "POST";
+=======
+    const search = document.getElementById("room-search")?.value || "";
+    const status = document.getElementById("room-status-filter")?.value || "";
+    const type = document.getElementById("room-type-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/rooms.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    if (type) url += `&room_type_id=${encodeURIComponent(type)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 
     const response = await fetch(url, {
       method: id ? "PUT" : "POST",
@@ -1073,6 +1250,7 @@ async function loadBookings() {
     return;
   }
 
+<<<<<<< HEAD
   // Show loading state
   tbody.innerHTML = `
         <tr>
@@ -1084,6 +1262,22 @@ async function loadBookings() {
             </td>
         </tr>
     `;
+=======
+  try {
+    const search = document.getElementById("booking-search")?.value || "";
+    const status = document.getElementById("booking-status-filter")?.value || "";
+    const dateFrom = document.getElementById("booking-date-from")?.value || "";
+    const dateTo = document.getElementById("booking-date-to")?.value || "";
+
+    let url = `${API_BASE_URL}/bookings.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    if (dateFrom) url += `&check_in_from=${encodeURIComponent(dateFrom)}`;
+    if (dateTo) url += `&check_in_to=${encodeURIComponent(dateTo)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 
   try {
     // Build query string from filters
@@ -1183,6 +1377,7 @@ function renderBookingsTable(bookings) {
     const createdDate = formatDateTime(booking.created_at);
 
     html += `
+<<<<<<< HEAD
             <tr>
                 <td><strong>${
                   booking.booking_code || `BK${booking.id}`
@@ -1236,6 +1431,299 @@ function renderBookingsTable(bookings) {
                 </td>
             </tr>
         `;
+=======
+                    <tr>
+                        <td><strong>${booking.booking_code}</strong></td>
+                        <td>${booking.customer_name || "N/A"}</td>
+                        <td>${booking.room_number || "N/A"}</td>
+                        <td>${formatDate(booking.check_in)}</td>
+                        <td>${formatDate(booking.check_out)}</td>
+                        <td>${nights} đêm</td>
+                        <td>${booking.num_guests} khách</td>
+                        <td>${formatCurrency(booking.total_price)}</td>
+                        <td><span class="payment-badge ${paymentStatusClass}">${paymentStatusText}</span></td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${formatDateTime(booking.created_at)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" onclick="viewBooking('${
+                                  booking.booking_code
+                                }')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="editBooking(${
+                                  booking.id
+                                })">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteBooking(${
+                                  booking.id
+                                })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+async function loadCustomers() {
+  if (USE_MOCK_DATA) {
+    renderCustomersTable(MOCK_DATA.customers);
+    return;
+  }
+
+  try {
+    const search = document.getElementById("customer-search")?.value || "";
+    const type = document.getElementById("customer-type-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/customers.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (type) url += `&user_type=${encodeURIComponent(type)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.success) {
+      renderCustomersTable(data.data);
+    }
+  } catch (error) {
+    console.error("Error loading customers:", error);
+    showToast("Lỗi tải danh sách khách hàng", "error");
+  }
+}
+
+function exportCustomers() {
+  const search = document.getElementById("customer-search")?.value || "";
+  const type = document.getElementById("customer-type-filter")?.value || "";
+
+  let url = `${API_BASE_URL}/customers.php?action=export`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (type) url += `&user_type=${encodeURIComponent(type)}`;
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.download = `customers_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function renderCustomersTable(customers) {
+  const tbody = document.getElementById("customers-table-body");
+
+  if (!customers || customers.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="11" class="no-data">Không có khách hàng nào</td></tr>';
+    return;
+  }
+
+  let html = "";
+  customers.forEach((customer) => {
+    const statusClass = `status-${customer.status}`;
+    const statusText =
+      {
+        active: "Hoạt động",
+        inactive: "Ngừng HĐ",
+      }[customer.status] || customer.status;
+
+    const userTypeText =
+      {
+        customer: "Khách lẻ",
+        corporate: "Doanh nghiệp",
+        vip: "VIP",
+      }[customer.user_type] || customer.user_type;
+
+    html += `
+                    <tr>
+                        <td>${customer.id}</td>
+                        <td><strong>${customer.full_name}</strong></td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone || "N/A"}</td>
+                        <td><span class="user-type-badge">${userTypeText}</span></td>
+                        <td>${customer.total_bookings || 0}</td>
+                        <td>${formatCurrency(customer.total_spent || 0)}</td>
+                        <td>${customer.loyalty_points || 0} điểm</td>
+                        <td>${formatDate(customer.created_at)}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editCustomer(${
+                                  customer.id
+                                })">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteCustomer(${
+                                  customer.id
+                                })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+async function loadServices() {
+  if (USE_MOCK_DATA) {
+    renderServicesCards(MOCK_DATA.services);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/services.php?action=getAll&mode=admin`);
+    const data = await response.json();
+
+    if (data.success) {
+      renderServicesCards(data.data);
+    }
+  } catch (error) {
+    console.error("Error loading services:", error);
+    showToast("Lỗi tải danh sách dịch vụ", "error");
+  }
+}
+
+function renderServicesCards(services) {
+  const container = document.getElementById("services-container");
+
+  if (!services || services.length === 0) {
+    container.innerHTML = '<div class="no-data">Không có dịch vụ nào</div>';
+    return;
+  }
+
+  let html = "";
+  services.forEach((service) => {
+    const categoryClass = `category-${service.category}`;
+    const categoryText =
+      {
+        transport: "Vận chuyển",
+        food: "Ẩm thực",
+        spa: "Spa & Wellness",
+        other: "Khác",
+      }[service.category] || service.category;
+
+    const statusClass =
+      service.status === "available" ? "available" : "unavailable";
+
+    html += `
+                    <div class="service-card">
+                        <div class="service-header">
+                            <h3>${service.service_name}</h3>
+                            <span class="service-price">${formatCurrency(
+                              service.price
+                            )}</span>
+                        </div>
+                        <div class="service-body">
+                            <p>${service.description || "Không có mô tả"}</p>
+                            <div class="service-meta">
+                                <span class="service-category ${categoryClass}">${categoryText}</span>
+                                <span class="service-status ${statusClass}">
+                                    ${
+                                      service.status === "available"
+                                        ? "Có sẵn"
+                                        : "Không khả dụng"
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                        <div class="service-footer">
+                            <button class="btn btn-sm btn-primary" onclick="editService(${
+                              service.id
+                            })">
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteService(${
+                              service.id
+                            })">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </div>
+                    </div>
+                `;
+  });
+
+  container.innerHTML = html;
+}
+
+async function loadStaff() {
+  if (USE_MOCK_DATA) {
+    renderStaffTable(MOCK_DATA.staff);
+    return;
+  }
+
+  try {
+    const search = document.getElementById("staff-search")?.value || "";
+    const department = document.getElementById("staff-dept-filter")?.value || "";
+
+    let url = `${API_BASE_URL}/staff.php?action=getAll`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (department) url += `&department=${encodeURIComponent(department)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.success) {
+      renderStaffTable(data.data);
+    }
+  } catch (error) {
+    console.error("Error loading staff:", error);
+    showToast("Lỗi tải danh sách nhân viên", "error");
+  }
+}
+
+function renderStaffTable(staffList) {
+  const tbody = document.getElementById("staff-table-body");
+
+  if (!staffList || staffList.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="9" class="no-data">Không có nhân viên nào</td></tr>';
+    return;
+  }
+
+  let html = "";
+  staffList.forEach((staff) => {
+    const departmentText =
+      {
+        reception: "Lễ tân",
+        housekeeping: "Buồng phòng",
+        management: "Quản lý",
+        support: "Hỗ trợ",
+      }[staff.department] || staff.department;
+
+    html += `
+                    <tr>
+                        <td><strong>${staff.staff_code}</strong></td>
+                        <td>${staff.full_name}</td>
+                        <td>${staff.email}</td>
+                        <td>${staff.phone || "N/A"}</td>
+                        <td>${staff.position}</td>
+                        <td><span class="dept-badge">${departmentText}</span></td>
+                        <td>${formatDate(staff.hire_date)}</td>
+                        <td><span class="status-badge status-active">Đang làm việc</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editStaff(${
+                                  staff.id
+                                })">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteStaff(${
+                                  staff.id
+                                })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
   });
 
   tbody.innerHTML = html;
@@ -1323,6 +1811,7 @@ function getBookingStatusInfo(status) {
   return statusMap[status] || { text: status, class: "status-inactive" };
 }
 
+<<<<<<< HEAD
 function getPaymentStatusInfo(status) {
   const statusMap = {
     pending: { text: "Chưa thanh toán", class: "payment-pending" },
@@ -1332,6 +1821,437 @@ function getPaymentStatusInfo(status) {
   };
 
   return statusMap[status] || { text: status, class: "payment-pending" };
+=======
+function openRoomModal(roomId = null) {
+  const modal = document.getElementById("room-modal");
+  const title = document.getElementById("room-modal-title");
+  const form = document.getElementById("room-form");
+
+  if (roomId) {
+    title.textContent = "Chỉnh sửa phòng";
+    loadRoomData(roomId);
+  } else {
+    title.textContent = "Thêm phòng mới";
+    form.reset();
+    document.getElementById("room-id").value = "";
+    loadRoomTypesForSelect();
+  }
+
+  modal.classList.add("active");
+}
+
+function editRoom(roomId) {
+  openRoomModal(roomId);
+}
+
+async function loadRoomTypesForSelect() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("room-type-id");
+    let html = '<option value="">Chọn loại phòng</option>';
+    MOCK_DATA.roomTypes.forEach((type) => {
+      html += `<option value="${type.id}">${type.type_name} (${formatCurrency(
+        type.base_price
+      )}/đêm)</option>`;
+    });
+    select.innerHTML = html;
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/room-types.php?action=getAll`
+    );
+    const data = await response.json();
+
+    if (data.success) {
+      const select = document.getElementById("room-type-id");
+      let html = '<option value="">Chọn loại phòng</option>';
+
+      data.data.forEach((type) => {
+        html += `<option value="${type.id}">${type.type_name} (${formatCurrency(
+          type.base_price
+        )}/đêm)</option>`;
+      });
+
+      select.innerHTML = html;
+    }
+  } catch (error) {
+    console.error("Error loading room types for select:", error);
+  }
+}
+
+async function loadRoomData(roomId) {
+  if (USE_MOCK_DATA) {
+    const room = MOCK_DATA.rooms.find((r) => r.id == roomId);
+    if (room) {
+      document.getElementById("room-id").value = room.id;
+      document.getElementById("room-number").value = room.room_number;
+      document.getElementById("room-type-id").value = room.room_type_id;
+      document.getElementById("room-floor").value = room.floor || "";
+      document.getElementById("room-view").value = room.view_type;
+      document.getElementById("room-status").value = room.status;
+      document.getElementById("room-image").value = room.image_url || "";
+      await loadRoomTypesForSelect();
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/rooms.php?action=get&id=${roomId}`
+    );
+    const data = await response.json();
+
+    if (data.success) {
+      const room = data.data;
+      document.getElementById("room-id").value = room.id;
+      document.getElementById("room-number").value = room.room_number;
+      document.getElementById("room-type-id").value = room.room_type_id;
+      document.getElementById("room-floor").value = room.floor || "";
+      document.getElementById("room-view").value = room.view_type;
+      document.getElementById("room-status").value = room.status;
+      document.getElementById("room-image").value = room.image_url || "";
+
+      // Load room types for select
+      await loadRoomTypesForSelect();
+    }
+  } catch (error) {
+    console.error("Error loading room data:", error);
+    showToast("Lỗi tải dữ liệu phòng", "error");
+  }
+}
+
+async function saveRoom() {
+  const roomId = document.getElementById("room-id").value;
+  const isEdit = !!roomId;
+
+  const roomData = {
+    room_number: document.getElementById("room-number").value,
+    room_type_id: document.getElementById("room-type-id").value,
+    floor: document.getElementById("room-floor").value || null,
+    view_type: document.getElementById("room-view").value,
+    status: document.getElementById("room-status").value,
+    image_url: document.getElementById("room-image").value || null,
+  };
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast(
+        "Chế độ demo: thao tác đã được giả lập, không gọi server",
+        "info"
+      );
+      closeAllModals();
+      loadRooms();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/rooms.php?action=${
+      isEdit ? "update" : "create"
+    }`;
+    
+    if (isEdit) {
+      url += `&id=${roomId}`;
+    }
+
+    const method = "POST";
+
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(isEdit ? { ...roomData, id: roomId } : roomData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(
+        isEdit ? "Cập nhật phòng thành công" : "Thêm phòng thành công",
+        "success"
+      );
+      closeAllModals();
+      loadRooms();
+      loadDashboardData();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving room:", error);
+    showToast("Lỗi lưu phòng", "error");
+  }
+}
+
+function deleteRoom(roomId) {
+  if (!confirm("Bạn có chắc chắn muốn xóa phòng này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa phòng", "info");
+    loadRooms();
+    loadDashboardData();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/rooms.php?action=delete&id=${roomId}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa phòng thành công", "success");
+        loadRooms();
+        loadDashboardData();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting room:", error);
+      showToast("Lỗi xóa phòng", "error");
+    });
+}
+
+function openBookingModal(bookingId = null) {
+  const modal = document.getElementById("booking-modal");
+  const title = document.getElementById("booking-modal-title");
+  const form = document.getElementById("booking-form");
+
+  if (bookingId) {
+    title.textContent = "Chỉnh sửa đặt phòng";
+    loadBookingData(bookingId);
+  } else {
+    title.textContent = "Thêm đặt phòng mới";
+    form.reset();
+    document.getElementById("booking-id").value = "";
+    loadCustomersForSelect();
+    loadAvailableRooms();
+    loadServicesForSelect();
+    setupDateCalculations();
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadCustomersForSelect() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("booking-customer-id");
+    let html = '<option value="">Chọn khách hàng</option>';
+    MOCK_DATA.customers.forEach((customer) => {
+      html += `<option value="${customer.id}">${customer.full_name} (${customer.email})</option>`;
+    });
+    select.innerHTML = html;
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/customers.php?action=getAll`);
+    const data = await response.json();
+
+    if (data.success) {
+      const select = document.getElementById("booking-customer-id");
+      let html = '<option value="">Chọn khách hàng</option>';
+
+      data.data.forEach((customer) => {
+        html += `<option value="${customer.id}">${customer.full_name} (${customer.email})</option>`;
+      });
+
+      select.innerHTML = html;
+    }
+  } catch (error) {
+    console.error("Error loading customers for select:", error);
+  }
+}
+
+async function loadAvailableRooms() {
+  if (USE_MOCK_DATA) {
+    const select = document.getElementById("booking-room-id");
+    let html = '<option value="">Chọn phòng</option>';
+    MOCK_DATA.rooms
+      .filter((room) => room.status === "available")
+      .forEach((room) => {
+        html += `<option value="${room.id}" data-price="${room.base_price}">
+                            Phòng ${room.room_number} - ${
+          room.type_name
+        } (${formatCurrency(room.base_price)}/đêm)
+                        </option>`;
+      });
+    select.innerHTML = html;
+    select.addEventListener("change", calculateTotalPrice);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/rooms.php?action=getAvailable`
+    );
+    const data = await response.json();
+
+    if (data.success) {
+      const select = document.getElementById("booking-room-id");
+      let html = '<option value="">Chọn phòng</option>';
+
+      data.data.forEach((room) => {
+        html += `<option value="${room.id}" data-price="${room.base_price}">
+                            Phòng ${room.room_number} - ${
+          room.type_name
+        } (${formatCurrency(room.base_price)}/đêm)
+                        </option>`;
+      });
+
+      select.innerHTML = html;
+
+      // Add event listener for room selection
+      select.addEventListener("change", calculateTotalPrice);
+    }
+  } catch (error) {
+    console.error("Error loading available rooms:", error);
+  }
+}
+
+async function loadServicesForSelect() {
+  if (USE_MOCK_DATA) {
+    const container = document.getElementById("services-selection");
+    let html = "";
+    MOCK_DATA.services.forEach((service) => {
+      if (service.status === "available") {
+        html += `
+                                <div class="service-checkbox">
+                                    <input type="checkbox" id="service-${
+                                      service.id
+                                    }" value="${service.id}" data-price="${
+          service.price
+        }">
+                                    <label for="service-${service.id}">
+                                        ${
+                                          service.service_name
+                                        } - ${formatCurrency(service.price)}
+                                        <small>${service.description}</small>
+                                    </label>
+                                </div>
+                            `;
+      }
+    });
+
+    container.innerHTML = html || "<p>Không có dịch vụ nào khả dụng</p>";
+    document
+      .querySelectorAll('#services-selection input[type="checkbox"]')
+      .forEach((checkbox) => {
+        checkbox.addEventListener("change", calculateTotalPrice);
+      });
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/services.php?action=getAll`);
+    const data = await response.json();
+
+    if (data.success) {
+      const container = document.getElementById("services-selection");
+      let html = "";
+
+      data.data.forEach((service) => {
+        if (service.status === "available") {
+          html += `
+                                <div class="service-checkbox">
+                                    <input type="checkbox" id="service-${
+                                      service.id
+                                    }" value="${service.id}" data-price="${
+            service.price
+          }">
+                                    <label for="service-${service.id}">
+                                        ${
+                                          service.service_name
+                                        } - ${formatCurrency(service.price)}
+                                        <small>${service.description}</small>
+                                    </label>
+                                </div>
+                            `;
+        }
+      });
+
+      container.innerHTML = html || "<p>Không có dịch vụ nào khả dụng</p>";
+
+      // Add event listeners for service selection
+      document
+        .querySelectorAll('#services-selection input[type="checkbox"]')
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", calculateTotalPrice);
+        });
+    }
+  } catch (error) {
+    console.error("Error loading services for select:", error);
+  }
+}
+
+function setupDateCalculations() {
+  const checkInInput = document.getElementById("check-in");
+  const checkOutInput = document.getElementById("check-out");
+  const numNightsInput = document.getElementById("num-nights");
+
+  // Set minimum date to today
+  const today = new Date().toISOString().split("T")[0];
+  checkInInput.min = today;
+
+  checkInInput.addEventListener("change", function () {
+    checkOutInput.min = this.value;
+    calculateNights();
+    calculateTotalPrice();
+  });
+
+  checkOutInput.addEventListener("change", function () {
+    calculateNights();
+    calculateTotalPrice();
+  });
+}
+
+function calculateNights() {
+  const checkIn = document.getElementById("check-in").value;
+  const checkOut = document.getElementById("check-out").value;
+
+  if (checkIn && checkOut) {
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+    document.getElementById("num-nights").value = nights > 0 ? nights : 0;
+  }
+}
+
+function calculateTotalPrice() {
+  const roomSelect = document.getElementById("booking-room-id");
+  const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+  const roomPrice = selectedOption
+    ? parseFloat(selectedOption.getAttribute("data-price"))
+    : 0;
+
+  const numNights = parseInt(document.getElementById("num-nights").value) || 0;
+  const numGuests = parseInt(document.getElementById("num-guests").value) || 2;
+
+  // Calculate room total
+  let total = roomPrice * numNights;
+
+  // Add service costs
+  const selectedServices = document.querySelectorAll(
+    '#services-selection input[type="checkbox"]:checked'
+  );
+  selectedServices.forEach((checkbox) => {
+    const price = parseFloat(checkbox.getAttribute("data-price")) || 0;
+    total += price;
+  });
+
+  // Update total display
+  document.getElementById("total-price").textContent = formatCurrency(total);
+}
+
+// Utility functions
+function formatCurrency(amount) {
+  if (!amount) amount = 0;
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 }
 
 function formatDate(dateString) {
@@ -1579,8 +2499,42 @@ function handleBookingFormSubmit(e) {
     special_requests: document.getElementById("special-requests").value,
   };
 
+<<<<<<< HEAD
   saveBooking(id, data);
 }
+=======
+  if (!bookingData.customer_id) {
+    showToast("Vui lòng chọn khách hàng", "error");
+    return;
+  }
+  if (!bookingData.room_id) {
+    showToast("Vui lòng chọn phòng", "error");
+    return;
+  }
+  if (!bookingData.check_in || !bookingData.check_out) {
+    showToast("Vui lòng chọn ngày nhận và trả phòng", "error");
+    return;
+  }
+  if (new Date(bookingData.check_in) >= new Date(bookingData.check_out)) {
+    showToast("Ngày trả phòng phải sau ngày nhận phòng", "error");
+    return;
+  }
+  if (isNaN(bookingData.total_price)) {
+    bookingData.total_price = 0;
+  }
+
+  // Get selected services
+  const selectedServices = [];
+  document
+    .querySelectorAll('#services-selection input[type="checkbox"]:checked')
+    .forEach((checkbox) => {
+      selectedServices.push({
+        service_id: checkbox.value,
+        price: parseFloat(checkbox.getAttribute("data-price")),
+        quantity: 1 // Add default quantity
+      });
+    });
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 
 async function saveBooking(id, data) {
   try {
@@ -1644,6 +2598,7 @@ function loadBookingData(id) {
     });
 }
 
+<<<<<<< HEAD
 function resetBookingForm() {
   document.getElementById("booking-form").reset();
   document.getElementById("booking-id").value = "";
@@ -1671,6 +2626,154 @@ function calculatePrice() {
     document.getElementById("total-price").textContent = "0";
     return;
   }
+=======
+// Room Type Functions
+function openRoomTypeModal(typeId = null) {
+  const modal = document.getElementById("room-type-modal");
+  const title = document.getElementById("room-type-modal-title");
+  const form = document.getElementById("room-type-form");
+
+  if (typeId) {
+    title.textContent = "Chỉnh sửa loại phòng";
+    loadRoomTypeData(typeId);
+  } else {
+    title.textContent = "Thêm loại phòng mới";
+    form.reset();
+    document.getElementById("room-type-id").value = "";
+    // Uncheck all amenities
+    document.querySelectorAll('#amenities-container input[type="checkbox"]').forEach(cb => cb.checked = false);
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadRoomTypeData(id) {
+  if (USE_MOCK_DATA) {
+    const type = MOCK_DATA.roomTypes.find((t) => t.id == id);
+    if (type) {
+      fillRoomTypeForm(type);
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/room-types.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      fillRoomTypeForm(data.data);
+    } else {
+        showToast(data.message || "Không tìm thấy loại phòng", "error");
+    }
+  } catch (error) {
+    console.error("Error loading room type:", error);
+    showToast("Lỗi tải thông tin loại phòng", "error");
+  }
+}
+
+function fillRoomTypeForm(type) {
+  document.getElementById("room-type-id").value = type.id;
+  document.getElementById("type-name").value = type.type_name;
+  document.getElementById("base-price").value = type.base_price;
+  document.getElementById("capacity").value = type.capacity;
+  document.getElementById("description").value = type.description || "";
+
+  // Handle amenities
+  const amenities = parseAmenities(type.amenities);
+  document.querySelectorAll('#amenities-container input[type="checkbox"]').forEach(cb => {
+    cb.checked = amenities.includes(cb.value);
+  });
+}
+
+async function saveRoomType() {
+  const id = document.getElementById("room-type-id").value;
+  const isEdit = !!id;
+
+  // Get selected amenities
+  const selectedAmenities = [];
+  document.querySelectorAll('#amenities-container input[type="checkbox"]:checked').forEach(cb => {
+    selectedAmenities.push(cb.value);
+  });
+
+  const roomTypeData = {
+    type_name: document.getElementById("type-name").value,
+    base_price: document.getElementById("base-price").value,
+    capacity: document.getElementById("capacity").value,
+    description: document.getElementById("description").value,
+    amenities: selectedAmenities
+  };
+
+  if (isEdit) {
+      roomTypeData.id = id;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo: thao tác đã được giả lập", "info");
+      closeAllModals();
+      loadRoomTypes();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/room-types.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roomTypeData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật loại phòng thành công" : "Thêm loại phòng thành công", "success");
+      closeAllModals();
+      loadRoomTypes();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving room type:", error);
+    showToast("Lỗi lưu loại phòng", "error");
+  }
+}
+
+function editRoomType(id) {
+  openRoomTypeModal(id);
+}
+
+function deleteRoomType(id) {
+  if (!confirm("Bạn có chắc chắn muốn xóa loại phòng này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa", "info");
+    loadRoomTypes();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/room-types.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa loại phòng thành công", "success");
+        loadRoomTypes();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting room type:", error);
+      showToast("Lỗi xóa loại phòng", "error");
+    });
+}
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 
   // Calculate number of nights
   const start = new Date(checkIn);
@@ -1729,6 +2832,7 @@ function deleteBooking(id) {
   }
 }
 
+<<<<<<< HEAD
 // Cập nhật hàm openBookingModal đã tồn tại
 function openBookingModal() {
   openBookingModal();
@@ -1742,6 +2846,244 @@ async function loadCustomers() {
   if (!tbody) {
     console.error("customers-table-body not found!");
     return;
+=======
+// Customer Functions
+function openCustomerModal(customerId = null) {
+  const modal = document.getElementById("customer-modal");
+  const title = document.getElementById("customer-modal-title");
+  const form = document.getElementById("customer-form");
+
+  if (customerId) {
+    title.textContent = "Chỉnh sửa khách hàng";
+    loadCustomerData(customerId);
+  } else {
+    title.textContent = "Thêm khách hàng mới";
+    form.reset();
+    document.getElementById("customer-id").value = "";
+    document.getElementById("customer-status").value = "active";
+    document.getElementById("customer-type").value = "customer";
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadCustomerData(id) {
+  if (USE_MOCK_DATA) {
+     // mock data
+     return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/customers.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const customer = data.data;
+      document.getElementById("customer-id").value = customer.id;
+      document.getElementById("customer-name").value = customer.full_name;
+      document.getElementById("customer-email").value = customer.email;
+      document.getElementById("customer-phone").value = customer.phone || "";
+      document.getElementById("customer-address").value = customer.address || "";
+      document.getElementById("customer-type").value = customer.user_type;
+      document.getElementById("customer-status").value = customer.status;
+      document.getElementById("customer-password").value = ""; // Don't show password
+    } else {
+      showToast(data.message || "Không tìm thấy khách hàng", "error");
+    }
+  } catch (error) {
+    console.error("Error loading customer:", error);
+    showToast("Lỗi tải thông tin khách hàng", "error");
+  }
+}
+
+async function saveCustomer() {
+  const id = document.getElementById("customer-id").value;
+  const isEdit = !!id;
+
+  const customerData = {
+    full_name: document.getElementById("customer-name").value,
+    email: document.getElementById("customer-email").value,
+    phone: document.getElementById("customer-phone").value,
+    address: document.getElementById("customer-address").value,
+    user_type: document.getElementById("customer-type").value,
+    status: document.getElementById("customer-status").value,
+  };
+
+  const password = document.getElementById("customer-password").value;
+  if (password) {
+    customerData.password = password;
+  } else if (!isEdit) {
+    // Default password for new customers if not provided
+    customerData.password = "123456";
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo", "info");
+      closeAllModals();
+      loadCustomers();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/customers.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customerData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật khách hàng thành công" : "Thêm khách hàng thành công", "success");
+      closeAllModals();
+      loadCustomers();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving customer:", error);
+    showToast("Lỗi lưu khách hàng", "error");
+  }
+}
+
+function editCustomer(id) {
+  openCustomerModal(id);
+}
+
+function deleteCustomer(id) {
+  if (!confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo", "info");
+    loadCustomers();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/customers.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa khách hàng thành công", "success");
+        loadCustomers();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting customer:", error);
+      showToast("Lỗi xóa khách hàng", "error");
+    });
+}
+
+
+function openServiceModal(serviceId = null) {
+  const modal = document.getElementById("service-modal");
+  const title = document.getElementById("service-modal-title");
+  const form = document.getElementById("service-form");
+
+  if (serviceId) {
+    title.textContent = "Chỉnh sửa dịch vụ";
+    loadServiceData(serviceId);
+  } else {
+    title.textContent = "Thêm dịch vụ mới";
+    form.reset();
+    document.getElementById("service-id").value = "";
+    document.getElementById("service-status").value = "available";
+  }
+
+  modal.classList.add("active");
+}
+
+async function loadServiceData(id) {
+  if (USE_MOCK_DATA) {
+    const service = MOCK_DATA.services.find((s) => s.id == id);
+    if (service) {
+      document.getElementById("service-id").value = service.id;
+      document.getElementById("service-name").value = service.service_name;
+      document.getElementById("service-price").value = service.price;
+      document.getElementById("service-category").value = service.category;
+      document.getElementById("service-status").value = service.status;
+      document.getElementById("service-description").value = service.description || "";
+    }
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/services.php?action=get&id=${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const service = data.data;
+      document.getElementById("service-id").value = service.id;
+      document.getElementById("service-name").value = service.service_name;
+      document.getElementById("service-price").value = service.price;
+      document.getElementById("service-category").value = service.category;
+      document.getElementById("service-status").value = service.status;
+      document.getElementById("service-description").value = service.description || "";
+    } else {
+      showToast(data.message || "Không tìm thấy dịch vụ", "error");
+    }
+  } catch (error) {
+    console.error("Error loading service:", error);
+    showToast("Lỗi tải thông tin dịch vụ", "error");
+  }
+}
+
+async function saveService() {
+  const id = document.getElementById("service-id").value;
+  const isEdit = !!id;
+
+  const serviceData = {
+    service_name: document.getElementById("service-name").value,
+    price: document.getElementById("service-price").value,
+    category: document.getElementById("service-category").value,
+    status: document.getElementById("service-status").value,
+    description: document.getElementById("service-description").value,
+  };
+
+  if (isEdit) {
+    serviceData.id = id;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+      showToast("Chế độ demo: thao tác đã được giả lập", "info");
+      closeAllModals();
+      loadServices();
+      return;
+    }
+
+    let url = `${API_BASE_URL}/services.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(serviceData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật dịch vụ thành công" : "Thêm dịch vụ thành công", "success");
+      closeAllModals();
+      loadServices();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving service:", error);
+    showToast("Lỗi lưu dịch vụ", "error");
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
   }
 
   // Show loading state
@@ -3029,6 +4371,7 @@ function viewServiceDetails(id) {
 }
 
 function editService(id) {
+<<<<<<< HEAD
   console.log("Edit service:", id);
   openServiceModal(id);
 }
@@ -3039,10 +4382,86 @@ async function deleteService(id) {
       "Bạn có chắc chắn muốn xóa dịch vụ này?\nThao tác này không thể hoàn tác."
     )
   ) {
+=======
+  openServiceModal(id);
+}
+
+function deleteService(id) {
+  if (!confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
+    return;
+  }
+
+  if (USE_MOCK_DATA) {
+    showToast("Chế độ demo: giả lập xóa", "info");
+    loadServices();
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/services.php?action=delete&id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        showToast("Xóa dịch vụ thành công", "success");
+        loadServices();
+      } else {
+        showToast(result.message || "Có lỗi xảy ra", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting service:", error);
+      showToast("Lỗi xóa dịch vụ", "error");
+    });
+}
+
+// Staff Functions
+function openStaffModal(staffId = null) {
+  const modal = document.getElementById("staff-modal");
+  const title = document.getElementById("staff-modal-title");
+  const form = document.getElementById("staff-form");
+
+  if (staffId) {
+    title.textContent = "Chỉnh sửa nhân viên";
+    loadStaffData(staffId);
+  } else {
+    title.textContent = "Thêm nhân viên mới";
+    form.reset();
+    document.getElementById("staff-id").value = "";
+    document.getElementById("staff-user-id").value = "";
+  }
+
+  modal.classList.add("active");
+}
+
+function editStaff(staffId) {
+  openStaffModal(staffId);
+}
+
+async function loadStaffData(staffId) {
+  if (USE_MOCK_DATA) {
+    const staff = MOCK_DATA.staff.find((s) => s.id == staffId);
+    if (staff) {
+      document.getElementById("staff-id").value = staff.id;
+      // Mock doesn't track user_id separately usually, but for completeness
+      document.getElementById("staff-user-id").value = staff.user_id || "";
+      document.getElementById("staff-name").value = staff.full_name;
+      document.getElementById("staff-email").value = staff.email;
+      document.getElementById("staff-phone").value = staff.phone || "";
+      document.getElementById("staff-position").value = staff.position;
+      document.getElementById("staff-department").value = staff.department;
+      document.getElementById("staff-salary").value = staff.salary || "";
+      // Format date for input type="date"
+      const hireDate = staff.hire_date ? new Date(staff.hire_date).toISOString().split('T')[0] : "";
+      document.getElementById("staff-hire-date").value = hireDate;
+      document.getElementById("staff-address").value = staff.address || "";
+    }
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
     return;
   }
 
   try {
+<<<<<<< HEAD
     const response = await fetch(
       `${API_BASE_URL}/ServiceController.php?action=delete&id=${id}`,
       {
@@ -3111,7 +4530,111 @@ async function testServiceApi() {
   } catch (error) {
     alert(`❌ Lỗi test API: ${error.message}`);
     console.error("Test error:", error);
+=======
+    const response = await fetch(`${API_BASE_URL}/staff.php?action=get&id=${staffId}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const staff = data.data;
+      document.getElementById("staff-id").value = staff.id;
+      document.getElementById("staff-user-id").value = staff.user_id;
+      document.getElementById("staff-name").value = staff.full_name;
+      document.getElementById("staff-email").value = staff.email;
+      document.getElementById("staff-phone").value = staff.phone || "";
+      document.getElementById("staff-position").value = staff.position;
+      document.getElementById("staff-department").value = staff.department;
+      document.getElementById("staff-salary").value = staff.salary || "";
+      document.getElementById("staff-hire-date").value = staff.hire_date;
+      document.getElementById("staff-address").value = staff.address || "";
+    } else {
+      showToast(data.message || "Không tìm thấy nhân viên", "error");
+    }
+  } catch (error) {
+    console.error("Error loading staff data:", error);
+    showToast("Lỗi tải dữ liệu nhân viên", "error");
   }
+}
+
+async function saveStaff() {
+  const staffId = document.getElementById("staff-id").value;
+  const isEdit = !!staffId;
+
+  const staffData = {
+    full_name: document.getElementById("staff-name").value,
+    email: document.getElementById("staff-email").value,
+    phone: document.getElementById("staff-phone").value,
+    position: document.getElementById("staff-position").value,
+    department: document.getElementById("staff-department").value,
+    salary: document.getElementById("staff-salary").value,
+    hire_date: document.getElementById("staff-hire-date").value,
+    address: document.getElementById("staff-address").value,
+    user_id: document.getElementById("staff-user-id").value
+  };
+
+  // Basic validation
+  if (!staffData.full_name || !staffData.email || !staffData.position || !staffData.department) {
+    showToast("Vui lòng điền đầy đủ thông tin bắt buộc", "error");
+    return;
+  }
+
+  try {
+    if (USE_MOCK_DATA) {
+       showToast("Chế độ demo: thao tác đã được giả lập", "info");
+       closeAllModals();
+       loadStaff();
+       return;
+    }
+
+    let url = `${API_BASE_URL}/staff.php?action=${isEdit ? "update" : "create"}`;
+    if (isEdit) url += `&id=${staffId}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(staffData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast(isEdit ? "Cập nhật nhân viên thành công" : "Thêm nhân viên thành công", "success");
+      closeAllModals();
+      loadStaff();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  } catch (error) {
+    console.error("Error saving staff:", error);
+    showToast("Lỗi lưu nhân viên", "error");
+  }
+}
+
+function deleteStaff(id) {
+  if (!confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) return;
+
+  if (USE_MOCK_DATA) {
+     showToast("Chế độ demo: giả lập xóa", "info");
+     loadStaff();
+     return;
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
+  }
+
+  fetch(`${API_BASE_URL}/staff.php?action=delete&id=${id}`, {
+    method: "DELETE"
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.success) {
+      showToast("Xóa nhân viên thành công", "success");
+      loadStaff();
+    } else {
+      showToast(result.message || "Có lỗi xảy ra", "error");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast("Lỗi xóa nhân viên", "error");
+  });
 }
 
 // ===== UTILITY FUNCTIONS (thêm nếu chưa có) =====
@@ -3265,4 +4788,21 @@ function loadSectionData(section) {
     default:
       console.log("No data loader for:", section);
   }
+}
+
+function exportReport() {
+  const period = document.getElementById("report-period").value;
+  let url = `${API_BASE_URL}/export.php?type=reports&period=${period}`;
+  
+  if (period === 'custom') {
+     const from = document.getElementById("report-date-from").value;
+     const to = document.getElementById("report-date-to").value;
+     if (!from || !to) {
+        showToast("Vui lòng chọn khoảng thời gian", "error");
+        return;
+     }
+     url += `&start_date=${from}&end_date=${to}`;
+  }
+  
+  window.open(url, "_blank");
 }

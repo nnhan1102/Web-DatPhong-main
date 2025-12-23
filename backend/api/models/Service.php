@@ -40,6 +40,7 @@ class Service {
             $params[':status'] = $filters['status'];
         }
 
+<<<<<<< HEAD
         if (count($whereConditions) > 0) {
             $query .= " AND " . implode(" AND ", $whereConditions);
         }
@@ -51,6 +52,121 @@ class Service {
 
         // Pagination
         if (isset($filters['limit'])) {
+=======
+    // Lấy dịch vụ theo ID
+    public function getById($id) {
+        $query = "SELECT * FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Tạo dịch vụ mới
+    public function create($data) {
+        $query = "INSERT INTO {$this->table} 
+                  (service_name, description, price, category, status) 
+                  VALUES (:service_name, :description, :price, :category, :status)";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindValue(':service_name', $data['service_name']);
+        $stmt->bindValue(':description', $data['description']);
+        $stmt->bindValue(':price', $data['price']);
+        $stmt->bindValue(':category', $data['category']);
+        $stmt->bindValue(':status', $data['status'] ?? 'available');
+        
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
+    }
+
+    // Cập nhật dịch vụ
+    public function update($id, $data) {
+        $setClause = [];
+        $params = [':id' => $id];
+        
+        if (isset($data['service_name'])) {
+            $setClause[] = "service_name = :service_name";
+            $params[':service_name'] = $data['service_name'];
+        }
+        
+        if (isset($data['description'])) {
+            $setClause[] = "description = :description";
+            $params[':description'] = $data['description'];
+        }
+        
+        if (isset($data['price'])) {
+            $setClause[] = "price = :price";
+            $params[':price'] = $data['price'];
+        }
+        
+        if (isset($data['category'])) {
+            $setClause[] = "category = :category";
+            $params[':category'] = $data['category'];
+        }
+        
+        if (isset($data['status'])) {
+            $setClause[] = "status = :status";
+            $params[':status'] = $data['status'];
+        }
+        
+        if (empty($setClause)) {
+            return false;
+        }
+        
+        $query = "UPDATE {$this->table} 
+                  SET " . implode(', ', $setClause) . " 
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        return $stmt->execute();
+    }
+
+    // Xóa dịch vụ
+    public function delete($id) {
+        $query = "DELETE FROM {$this->table} WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    // Kiểm tra tên dịch vụ đã tồn tại
+    public function serviceNameExists($service_name, $excludeId = null) {
+        $query = "SELECT id FROM {$this->table} WHERE service_name = :service_name";
+        $params = [':service_name' => $service_name];
+        
+        if ($excludeId) {
+            $query .= " AND id != :exclude_id";
+            $params[':exclude_id'] = $excludeId;
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    // Lấy dịch vụ theo category
+    public function getByCategory($category, $limit = null) {
+        $query = "SELECT * FROM {$this->table} 
+                  WHERE category = :category AND status = 'available' 
+                  ORDER BY price";
+        
+        if ($limit) {
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
             $query .= " LIMIT :limit";
             $params[':limit'] = (int)$filters['limit'];
             

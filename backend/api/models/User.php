@@ -10,8 +10,67 @@ class User {
 
     // Register new user - SỬA LẠI
     public function register($data) {
+<<<<<<< HEAD
         try {
             error_log("User::register called with data: " . print_r($data, true));
+=======
+        $query = "INSERT INTO " . $this->table . " 
+                  (username, email, password, full_name, phone, address, user_type, status) 
+                  VALUES (:username, :email, :password, :full_name, :phone, :address, :user_type, :status)";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        // Generate username if not provided
+        if (empty($data['username'])) {
+            $data['username'] = strtolower(str_replace(' ', '.', $data['full_name'])) . rand(100, 999);
+        }
+        
+        // Hash password
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+        
+        $stmt->bindParam(':username', $data['username']);
+        $stmt->bindParam(':email', $data['email']);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':full_name', $data['full_name']);
+        $stmt->bindParam(':phone', $data['phone']);
+        $stmt->bindParam(':address', $data['address']);
+        
+        $user_type = $data['user_type'] ?? 'customer';
+        $status = $data['status'] ?? 'active';
+        
+        $stmt->bindParam(':user_type', $user_type);
+        $stmt->bindParam(':status', $status);
+        
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
+    }
+
+    // Đăng nhập
+    public function login($email, $password) {
+        $query = "SELECT * FROM " . $this->table . " 
+                  WHERE email = :email AND status = 'active'";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($row && password_verify($password, $row['password'])) {
+            // Gán giá trị cho object
+            $this->id = $row['id'];
+            $this->username = $row['username'];
+            $this->email = $row['email'];
+            $this->full_name = $row['full_name'];
+            $this->phone = $row['phone'];
+            $this->address = $row['address'];
+            $this->user_type = $row['user_type'];
+            $this->status = $row['status'];
+            $this->created_at = $row['created_at'];
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
             
             // Check if email or username already exists
             $checkQuery = "SELECT id FROM " . $this->table_name . " WHERE email = ? OR username = ?";

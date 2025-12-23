@@ -1382,6 +1382,7 @@ body {
   }
 }
 
+<<<<<<< HEAD
 /* ========== ROOM TYPES STYLES ========== */
 .cards-container {
   display: grid;
@@ -1872,4 +1873,45 @@ body {
 .status-inactive {
   background: #f8d7da;
   color: #721c24;
+=======
+/* Amenities Grid */
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 5px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.checkbox-item:hover {
+  background-color: #e9ecef;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: normal;
+  font-size: 0.9rem;
+  color: #333;
+>>>>>>> 582f04a39e270fe9b49fa2236a67353f94b15850
 }
