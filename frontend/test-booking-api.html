@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Booking API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .test-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        white-space: pre-wrap;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .url {
+        background: #e9ecef;
+        padding: 5px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Booking API</h1>
+
+    <div class="test-section">
+      <h2>1. Test Kết nối API</h2>
+      <p>URL API: <span class="url" id="apiUrl"></span></p>
+      <button onclick="testConnection()">Test Kết nối</button>
+      <div class="result" id="connectionResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>2. Test Authentication</h2>
+      <div>
+        <label>User JSON (từ localStorage):</label><br />
+        <textarea
+          id="userJson"
+          rows="6"
+          style="width: 100%; font-family: monospace; margin: 10px 0"
+        >
+{
+    "id": 1,
+    "full_name": "Nguyễn Văn A",
+    "email": "test@example.com",
+    "phone": "0123456789",
+    "isLoggedIn": true,
+    "user_type": "customer"
+}
+            </textarea
+        >
+      </div>
+      <button onclick="testAuthentication()">Test Authentication Token</button>
+      <div class="result" id="authResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>3. Test Gửi Booking Request</h2>
+      <button onclick="testBookingRequest()">Test Booking Request</button>
+      <div class="result" id="bookingResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>4. Kiểm tra đường dẫn file PHP</h2>
+      <button onclick="checkPhpFile()">
+        Kiểm tra file BookingController.php
+      </button>
+      <div class="result" id="fileCheckResult"></div>
+    </div>
+
+    <script>
+      // Đường dẫn API - cập nhật đúng với cấu trúc thư mục của bạn
+      const API_URL = "../../backend/api/controllers/BookingController.php";
+      document.getElementById("apiUrl").textContent = API_URL;
+
+      // Hàm safe btoa
+      function safeBtoa(str) {
+        return btoa(
+          encodeURIComponent(str).replace(
+            /%([0-9A-F]{2})/g,
+            function (match, p1) {
+              return String.fromCharCode("0x" + p1);
+            }
+          )
+        );
+      }
+
+      // 1. Test kết nối cơ bản
+      async function testConnection() {
+        const resultEl = document.getElementById("connectionResult");
+        resultEl.innerHTML = "Đang kiểm tra...";
+
+        try {
+          const response = await fetch(API_URL);
+          const contentType = response.headers.get("content-type");
+          const text = await response.text();
+
+          let result = `Status: ${response.status} ${response.statusText}\n`;
+          result += `Content-Type: ${contentType}\n`;
+          result += `Response (first 500 chars):\n${text.substring(0, 500)}...`;
+
+          if (contentType && contentType.includes("application/json")) {
+            resultEl.className = "result success";
+          } else if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+            resultEl.className = "result error";
+            result += "\n\n⚠️ WARNING: Server trả về HTML thay vì JSON!\n";
+            result += "Điều này có nghĩa là:\n";
+            result += "1. Đường dẫn API sai\n";
+            result += "2. PHP có lỗi syntax\n";
+            result += "3. File không tồn tại\n";
+          } else {
+            resultEl.className = "result";
+          }
+
+          resultEl.textContent = result;
+        } catch (error) {
+          resultEl.className = "result error";
+          resultEl.textContent = `Lỗi: ${error.message}\n\nCó thể:\n1. Server không chạy\n2. Đường dẫn sai\n3. CORS issue`;
+        }
+      }
+
+      // 2. Test authentication token
+      function testAuthentication() {
+        const userJson = document.getElementById("userJson").value;
+        const resultEl = document.getElementById("authResult");
+
+        try {
+          const user = JSON.parse(userJson);
+          const token = safeBtoa(JSON.stringify(user));
+
+          // Decode để kiểm tra
+          const decoded = atob(token);
+          const decodedJson = decodeURIComponent(
+            decoded.replace(/(.)/g, function (m, c) {
+              return "%" + c.charCodeAt(0).toString(16).padStart(2, "0");
+            })
+          );
+
+          resultEl.className = "result success";
+          resultEl.innerHTML = `
+<b>Token tạo thành công!</b>
+Token (base64): ${token.substring(0, 50)}...
+Độ dài: ${token.length} ký tự
+
+<b>Decoded token:</b>
+${decodedJson}
+                `;
+        } catch (error) {
+          resultEl.className = "result error";
+          resultEl.textContent = `Lỗi tạo token: ${error.message}`;
+        }
+      }
+
+      // 3. Test gửi booking request
+      async function testBookingRequest() {
+        const resultEl = document.getElementById("bookingResult");
+        resultEl.innerHTML = "Đang gửi request...";
+
+        try {
+          // Tạo user test
+          const user = {
+            id: 1,
+            full_name: "Nguyễn Văn Test",
+            email: "test@example.com",
+            phone: "0123456789",
+            isLoggedIn: true,
+            user_type: "customer",
+          };
+
+          const token = safeBtoa(JSON.stringify(user));
+
+          // Tạo booking data test
+          const bookingData = {
+            room_id: 1,
+            check_in: "2024-12-26",
+            check_out: "2024-12-28",
+            num_guests: 2,
+            total_price: 2000000,
+            payment_method: "cash",
+            special_requests: "Test booking",
+            customer_name: "Nguyễn Văn Test",
+            customer_email: "test@example.com",
+            customer_phone: "0123456789",
+          };
+
+          console.log("Sending request to:", API_URL + "?action=create");
+          console.log("Token:", token.substring(0, 50) + "...");
+          console.log("Data:", bookingData);
+
+          const response = await fetch(API_URL + "?action=create", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(bookingData),
+          });
+
+          const responseText = await response.text();
+          let result = `Status: ${response.status}\n`;
+          result += `Content-Type: ${response.headers.get("content-type")}\n\n`;
+
+          // Kiểm tra nếu là HTML
+          if (
+            responseText.includes("<!DOCTYPE") ||
+            responseText.includes("<html")
+          ) {
+            resultEl.className = "result error";
+            result += `⚠️ SERVER TRẢ VỀ HTML:\n\n`;
+            result += responseText.substring(0, 1000);
+
+            // Tìm lỗi PHP trong response
+            if (
+              responseText.includes("Parse error") ||
+              responseText.includes("Fatal error")
+            ) {
+              result += "\n\n🔴 PHÁT HIỆN LỖI PHP!";
+            }
+          } else {
+            // Thử parse JSON
+            try {
+              const jsonData = JSON.parse(responseText);
+              resultEl.className = "result success";
+              result += `✅ JSON Response:\n${JSON.stringify(
+                jsonData,
+                null,
+                2
+              )}`;
+            } catch (e) {
+              resultEl.className = "result error";
+              result += `❌ Không parse được JSON: ${e.message}\n`;
+              result += `Response text:\n${responseText}`;
+            }
+          }
+
+          resultEl.textContent = result;
+        } catch (error) {
+          resultEl.className = "result error";
+          resultEl.textContent = `Lỗi: ${error.message}\n\nStack: ${error.stack}`;
+        }
+      }
+
+      // 4. Kiểm tra file PHP
+      async function checkPhpFile() {
+        const resultEl = document.getElementById("fileCheckResult");
+        resultEl.innerHTML = "Đang kiểm tra...";
+
+        try {
+          // Kiểm tra file tồn tại
+          const response = await fetch(API_URL);
+          const text = await response.text();
+
+          let result = `Status: ${response.status}\n`;
+
+          if (response.status === 404) {
+            resultEl.className = "result error";
+            result += "❌ File không tồn tại (404)\n";
+            result += "Kiểm tra đường dẫn: " + API_URL;
+          } else if (
+            text.includes("Parse error") ||
+            text.includes("Fatal error")
+          ) {
+            resultEl.className = "result error";
+            result += "❌ File PHP có lỗi syntax\n\n";
+            result += text.substring(0, 500);
+          } else if (text.includes("BookingController")) {
+            resultEl.className = "result success";
+            result += "✅ File PHP tồn tại và chạy được\n";
+
+            // Kiểm tra nếu hiển thị code PHP
+            if (
+              text.includes("<?php") &&
+              text.includes("class BookingController")
+            ) {
+              result += "⚠️ Cảnh báo: Có thể hiển thị mã nguồn PHP\n";
+              result +=
+                "Kiểm tra cấu hình PHP (short_open_tag, display_errors)";
+            }
+          } else {
+            resultEl.className = "result";
+            result += "Response:\n" + text.substring(0, 300);
+          }
+
+          resultEl.textContent = result;
+        } catch (error) {
+          resultEl.className = "result error";
+          resultEl.textContent = `Lỗi: ${error.message}`;
+        }
+      }
+
+      // Chạy test kết nối khi load trang
+      window.onload = testConnection;
+    </script>
+  </body>
+</html>

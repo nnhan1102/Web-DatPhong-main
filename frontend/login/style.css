@@ -11,7 +11,11 @@ body {
   background: #f1f4f7;
 }
 
-/* HEADER */
+body.register-page {
+  background: #edf1f5;
+}
+
+/* ========== HEADER TOPBAR ========== */
 .topbar {
   background: #083d6b;
   height: 60px;
@@ -41,91 +45,6 @@ body {
 .menu a:hover {
   text-decoration: underline;
 }
-/* mũi tên cho đăng ký */
-.header {
-    position: relative;
-    text-align: center;
-    margin-bottom: 22px;
-}
-.header h2 {
-    margin: 0;
-    font-size: 22px;
-    color: #083d6b;
-}
-/* BACK BUTTON */
-.back-btn {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    text-decoration: none;
-    color: #6b7280;
-}
-
-.back-btn:hover {
-    color: orange;
-}
-
-/* LABEL */
-.register-box label {
-    display: block;
-    margin-top: 14px;
-    font-weight: 600;
-    color: #333;
-    font-size: 14px;
-}
-
-.required {
-    color: red;
-}
-
-/* INPUT */
-.register-box input {
-    width: 100%;
-    margin-top: 6px;
-    padding: 11px;
-    font-size: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    outline: none;
-}
-
-.register-box input:focus {
-    border-color: #ff9c27;
-}
-
-/* BUTTON */
-.actions button {
-    width: 100%;
-    background: #ff9c27;
-    border: none;
-    padding: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    margin-top: 16px;
-    transition: 0.3s;
-}
-
-.actions button:hover {
-    background: #e6891a;
-}
-.header .back-btn {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22px;
-  text-decoration: none;
-  color: #6b7280;
-}
-
-.header .back-btn:hover {
-  color: orange;
-}
 
 .header-right {
   display: flex;
@@ -136,7 +55,7 @@ body {
   font-weight: bold;
 }
 
-/* LOGIN AREA */
+/* ========== LOGIN PAGE ========== */
 .login-wrapper {
   display: flex;
   justify-content: center;
@@ -150,10 +69,10 @@ body {
   width: 380px;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* BACK BUTTON */
+/* Back button trong login */
 .login-box .back-btn {
   position: absolute;
   left: 15px;
@@ -163,18 +82,12 @@ body {
   color: #083d6b;
 }
 
-.back-btn:hover {
-  color: orange;
-}
-
-/* TITLE */
 .login-box h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #083d6b;
 }
 
-/* FORM */
 .login-box label {
   font-size: 14px;
   display: block;
@@ -194,7 +107,6 @@ body {
   border-color: #ff9c27;
 }
 
-/* LINKS */
 .login-links {
   display: flex;
   justify-content: space-between;
@@ -211,7 +123,6 @@ body {
   text-decoration: underline;
 }
 
-/* BUTTON */
 .login-btn {
   width: 100%;
   padding: 12px;
@@ -232,7 +143,6 @@ body {
   background: #e67e00;
 }
 
-/* REGISTER BUTTON */
 .register-btn {
   background: #083d6b;
 }
@@ -241,7 +151,6 @@ body {
   background: #062f55;
 }
 
-/* DIVIDER */
 .divider {
   text-align: center;
   margin: 15px 0;
@@ -267,24 +176,18 @@ body {
   right: 0;
 }
 
-/* ===== REGISTER PAGE FIX ===== */
-
-body.register-page {
-  background: #edf1f5;
-}
-
-/* BOX ĐĂNG KÝ */
+/* ========== REGISTER PAGE ========== */
 .register-box {
   background: white;
   width: 100%;
   max-width: 420px;
   padding: 28px;
   border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   margin: 60px auto;
 }
 
-/* HEADER */
+/* Header trong register box */
 .register-box .header {
   position: relative;
   text-align: center;
@@ -297,7 +200,7 @@ body.register-page {
   font-weight: bold;
 }
 
-/* NÚT BACK */
+/* Back button trong register */
 .register-box .back-btn {
   position: absolute;
   left: 0;
@@ -308,17 +211,45 @@ body.register-page {
   color: #6b7280;
 }
 
-.register-box .back-btn:hover {
+/* Back button chung */
+.back-btn:hover {
   color: orange;
 }
 
-/* INPUT GROUP - MẬT KHẨU */
+/* Labels */
+.register-box label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.required {
+  color: red;
+}
+
+/* Inputs */
+.register-box input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 11px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.register-box input:focus {
+  border-color: #ff9c27;
+}
+
+/* Input group cho password */
 .input-group {
   position: relative;
 }
 
 .input-group input {
-  width: 100%;
   padding-right: 38px;
 }
 
@@ -331,7 +262,7 @@ body.register-page {
   font-size: 15px;
 }
 
-/* CAPTCHA */
+/* CAPTCHA (nếu có) */
 .captcha {
   margin-top: 16px;
   border: 1px solid #d0d0d0;
@@ -360,20 +291,170 @@ body.register-page {
   width: 42px;
 }
 
-/* NÚT ĐĂNG KÝ */
+/* Buttons */
+.actions button,
 .register-btn {
   width: 100%;
-  margin-top: 18px;
+  background: #ff9c27;
+  border: none;
   padding: 14px;
   border-radius: 6px;
-  border: none;
-  background: #ff9c27;
-  color: white;
+  cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-  cursor: pointer;
+  color: white;
+  margin-top: 16px;
+  transition: 0.3s;
 }
 
+.actions button:hover,
 .register-btn:hover {
   background: #e6891a;
+}
+
+/* ========== UTILITIES ========== */
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  text-align: center;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25em;
+  border-color: #007bff;
+  border-right-color: transparent;
+  animation: spinner-border 0.75s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Notifications */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  max-width: 400px;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.success {
+  background: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.notification.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+.notification.info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border-left: 4px solid #17a2b8;
+}
+
+.notification.warning {
+  background: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .login-box,
+  .register-box {
+    width: 95%;
+    margin: 20px auto;
+    padding: 25px;
+  }
+
+  .topbar {
+    padding: 0 20px;
+  }
+
+  .menu {
+    margin-left: 20px;
+  }
+
+  .menu a {
+    margin-right: 10px;
+    font-size: 13px;
+  }
+
+  .login-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-box h2,
+  .register-box h2 {
+    font-size: 20px;
+  }
+
+  .login-box input,
+  .register-box input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .login-btn,
+  .register-btn,
+  .actions button {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .notification {
+    left: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+  }
+}
+
+/* Focus styles for accessibility */
+input:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }

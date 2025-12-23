@@ -1,0 +1,496 @@
+<!--file du lịch nước ngoài nha ae-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khách sạn nước ngoài</title>
+  <link rel="stylesheet" href="../frontend/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../frontend/assets/css/foreign.css" />
+  <!-- Use central stylesheet for consistent site styles -->
+</head>
+<body>
+    <!-- Navigation (same as booking.html) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <img src="images/logo.png" alt="Logo" height="40" class="d-inline-block align-text-top" />
+          <span class="brand-text">Opulent<span class="text-primary"></span></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="tours.html">Tour du lịch</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+          </ul>
+          <div class="d-flex">
+            <a href="login/login.html" class="btn btn-outline-primary me-2"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+            <a href="login/register.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Đăng ký</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-5" style="margin-top: 76px">
+      <!-- Search Header (simple copy) -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h2 class="card-title mb-4">Tìm phòng khách sạn</h2>
+              <form id="hotelSearchForm">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label">Địa điểm</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                      <input type="text" class="form-control" id="searchLocation" placeholder="Thành phố, địa điểm..." />
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Nhận phòng</label>
+                    <input type="date" class="form-control" id="checkInDate" />
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Trả phòng</label>
+                    <input type="date" class="form-control" id="checkOutDate" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Số phòng & Khách</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+                      <select class="form-select" id="roomGuests">
+                        <option value="1">1 phòng, 1 khách</option>
+                        <option value="2" selected>1 phòng, 2 khách</option>
+                        <option value="3">1 phòng, 3 khách</option>
+                        <option value="4">2 phòng, 4 khách</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                      <i class="fas fa-search me-2"></i>Tìm khách sạn
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="card border-0 shadow-sm sticky-top" style="top: 90px">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Bộ lọc</h5>
+              <div class="mb-4">
+                <h6 class="mb-3">Khoảng giá / đêm</h6>
+                <div class="d-flex justify-content-between mb-2">
+                  <span id="minPriceLabel">0 USD</span>
+                  <span id="maxPriceLabel">5,000,000 USD</span>
+                </div>
+                <input type="range" class="form-range" min="0" max="5000000" step="500000" id="priceRange" value="5000000" />
+                <div class="mt-2">
+                  <input type="number" class="form-control mb-2" id="minPriceInput" placeholder="Từ" min="0" />
+                  <input type="number" class="form-control" id="maxPriceInput" placeholder="Đến" max="5000000" />
+                </div>
+              </div>
+              <div class="mb-4">
+                <h6 class="mb-3">Hạng sao</h6>
+                <div id="starRatingFilters">
+                  <div class="filter-option" data-rating="5">
+                    <div>
+                      <div class="star-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                      </div>
+                      <small class="text-muted">5 sao</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" />
+                    </div>
+                  </div>
+                  <div class="filter-option" data-rating="4">
+                    <div>
+                      <div class="star-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                      </div>
+                      <small class="text-muted">4 sao</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-4">
+                <h6 class="mb-3">Tiện nghi</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="wifi" />
+                  <label class="form-check-label" for="wifi"><i class="fas fa-wifi text-primary me-2"></i>Wi-Fi miễn phí</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="parking" />
+                  <label class="form-check-label" for="parking"><i class="fas fa-parking text-primary me-2"></i>Bãi đỗ xe</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="pool" />
+                  <label class="form-check-label" for="pool"><i class="fas fa-swimming-pool text-primary me-2"></i>Hồ bơi</label>
+                </div>
+              </div>
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary" id="applyHotelFilters">Áp dụng bộ lọc</button>
+                <button class="btn btn-outline-secondary" id="resetHotelFilters">Đặt lại</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotels List -->
+        <div class="col-lg-9">
+          <h1 class="page-title" id="page-title">Khách sạn ở ${city}</h1>
+          <div id="city-info" class="city-info"></div>
+          <div id="hotel-list" class="row">
+            <div class="col-12 text-center loading">Đang tải dữ liệu...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer (copied from hotels.html for consistent look) -->
+    <footer class="bg-dark text-white py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h5 class="mb-3">Opulent</h5>
+            <p class="text-muted">Đặt phòng khách sạn nhanh chóng, giá tốt với nhiều lựa chọn.</p>
+            <div class="social-icons mt-3">
+              <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-6 mb-4">
+            <h6 class="mb-3">Khách sạn</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="hotels.html?city=Ha Noi" class="text-muted text-decoration-none">Hà Nội</a></li>
+              <li class="mb-2"><a href="hotels.html?city=Da Nang" class="text-muted text-decoration-none">Đà Nẵng</a></li>
+              <li class="mb-2"><a href="hotels.html?city=Ho Chi Minh" class="text-muted text-decoration-none">TP.HCM</a></li>
+              <li class="mb-2"><a href="hotels.html?city=Phu Quoc" class="text-muted text-decoration-none">Phú Quốc</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <h6 class="mb-3">Hỗ trợ</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="faq.html" class="text-muted text-decoration-none">Câu hỏi thường gặp</a></li>
+              <li class="mb-2"><a href="contact.html" class="text-muted text-decoration-none">Liên hệ đặt phòng</a></li>
+              <li class="mb-2"><a href="terms.html" class="text-muted text-decoration-none">Điều khoản đặt phòng</a></li>
+              <li class="mb-2"><a href="privacy.html" class="text-muted text-decoration-none">Chính sách bảo mật</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 mb-4">
+            <h6 class="mb-3">Hỗ trợ 24/7</h6>
+            <p class="text-muted small">Gọi ngay để được tư vấn và đặt phòng</p>
+            <div class="mb-3"><h4 class="text-warning">1900 1234</h4><small class="text-muted">Miễn phí cuộc gọi</small></div>
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="Email nhận ưu đãi" />
+              <button class="btn btn-primary">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+        <hr class="bg-secondary" />
+        <div class="row pt-3">
+          <div class="col-md-6"><p class="mb-0 text-muted">© 2025 Opulent. All rights reserved.</p></div>
+          <div class="col-md-6 text-md-end"><img src="images/payment-methods.png" alt="Payment Methods" height="30" /></div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Dữ liệu giới thiệu các thành phố
+    const cityDescriptions = {
+      'Singapore': {
+        title: 'Singapore - Thành phố quốc gia hiện đại',
+        description: 'Singapore là một trong những thành phố du lịch hàng đầu châu Á với những tòa nhà chọc trời hiện đại, vườn Supertree Grove nổi tiếng, và ẩm thực đa dạng. Khí hậu nhiệt đới quanh năm tạo điều kiện hoàn hảo cho du lịch.'
+      },
+      'Bangkok': {
+        title: 'Bangkok - Thành phố thiên thần',
+        description: 'Bangkok là thủ đô sôi động của Thái Lan với hàng ngàn ngôi chùa vàng lộng lẫy, chợ nổi truyền thống, và các quán ăn đường phố nổi tiếng thế giới. Đây là điểm đến lý tưởng cho những ai yêu thích nền văn hóa phong phú.'
+      },
+      'Tokyo': {
+        title: 'Tokyo - Thủ đô của sự hiện đại',
+        description: 'Tokyo là một thành phố kết hợp hoàn hảo giữa truyền thống cổ xưa và công nghệ tương lai. Với các chùa Phật giáo cổ kính, khu Shibuya sôi động, và ẩm thực Nhật Bản tinh tế, Tokyo không bao giờ làm khách thất vọng.'
+      },
+      'Thượng Hải': {
+        title: 'Thượng Hải - Tòa nhà sang trọng bên sông Hoàng Phố',
+        description: 'Thượng Hải là trung tâm tài chính của Trung Quốc với skyline tuyệt đẹp, những cây cầu hiện đại, và nền ẩm thực phong phú. Cảnh sắc thành phố về đêm thật không thể bỏ qua.'
+      },
+      'Maldives': {
+        title: 'Maldives - Thiên đường trên mặt đất',
+        description: 'Maldives là một quốc đảo xinh đẹp nổi tiếng với những bãi biển cát trắng, nước biển xanh ngọc bích, và các resort sang trọng. Đây là điểm đến lý tưởng cho kỳ nghỉ lãng mạn và thư giãn.'
+      }
+    };
+
+    // Lấy tham số city từ URL
+    const params = new URLSearchParams(window.location.search);
+    const city = params.get('city') || 'Singapore';
+
+    // Initialize dates: today and tomorrow
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Format dates as YYYY-MM-DD for HTML date input
+    const formatDateForInput = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const checkInInput = document.getElementById('checkInDate');
+    const checkOutInput = document.getElementById('checkOutDate');
+
+    checkInInput.value = formatDateForInput(today);
+    checkOutInput.value = formatDateForInput(tomorrow);
+
+    // Set minimum date for check-in (today)
+    checkInInput.setAttribute('min', formatDateForInput(today));
+
+    // Validate dates: check-out must be after check-in
+    const validateDates = () => {
+      const checkIn = new Date(checkInInput.value);
+      const checkOut = new Date(checkOutInput.value);
+
+      if (checkOut <= checkIn) {
+        // If check-out is not after check-in, set it to check-in + 1 day
+        const newCheckOut = new Date(checkIn);
+        newCheckOut.setDate(newCheckOut.getDate() + 1);
+        checkOutInput.value = formatDateForInput(newCheckOut);
+      }
+
+      // Set minimum date for check-out (must be after check-in)
+      const minCheckOut = new Date(checkIn);
+      minCheckOut.setDate(minCheckOut.getDate() + 1);
+      checkOutInput.setAttribute('min', formatDateForInput(minCheckOut));
+    };
+
+    // Validate on check-in change
+    checkInInput.addEventListener('change', validateDates);
+
+    // Validate on check-out change
+    checkOutInput.addEventListener('change', validateDates);
+
+    // Update tiêu đề
+    document.getElementById('page-title').textContent = `Khách sạn ở ${city}`;
+
+    // Hiển thị giới thiệu thành phố
+    const cityInfo = cityDescriptions[city];
+    if (cityInfo) {
+      document.getElementById('city-info').innerHTML = `
+        <h2>${cityInfo.title}</h2>
+        <p>${cityInfo.description}</p>
+      `;
+    }
+
+    // Price range UI: default at 0 (show VND) and sync inputs; when both inputs filled update image #2
+    let hotelsData = [];
+
+ // Sample hotel posts for cities (used as fallback or to augment API results)
+    const sampleHotels = {     
+         'Singapore': [
+        { id: 5001, name: 'Marina Bay Hotel', address: 'Marina Bay, Singapore', description: 'Khách sạn hạng sang view toàn cảnh vịnh.', min_price: 5500000, images: ['../image/anh91.jpg'] },
+        { id: 5002, name: 'Orchard Boutique Hotel', address: 'Orchard Road, Singapore', description: 'Khách sạn sang trọng giữa trung tâm mua sắm.', min_price: 4200000, images: ['../image/anh98.jpg'] }
+      ],      'Tokyo': [
+        { id: 1001, name: 'Tokyo Grand Hotel', address: 'Shinjuku, Tokyo', description: 'Khách sạn sang trọng gần ga Shinjuku.', min_price: 3500000, images: ['../image/anh84.jpg'] },
+        { id: 1002, name: 'Sakura Inn Tokyo', address: 'Asakusa, Tokyo', description: 'Khách sạn ấm cúng, gần đền Senso-ji.', min_price: 2200000, images: ['../image/anh74.jpg'] }
+      ],
+      'Bangkok': [
+        { id: 2001, name: 'Bangkok Riverside Hotel', address: 'Riverside, Bangkok', description: 'Tầm nhìn sông và tiện nghi đầy đủ.', min_price: 1800000, images: ['../image/anh76.jpg'] },
+        { id: 2002, name: 'Thai Comfort Hotel', address: 'Sukhumvit, Bangkok', description: 'Vị trí trung tâm, gần mua sắm và ăn uống.', min_price: 1400000, images: ['../image/anh68.jpg'] }
+      ],
+      'Thượng Hải': [
+        { id: 3001, name: 'Shanghai Skyline Hotel', address: 'Bund, Shanghai', description: 'Gần Bến Thượng Hải với view skyline.', min_price: 3000000, images: ['../image/anh54.jpg'] },
+        { id: 3002, name: 'Orient Pearl Hotel', address: 'Pudong, Shanghai', description: 'Tiện nghi hiện đại, thích hợp cho doanh nhân.', min_price: 2600000, images: ['../image/anh55.jpg'] }
+      ],
+      'Maldives': [
+        { id: 4001, name: 'Maldives Beach Resort', address: 'North Atoll', description: 'Resort trên biển với bungalow riêng.', min_price: 8500000, images: ['../image/anh89.jpg'] },
+        { id: 4002, name: 'Coral Atoll Retreat', address: 'South Atoll', description: 'Khu nghỉ dưỡng yên tĩnh, lãng mạn.', min_price: 12000000, images: ['../image/anh83.jpg'] }
+      ]
+    };
+
+    (function setupPriceRange() {
+      const priceRange = document.getElementById('priceRange');
+      const minPriceLabel = document.getElementById('minPriceLabel');
+      const maxPriceLabel = document.getElementById('maxPriceLabel');
+      const minPriceInput = document.getElementById('minPriceInput');
+      const maxPriceInput = document.getElementById('maxPriceInput');
+
+      if (!priceRange || !minPriceLabel || !maxPriceLabel) return;
+
+      // Ensure slider starts at 0
+      priceRange.value = priceRange.min || 0;
+
+        const formatVND = (valueVND) => {
+          const n = Number(valueVND) || 0;
+          return new Intl.NumberFormat('vi-VN').format(n) + ' VND';
+      };
+
+      // Initialize labels and inputs (VND)
+      minPriceLabel.textContent = formatVND(priceRange.value);
+      maxPriceLabel.textContent = formatVND(priceRange.max || 5000000);
+      if (minPriceInput) minPriceInput.value = priceRange.value;
+      if (maxPriceInput) maxPriceInput.value = priceRange.max || 5000000;
+
+      // Helper: if both inputs have values, update second image
+      const checkInputsForImageUpdate = () => {
+        const minVal = minPriceInput && minPriceInput.value;
+        const maxVal = maxPriceInput && maxPriceInput.value;
+        if (minVal !== '' && maxVal !== '' && hotelsData && hotelsData.length) {
+          updateSecondImage();
+        }
+      };
+
+      // Update as slider moves (sync min input)
+      priceRange.addEventListener('input', () => {
+        minPriceLabel.textContent = formatVND(priceRange.value);
+        if (minPriceInput) minPriceInput.value = priceRange.value;
+      });
+
+      // If user edits min price input number, sync slider
+      if (minPriceInput) {
+        minPriceInput.addEventListener('change', () => {
+          let v = Number(minPriceInput.value) || 0;
+          v = Math.max(Number(priceRange.min || 0), Math.min(v, Number(priceRange.max || 5000000)));
+          priceRange.value = v;
+          minPriceLabel.textContent = formatVND(v);
+
+          // If max is less than new min, bump max up to min
+          if (maxPriceInput) {
+            let maxV = Number(maxPriceInput.value) || 0;
+            if (maxV < v) {
+              maxV = v;
+              maxPriceInput.value = maxV;
+              maxPriceLabel.textContent = formatVND(maxV);
+            }
+          }
+
+          checkInputsForImageUpdate();
+        });
+      }
+
+      // If user edits max price input, update label and possibly image
+      if (maxPriceInput) {
+        maxPriceInput.addEventListener('change', () => {
+          let v = Number(maxPriceInput.value) || 0;
+          v = Math.max(0, Math.min(v, Number(priceRange.max || 5000000)));
+
+          const minV = minPriceInput ? (Number(minPriceInput.value) || 0) : 0;
+          if (v < minV) {
+            v = minV;
+          }
+
+          maxPriceLabel.textContent = formatVND(v);
+          maxPriceInput.value = v;
+          checkInputsForImageUpdate();
+        });
+      }
+    })();
+
+    // Fetch dữ liệu khách sạn từ API (use Apache host so Live Server pages can reach backend)
+    fetch(`http://localhost/Web-DatPhong-main-main/Web-DatPhong-main-main/backend/api/hotels.php?city=${encodeURIComponent(city)}`)
+      .then(response => response.json())
+      .then(data => {
+        const hotelList = document.getElementById('hotel-list');
+        let apiHotels = [];
+        
+        // Try to extract hotels from API response
+        if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
+          apiHotels = data.data;
+        }
+
+        // Always use sample hotels for the city as fallback/augment
+        const samples = sampleHotels[city] || [];
+        hotelsData = apiHotels.concat(samples);
+
+        if (hotelsData && hotelsData.length > 0) {
+          renderHotelList(hotelsData);
+        } else {
+          hotelList.innerHTML = '<div class="error">Không tìm thấy khách sạn nào ở ' + city + '</div>';
+        }
+      })
+      .catch(error => {
+        console.error('API Error:', error);
+        // Fallback to sample hotels on network/parse error
+        const hotelList = document.getElementById('hotel-list');
+        hotelsData = sampleHotels[city] || [];
+        if (hotelsData && hotelsData.length > 0) {
+          renderHotelList(hotelsData);
+        } else {
+          hotelList.innerHTML = '<div class="error">Lỗi khi tải dữ liệu</div>';
+        }
+      });
+
+    // Render hotel list (prices shown in VND)
+    function renderHotelList(hotels) {
+      const hotelList = document.getElementById('hotel-list');
+      hotelList.innerHTML = hotels.map(hotel => {
+        let priceVND = hotel.min_price || hotel.base_price || 2500000;
+        // If price is very small (likely from API as 120), multiply by 10000
+        if (priceVND < 1000) {
+          priceVND = priceVND * 10000;
+        }
+        const priceFormatted = new Intl.NumberFormat('vi-VN').format(priceVND) + ' VND';
+        const imgSrc = (hotel.images && hotel.images[0]) || hotel.primary_image || '../image/anh86.jpg';
+
+        return `
+          <div class="col-md-4 mb-4">
+            <div class="card hotel-card h-100">
+              <img src="${imgSrc}" class="card-img-top hotel-image" data-hotel-id="${hotel.id}" alt="${hotel.name}" style="height:200px; object-fit:cover;" />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">${hotel.name}</h5>
+                <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt"></i> ${hotel.address || ''}</p>
+                <p class="mb-2 text-truncate">${(hotel.description || 'Khách sạn chất lượng cao')}</p>
+                <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+                  <div>
+                    <div class="price-badge">${priceFormatted}</div>
+                    <small class="text-muted">/đêm</small>
+                  </div>
+                  <button class="btn btn-primary" onclick="goToBooking(${hotel.id})">Đặt phòng</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // When both numeric inputs (min & max) are filled, update each card to show the second image (if available)
+    function updateSecondImage() {
+      if (!hotelsData || hotelsData.length === 0) return;
+      hotelsData.forEach(hotel => {
+        const imgEl = document.querySelector(`img.hotel-image[data-hotel-id="${hotel.id}"]`);
+        if (!imgEl) return;
+        const second = hotel.images && hotel.images[1];
+        if (second) {
+          imgEl.src = second;
+        }
+      });
+    }
+
+    function goToBooking(hotelId) {
+      window.location.href = `booking.html?hotel_id=${hotelId}`;
+    }
+  </script>
+</body>
+</html>

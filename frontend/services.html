@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dịch vụ - Opulent Hotel</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Reset và base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* Header & Navigation */
+      .header {
+        width: 100%;
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .logo {
+        font-size: 28px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: white;
+      }
+
+      .logo i {
+        color: #e74c3c;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 4px;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-links a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        font-weight: 600;
+      }
+
+      /* User Info Section */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: white;
+      }
+
+      .user-name {
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .logout-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .logout-btn:hover {
+        background: #ff5252;
+      }
+
+      .login-btn {
+        background: #2ecc71;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .login-btn:hover {
+        background: #27ae60;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url("https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 100px 20px;
+        margin-bottom: 50px;
+      }
+
+      .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .hero p {
+        font-size: 18px;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        opacity: 0.9;
+      }
+
+      /* Services Section */
+      .services-section {
+        padding: 60px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .section-title h2 {
+        font-size: 36px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .section-title h2:after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, #3498db, #2c3e50);
+      }
+
+      .section-title p {
+        color: #666;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Category Filter */
+      .category-filter {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+
+      .category-btn {
+        padding: 12px 24px;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .category-btn:hover {
+        background: #3498db;
+        color: white;
+      }
+
+      .category-btn.active {
+        background: #3498db;
+        color: white;
+      }
+
+      /* Services Grid */
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+      }
+
+      .service-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .service-card.unavailable {
+        opacity: 0.7;
+      }
+
+      .service-image {
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .service-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .service-card:hover .service-image img {
+        transform: scale(1.1);
+      }
+
+      .service-category {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .service-content {
+        padding: 25px;
+      }
+
+      .service-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #2c3e50;
+      }
+
+      .service-description {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        min-height: 80px;
+      }
+
+      .service-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+
+      .price-tag {
+        font-size: 24px;
+        font-weight: 700;
+        color: #e74c3c;
+      }
+
+      .price-tag span {
+        font-size: 14px;
+        color: #666;
+        font-weight: normal;
+      }
+
+      .book-btn {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .book-btn:hover {
+        background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+        transform: scale(1.05);
+      }
+
+      .book-btn:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .service-status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .status-available {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-unavailable {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      /* Service Modal */
+      .service-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlide 0.3s ease;
+      }
+
+      @keyframes modalSlide {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        padding: 25px;
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h3 {
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .close-modal {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        line-height: 1;
+      }
+
+      .modal-body {
+        padding: 25px;
+      }
+
+      .modal-price {
+        font-size: 28px;
+        color: #e74c3c;
+        font-weight: 700;
+        margin: 15px 0;
+      }
+
+      .modal-category {
+        display: inline-block;
+        background: #3498db;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      .modal-description {
+        margin: 20px 0;
+        line-height: 1.7;
+        color: #555;
+      }
+
+      .booking-form {
+        margin-top: 25px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        border-color: #3498db;
+        outline: none;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn-primary {
+        flex: 1;
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+      }
+
+      .btn-secondary {
+        flex: 1;
+        background: #95a5a6;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: #7f8c8d;
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 60px;
+        grid-column: 1 / -1;
+      }
+
+      .loading i {
+        font-size: 40px;
+        color: #3498db;
+        margin-bottom: 20px;
+      }
+
+      .loading p {
+        font-size: 18px;
+        color: #666;
+      }
+
+      /* No Results */
+      .no-results {
+        text-align: center;
+        padding: 60px;
+        grid-column: 1 / -1;
+      }
+
+      .no-results i {
+        font-size: 60px;
+        color: #ddd;
+        margin-bottom: 20px;
+      }
+
+      .no-results p {
+        font-size: 18px;
+        color: #666;
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 1001;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      .toast.success {
+        border-left: 4px solid #2ecc71;
+      }
+
+      .toast.error {
+        border-left: 4px solid #e74c3c;
+      }
+
+      .toast.info {
+        border-left: 4px solid #3498db;
+      }
+
+      .toast i {
+        font-size: 20px;
+      }
+
+      .toast.success i {
+        color: #2ecc71;
+      }
+
+      .toast.error i {
+        color: #e74c3c;
+      }
+
+      .toast.info i {
+        color: #3498db;
+      }
+
+      /* Footer */
+      .footer {
+        background: #2c3e50;
+        color: white;
+        padding: 60px 0 30px;
+        margin-top: 60px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-section h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #3498db;
+      }
+
+      .footer-section p {
+        color: #bdc3c7;
+        line-height: 1.7;
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-section ul li a {
+        color: #bdc3c7;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-section ul li a:hover {
+        color: #3498db;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid #34495e;
+        color: #bdc3c7;
+      }
+
+      /* Responsive */
+      @media (max-width: 992px) {
+        .header {
+          padding: 15px 20px;
+        }
+
+        .nav {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 15px;
+        }
+
+        .user-info {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .category-filter {
+          gap: 10px;
+        }
+
+        .category-btn {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero {
+          padding: 60px 20px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .section-title h2 {
+          font-size: 28px;
+        }
+
+        .service-card {
+          margin: 0 10px;
+        }
+
+        .user-info {
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <nav class="nav">
+          <a href="../frontend/index.html" class="logo">
+            <i class="fas fa-hotel"></i>
+            Opulent Hotel
+          </a>
+          <ul class="nav-links">
+            <li><a href="../frontend/index.html">Trang chủ</a></li>
+            <li><a href="rooms.html">Phòng</a></li>
+            <li><a href="services.html" class="active">Dịch vụ</a></li>
+            <li><a href="booking.html">Đặt phòng</a></li>
+            <li><a href="contact.html">Liên hệ</a></li>
+            <!-- User Info Section -->
+            <div class="user-info" id="userInfoSection">
+              <a
+                href="../frontend/login/login.html"
+                class="login-btn"
+                id="loginBtnNav"
+                >Đăng nhập</a
+              >
+            </div>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Dịch vụ đẳng cấp</h1>
+        <p id="welcomeMessage">
+          Trải nghiệm những dịch vụ tốt nhất tại Opulent Hotel. Từ đưa đón, ẩm
+          thực đến spa, chúng tôi mang đến sự thoải mái tuyệt đối cho kỳ nghỉ
+          của bạn.
+        </p>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Dịch vụ của chúng tôi</h2>
+          <p>
+            Khám phá những dịch vụ đặc biệt được thiết kế riêng cho trải nghiệm
+            của bạn
+          </p>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="category-filter">
+          <button class="category-btn active" data-category="all">
+            <i class="fas fa-th"></i>
+            Tất cả
+          </button>
+          <button class="category-btn" data-category="transport">
+            <i class="fas fa-car"></i>
+            Vận chuyển
+          </button>
+          <button class="category-btn" data-category="food">
+            <i class="fas fa-utensils"></i>
+            Ẩm thực
+          </button>
+          <button class="category-btn" data-category="spa">
+            <i class="fas fa-spa"></i>
+            Spa & Wellness
+          </button>
+          <button class="category-btn" data-category="other">
+            <i class="fas fa-concierge-bell"></i>
+            Dịch vụ khác
+          </button>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="services-grid" id="services-container">
+          <!-- Services will be loaded here by JavaScript -->
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải dịch vụ...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Detail Modal -->
+    <div class="service-modal" id="service-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-service-name">Dịch vụ</h3>
+          <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-category" id="modal-category"></div>
+          <div id="modal-status"></div>
+          <div class="modal-price" id="modal-price"></div>
+          <div class="modal-description" id="modal-description"></div>
+
+          <form class="booking-form" id="booking-form">
+            <div class="form-group">
+              <label for="booking-date"
+                ><i class="far fa-calendar-alt"></i> Ngày đặt dịch vụ</label
+              >
+              <input type="date" id="booking-date" required />
+            </div>
+
+            <div class="form-group">
+              <label for="booking-time"><i class="far fa-clock"></i> Giờ</label>
+              <select id="booking-time" required>
+                <option value="">Chọn giờ</option>
+                <option value="08:00">08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+                <option value="17:00">17:00</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="booking-quantity"
+                ><i class="fas fa-users"></i> Số lượng</label
+              >
+              <input
+                type="number"
+                id="booking-quantity"
+                min="1"
+                max="10"
+                value="1"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="special-requests"
+                ><i class="far fa-comment-alt"></i> Yêu cầu đặc biệt (tùy
+                chọn)</label
+              >
+              <textarea
+                id="special-requests"
+                placeholder="Nhập yêu cầu đặc biệt của bạn..."
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeModal()"
+              >
+                Hủy
+              </button>
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-check-circle"></i> Xác nhận đặt dịch vụ
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Opulent Hotel</h3>
+            <p>
+              Khách sạn 5 sao với dịch vụ đẳng cấp và tiện nghi hiện đại. Trải
+              nghiệm sự sang trọng và thoải mái tuyệt đối.
+            </p>
+          </div>
+
+          <div class="footer-section">
+            <h3>Liên hệ</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận 1,
+                TP.HCM
+              </li>
+              <li><i class="fas fa-phone"></i> (028) 1234 5678</li>
+              <li><i class="fas fa-envelope"></i> info@opulenthotel.com</li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Liên kết nhanh</h3>
+            <ul>
+              <li><a href="../frontend/index.html">Trang chủ</a></li>
+              <li><a href="rooms.html">Phòng & Suite</a></li>
+              <li><a href="services.html">Dịch vụ</a></li>
+              <li><a href="booking.html">Đặt phòng</a></li>
+              <li><a href="contact.html">Liên hệ</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Theo dõi chúng tôi</h3>
+            <div style="display: flex; gap: 15px; margin-top: 20px">
+              <a href="#" style="color: white; font-size: 20px"
+                ><i class="fab fa-facebook"></i
+              ></a>
+              <a href="#" style="color: white; font-size: 20px"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" style="color: white; font-size: 20px"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" style="color: white; font-size: 20px"
+                ><i class="fab fa-youtube"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>&copy; 2024 Opulent Hotel. Tất cả các quyền được bảo lưu.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+      // ==================== USER AUTHENTICATION FUNCTIONS ====================
+
+      // Hàm kiểm tra đăng nhập và cập nhật UI
+      function updateUserUI() {
+        const userInfoSection = document.getElementById("userInfoSection");
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        const userData = localStorage.getItem("opulent_user");
+
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+
+            if (user.isLoggedIn) {
+              // Hiển thị thông tin user
+              userInfoSection.innerHTML = `
+              <div class="user-greeting">
+                Xin chào, <span class="user-name">${
+                  user.full_name || user.username || user.email
+                }</span>
+              </div>
+              <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+            `;
+
+              // Cập nhật welcome message
+              if (welcomeMessage) {
+                welcomeMessage.innerHTML = `Chào mừng <strong>${
+                  user.full_name || user.username
+                }</strong> đến với dịch vụ đẳng cấp của Opulent Hotel! Trải nghiệm những dịch vụ tốt nhất được thiết kế riêng cho bạn.`;
+              }
+
+              // Thêm sự kiện logout
+              document
+                .getElementById("logoutBtn")
+                .addEventListener("click", logout);
+            } else {
+              showLoginButton();
+            }
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+            showLoginButton();
+          }
+        } else {
+          showLoginButton();
+        }
+      }
+
+      // Hiển thị nút đăng nhập
+      function showLoginButton() {
+        const userInfoSection = document.getElementById("userInfoSection");
+        userInfoSection.innerHTML = `
+        <a href="../frontend/login/login.html" class="login-btn">Đăng nhập</a>
+      `;
+
+        // Reset welcome message
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        if (welcomeMessage) {
+          welcomeMessage.innerHTML =
+            "Trải nghiệm những dịch vụ tốt nhất tại Opulent Hotel. Từ đưa đón, ẩm thực đến spa, chúng tôi mang đến sự thoải mái tuyệt đối cho kỳ nghỉ của bạn.";
+        }
+      }
+
+      // Hàm đăng xuất
+      function logout() {
+        // Xóa thông tin user khỏi localStorage
+        localStorage.removeItem("opulent_user");
+        localStorage.removeItem("remember_me");
+
+        // Gọi API logout nếu cần (tùy chọn)
+        fetch("../../backend/api/auth/logout.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).catch((error) => {
+          console.error("Logout API error:", error);
+        });
+
+        // Cập nhật UI
+        updateUserUI();
+
+        // Hiển thị thông báo
+        showToast("Đã đăng xuất thành công!", "success");
+      }
+
+      // Hàm lắng nghe thay đổi localStorage (để cập nhật khi login từ trang khác)
+      function setupStorageListener() {
+        window.addEventListener("storage", function (event) {
+          if (event.key === "opulent_user") {
+            updateUserUI();
+          }
+        });
+      }
+
+      // Kiểm tra mỗi 5 giây để cập nhật trạng thái đăng nhập (cho trường hợp mở nhiều tab)
+      function setupLoginChecker() {
+        setInterval(updateUserUI, 5000);
+      }
+
+      // ==================== SERVICE FUNCTIONS ====================
+
+      // API Configuration
+      const API_BASE_URL =
+        "http://localhost/Web-DatPhong-main/backend/api/controllers";
+      let currentServices = [];
+      let selectedService = null;
+
+      // DOM Elements
+      const servicesContainer = document.getElementById("services-container");
+      const categoryButtons = document.querySelectorAll(".category-btn");
+      const serviceModal = document.getElementById("service-modal");
+      const bookingForm = document.getElementById("booking-form");
+      const toast = document.getElementById("toast");
+
+      // Category images mapping
+      const categoryImages = {
+        transport:
+          "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        food: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        spa: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        other:
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        default:
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      };
+
+      // Category names in Vietnamese
+      const categoryNames = {
+        transport: "Vận chuyển",
+        food: "Ẩm thực",
+        spa: "Spa & Wellness",
+        other: "Dịch vụ khác",
+      };
+
+      // Format currency
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount * 1000); // Nhân với 1000 vì giá trong DB có thể là đơn vị nhỏ hơn
+      }
+
+      // Show toast message
+      function showToast(message, type = "info") {
+        const icons = {
+          success: "fas fa-check-circle",
+          error: "fas fa-exclamation-circle",
+          info: "fas fa-info-circle",
+        };
+
+        toast.innerHTML = `
+                <i class="${icons[type] || icons.info}"></i>
+                <span>${message}</span>
+            `;
+        toast.className = `toast ${type} show`;
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // Load services from API
+      async function loadServices(category = "all") {
+        try {
+          servicesContainer.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải dịch vụ...</p>
+                    </div>
+                `;
+
+          let url = `${API_BASE_URL}/ServiceController.php?action=getAll`;
+          console.log("Loading services from:", url);
+
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          });
+
+          console.log("Response status:", response.status);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("API response:", data);
+
+          if (data.success && data.data && data.data.data) {
+            currentServices = data.data.data; // Lấy services từ data.data.data
+
+            // Filter by category if needed
+            let filteredServices = currentServices;
+            if (category !== "all") {
+              filteredServices = currentServices.filter(
+                (service) => service.category === category
+              );
+            }
+
+            renderServices(filteredServices);
+
+            // Show success message if services loaded
+            if (filteredServices.length > 0) {
+              console.log(`Loaded ${filteredServices.length} services`);
+              showToast(`Đã tải ${filteredServices.length} dịch vụ`, "success");
+            }
+          } else {
+            servicesContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-concierge-bell"></i>
+                            <p>${data.message || "Không có dịch vụ nào"}</p>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          console.error("Error loading services:", error);
+          servicesContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Không thể tải dịch vụ. Vui lòng thử lại sau.</p>
+                        <p style="font-size: 14px; color: #999; margin-top: 10px;">${error.message}</p>
+                        <button onclick="loadServices()" style="margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <i class="fas fa-redo"></i> Thử lại
+                        </button>
+                    </div>
+                `;
+          showToast("Lỗi khi tải dịch vụ: " + error.message, "error");
+        }
+      }
+
+      // Render services to the grid
+      function renderServices(services) {
+        if (services.length === 0) {
+          servicesContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-concierge-bell"></i>
+                        <p>Không tìm thấy dịch vụ nào trong danh mục này</p>
+                        <button onclick="loadServices()" style="margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <i class="fas fa-redo"></i> Xem tất cả dịch vụ
+                        </button>
+                    </div>
+                `;
+          return;
+        }
+
+        servicesContainer.innerHTML = services
+          .map((service) => {
+            const imageUrl =
+              categoryImages[service.category] || categoryImages.default;
+            const categoryName = categoryNames[service.category] || "Dịch vụ";
+            const isAvailable =
+              service.status === "available" || service.status === "active";
+            const statusClass = isAvailable
+              ? "status-available"
+              : "status-unavailable";
+            const statusText = isAvailable ? "Có sẵn" : "Tạm ngừng";
+
+            // Format price
+            const price = parseFloat(service.price) || 0;
+
+            return `
+                    <div class="service-card ${
+                      !isAvailable ? "unavailable" : ""
+                    }" data-id="${service.id}">
+                        <div class="service-image">
+                            <img src="${imageUrl}" alt="${
+              service.service_name
+            }">
+                            <div class="service-category">${categoryName}</div>
+                        </div>
+                        <div class="service-content">
+                            <span class="service-status ${statusClass}">${statusText}</span>
+                            <h3 class="service-title">${
+                              service.service_name
+                            }</h3>
+                            <p class="service-description">${
+                              service.description || "Không có mô tả"
+                            }</p>
+                            <div class="service-price">
+                                <div class="price-tag">${formatCurrency(
+                                  price
+                                )}</div>
+                                <button class="book-btn" onclick="openServiceModal(${
+                                  service.id
+                                })" 
+                                        ${!isAvailable ? "disabled" : ""}>
+                                    <i class="fas fa-calendar-plus"></i>
+                                    ${
+                                      isAvailable
+                                        ? "Đặt ngay"
+                                        : "Không khả dụng"
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      // Open service detail modal
+      async function openServiceModal(serviceId) {
+        try {
+          // Find service from current list
+          let service = currentServices.find((s) => s.id == serviceId);
+
+          if (!service) {
+            // Try to fetch single service from API
+            const response = await fetch(
+              `${API_BASE_URL}/ServiceController.php?action=getById&id=${serviceId}`,
+              {
+                headers: {
+                  Accept: "application/json",
+                },
+              }
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success && data.data) {
+                service = data.data;
+              }
+            }
+          }
+
+          if (service) {
+            selectedService = service;
+
+            // Set modal content
+            document.getElementById("modal-service-name").textContent =
+              service.service_name;
+
+            document.getElementById("modal-category").textContent =
+              categoryNames[service.category] || "Dịch vụ";
+
+            const price = parseFloat(service.price) || 0;
+            document.getElementById("modal-price").textContent =
+              formatCurrency(price);
+
+            document.getElementById("modal-description").textContent =
+              service.description || "Không có mô tả";
+
+            // Set status
+            const statusElement = document.getElementById("modal-status");
+            const isAvailable =
+              service.status === "available" || service.status === "active";
+            if (isAvailable) {
+              statusElement.innerHTML =
+                '<span class="status-available">Có sẵn</span>';
+            } else {
+              statusElement.innerHTML =
+                '<span class="status-unavailable">Tạm ngừng</span>';
+            }
+
+            // Set min date to today
+            const today = new Date();
+            const formattedDate = today.toISOString().split("T")[0];
+            document.getElementById("booking-date").min = formattedDate;
+            document.getElementById("booking-date").value = formattedDate;
+
+            // Show modal
+            serviceModal.style.display = "flex";
+          } else {
+            showToast("Không tìm thấy thông tin dịch vụ", "error");
+          }
+        } catch (error) {
+          console.error("Error opening service modal:", error);
+          showToast("Không thể mở thông tin dịch vụ", "error");
+        }
+      }
+
+      // Close modal
+      function closeModal() {
+        serviceModal.style.display = "none";
+        bookingForm.reset();
+        selectedService = null;
+      }
+
+      // Handle booking form submission
+      bookingForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        if (!selectedService) {
+          showToast("Không có dịch vụ được chọn", "error");
+          return;
+        }
+
+        const isAvailable =
+          selectedService.status === "available" ||
+          selectedService.status === "active";
+        if (!isAvailable) {
+          showToast("Dịch vụ hiện không khả dụng", "error");
+          return;
+        }
+
+        const bookingData = {
+          service_id: selectedService.id,
+          booking_date: document.getElementById("booking-date").value,
+          booking_time: document.getElementById("booking-time").value,
+          quantity:
+            parseInt(document.getElementById("booking-quantity").value) || 1,
+          special_requests: document.getElementById("special-requests").value,
+          total_price:
+            (parseFloat(selectedService.price) || 0) *
+            (parseInt(document.getElementById("booking-quantity").value) || 1),
+        };
+
+        console.log("Booking data:", bookingData);
+
+        // Check if user is logged in
+        const userData = localStorage.getItem("opulent_user");
+        const isLoggedIn = userData ? JSON.parse(userData).isLoggedIn : false;
+
+        if (!isLoggedIn) {
+          showToast("Vui lòng đăng nhập để đặt dịch vụ", "info");
+          // Store service ID for redirect
+          localStorage.setItem("redirect_service_id", selectedService.id);
+          // Redirect to login page
+          setTimeout(() => {
+            window.location.href = "../frontend/login/login.html";
+          }, 2000);
+          return;
+        }
+
+        try {
+          showToast("Đang xử lý đặt dịch vụ...", "info");
+
+          // Send booking request to API
+          // Note: You need to create a BookingServiceController for this
+          const response = await fetch(
+            `${API_BASE_URL}/ServiceBookingController.php?action=create`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bookingData),
+            }
+          );
+
+          const result = await response.json();
+          console.log("Booking response:", result);
+
+          if (result.success) {
+            showToast("Đã đặt dịch vụ thành công!", "success");
+            closeModal();
+
+            // Optional: Redirect to booking confirmation page
+            // setTimeout(() => {
+            //     window.location.href = 'booking-confirmation.html?id=' + result.data.booking_id;
+            // }, 1500);
+          } else {
+            showToast(result.message || "Đặt dịch vụ thất bại", "error");
+          }
+        } catch (error) {
+          console.error("Error booking service:", error);
+          showToast("Đã xảy ra lỗi khi đặt dịch vụ", "error");
+        }
+      });
+
+      // Initialize category filter buttons
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active class from all buttons
+          categoryButtons.forEach((btn) => btn.classList.remove("active"));
+          // Add active class to clicked button
+          button.classList.add("active");
+
+          const category = button.getAttribute("data-category");
+          loadServices(category);
+        });
+      });
+
+      // Close modal when clicking outside
+      window.addEventListener("click", (e) => {
+        if (e.target === serviceModal) {
+          closeModal();
+        }
+      });
+
+      // ==================== INITIALIZATION ====================
+
+      // Khởi tạo khi trang load
+      document.addEventListener("DOMContentLoaded", () => {
+        // Cập nhật UI user
+        updateUserUI();
+
+        // Thiết lập lắng nghe storage
+        setupStorageListener();
+
+        // Thiết lập kiểm tra đăng nhập định kỳ
+        setupLoginChecker();
+
+        // Set default date to today
+        const today = new Date().toISOString().split("T")[0];
+        const dateInput = document.getElementById("booking-date");
+        if (dateInput) {
+          dateInput.min = today;
+          dateInput.value = today;
+        }
+
+        // Load all services on page load
+        loadServices();
+
+        // Check if there's a redirect service ID from login
+        const redirectServiceId = localStorage.getItem("redirect_service_id");
+        if (redirectServiceId) {
+          localStorage.removeItem("redirect_service_id");
+          openServiceModal(redirectServiceId);
+        }
+      });
+    </script>
+  </body>
+</html>

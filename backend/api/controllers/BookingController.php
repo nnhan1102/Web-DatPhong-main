@@ -1,821 +1,754 @@
 <?php
-require_once '../config/database.php';
+// controllers/BookingController.php - VERSION ĐẦY ĐỦ CHO CUSTOMER VÀ ADMIN
+
+// Bật debug ở đầu file
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/booking_errors.log');
+
+// Log request để debug
+file_put_contents(__DIR__ . '/booking_debug.log', 
+    "\n=== " . date('Y-m-d H:i:s') . " =================================\n" .
+    "Method: " . $_SERVER['REQUEST_METHOD'] . "\n" .
+    "URI: " . $_SERVER['REQUEST_URI'] . "\n" .
+    "GET: " . print_r($_GET, true) . "\n" .
+    "Headers: " . json_encode(getallheaders(), JSON_PRETTY_PRINT) . "\n" .
+    "Input: " . file_get_contents('php://input') . "\n",
+    FILE_APPEND
+);
+
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once '../config/Database.php';
 require_once '../models/Booking.php';
+require_once '../models/Room.php';
+require_once '../models/Customer.php';
 
 class BookingController {
     private $db;
     private $booking;
+    private $room;
+    private $customer;
 
     public function __construct() {
-        $database = new Database();
-        $this->db = $database->getConnection();
-        $this->booking = new Booking($this->db);
+        try {
+            $database = new Database();
+            $this->db = $database->getConnection();
+            $this->booking = new Booking($this->db);
+            $this->room = new Room($this->db);
+            $this->customer = new Customer($this->db);
+            
+            // Log thành công
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Database connection established\n",
+                FILE_APPEND
+            );
+        } catch (Exception $e) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Database connection failed: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            throw $e;
+        }
     }
 
-    // Lấy tất cả bookings (admin)
-    public function getAllBookings() {
+    private function authenticateUser() {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+        
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "Auth header received: " . substr($authHeader, 0, 50) . "...\n",
+            FILE_APPEND
+        );
+        
+        if (strpos($authHeader, 'Bearer ') !== 0) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Auth failed: No Bearer token\n",
+                FILE_APPEND
+            );
+            return null;
+        }
+        
+        $token = str_replace('Bearer ', '', $authHeader);
+        
+        // Giải mã token
         try {
-            // Kiểm tra quyền admin
-            $this->checkAdminAuth();
+            // Decode base64
+            $decoded = base64_decode($token);
             
-            // Lấy parameters từ query string
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
-            $search = isset($_GET['search']) ? $_GET['search'] : '';
-            $status = isset($_GET['status']) ? $_GET['status'] : '';
-            $paymentStatus = isset($_GET['payment_status']) ? $_GET['payment_status'] : '';
-            $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : '';
-            $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : '';
-            
-            // Tính offset
-            $offset = ($page - 1) * $limit;
-            
-            // Build query conditions
-            $conditions = [];
-            $params = [];
-            
-            if (!empty($search)) {
-                $conditions[] = "(b.booking_code LIKE :search OR 
-                                 u.full_name LIKE :search OR 
-                                 u.email LIKE :search OR 
-                                 u.phone LIKE :search)";
-                $params[':search'] = "%$search%";
+            if (!$decoded) {
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Token base64 decode failed\n",
+                    FILE_APPEND
+                );
+                return null;
             }
             
-            if (!empty($status)) {
-                $conditions[] = "b.booking_status = :status";
-                $params[':status'] = $status;
+            // Thử decode với urldecode trước
+            $jsonStr = urldecode($decoded);
+            $userData = json_decode($jsonStr, true);
+            
+            // Nếu không được, thử decode trực tiếp
+            if (!$userData || json_last_error() !== JSON_ERROR_NONE) {
+                $userData = json_decode($decoded, true);
             }
             
-            if (!empty($paymentStatus)) {
-                $conditions[] = "b.payment_status = :payment_status";
-                $params[':payment_status'] = $paymentStatus;
+            if ($userData && isset($userData['id']) && isset($userData['isLoggedIn'])) {
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "User authenticated: " . ($userData['full_name'] ?? 'Unknown') . "\n",
+                    FILE_APPEND
+                );
+                return $userData;
+            } else {
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Invalid user data structure\n",
+                    FILE_APPEND
+                );
+                return null;
             }
+        } catch (Exception $e) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Token decode error: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            return null;
+        }
+    }
+
+    // ========== ADMIN METHODS ==========
+
+    // Lấy tất cả bookings (cho admin)
+    public function getAll() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== GET ALL BOOKINGS (ADMIN) CALLED ===\n",
+            FILE_APPEND
+        );
+        
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập', [], 401);
+            return;
+        }
+
+        // Chỉ admin mới được xem tất cả bookings
+        if ($user['user_type'] !== 'admin') {
+            $this->jsonResponse(false, 'Chỉ admin mới có quyền xem tất cả đặt phòng', [], 403);
+            return;
+        }
+
+        // Lấy parameters từ query string
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $limit = isset($_GET['limit']) ? min(100, max(1, (int)$_GET['limit'])) : 10;
+        $offset = ($page - 1) * $limit;
+        
+        $search = $_GET['search'] ?? '';
+        $status = $_GET['status'] ?? '';
+        $date_from = $_GET['date_from'] ?? '';
+        $date_to = $_GET['date_to'] ?? '';
+
+        try {
+            // Gọi phương thức trong model để lấy tất cả bookings
+            $bookings = $this->booking->getAllBookings($search, $status, $date_from, $date_to, $limit, $offset);
+            $total = $this->booking->countAllBookings($search, $status, $date_from, $date_to);
             
-            if (!empty($startDate)) {
-                $conditions[] = "DATE(b.created_at) >= :start_date";
-                $params[':start_date'] = $startDate;
-            }
-            
-            if (!empty($endDate)) {
-                $conditions[] = "DATE(b.created_at) <= :end_date";
-                $params[':end_date'] = $endDate;
-            }
-            
-            $whereClause = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
-            
-            // Query tổng số records
-            $countQuery = "SELECT COUNT(DISTINCT b.id) as total 
-                          FROM bookings b
-                          LEFT JOIN users u ON b.user_id = u.id
-                          $whereClause";
-            
-            $stmt = $this->db->prepare($countQuery);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->execute();
-            $totalResult = $stmt->fetch(PDO::FETCH_ASSOC);
-            $total = $totalResult['total'];
-            
-            // Query dữ liệu bookings
-            $query = "SELECT b.*, 
-                             t.name as tour_name,
-                             t.destination,
-                             t.duration_days,
-                             t.duration_nights,
-                             t.featured_image,
-                             u.full_name as customer_name,
-                             u.email as customer_email,
-                             u.phone as customer_phone
-                      FROM bookings b
-                      LEFT JOIN tours t ON b.tour_id = t.id
-                      LEFT JOIN users u ON b.user_id = u.id
-                      $whereClause
-                      ORDER BY b.created_at DESC
-                      LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->db->prepare($query);
-            
-            // Bind parameters
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            
-            $stmt->execute();
-            $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Format dữ liệu
-            foreach ($bookings as &$booking) {
-                $booking['customer_info'] = json_decode($booking['customer_info'], true) ?: [];
-                $booking['total_price'] = (float)$booking['total_price'];
-                $booking['num_adults'] = (int)$booking['num_adults'];
-                $booking['num_children'] = (int)$booking['num_children'];
-                $booking['num_infants'] = (int)$booking['num_infants'];
-                
-                // Format dates
-                $booking['departure_date'] = date('d/m/Y', strtotime($booking['departure_date']));
-                $booking['created_at'] = date('d/m/Y H:i', strtotime($booking['created_at']));
-            }
-            
-            // Tính tổng số trang
+            // Tính toán pagination
             $totalPages = ceil($total / $limit);
-            
-            http_response_code(200);
-            echo json_encode([
-                'success' => true,
+
+            $this->jsonResponse(true, 'Lấy danh sách đặt phòng thành công', [
                 'data' => $bookings,
                 'pagination' => [
-                    'current_page' => $page,
-                    'per_page' => $limit,
                     'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
                     'total_pages' => $totalPages,
                     'has_next' => $page < $totalPages,
                     'has_prev' => $page > 1
                 ]
             ]);
-            
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Error in getAll: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
         }
     }
 
-    // Lấy booking theo ID
-    public function getBooking($id) {
+    // Cập nhật booking (cho admin)
+    public function update() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== UPDATE BOOKING (ADMIN) CALLED ===\n",
+            FILE_APPEND
+        );
+        
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method !== 'PUT' && $method !== 'POST') {
+            $this->jsonResponse(false, 'Method không được phép', [], 405);
+            return;
+        }
+
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập', [], 401);
+            return;
+        }
+
+        // Chỉ admin mới được cập nhật booking
+        if ($user['user_type'] !== 'admin') {
+            $this->jsonResponse(false, 'Chỉ admin mới có quyền cập nhật đặt phòng', [], 403);
+            return;
+        }
+
+        $id = $_GET['id'] ?? 0;
+        if (!$id || !is_numeric($id)) {
+            $this->jsonResponse(false, 'ID booking không hợp lệ', [], 400);
+            return;
+        }
+
+        // Lấy dữ liệu
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "Update data for booking $id: " . print_r($data, true) . "\n",
+            FILE_APPEND
+        );
+        
+        if (!$data) {
+            $this->jsonResponse(false, 'Dữ liệu không hợp lệ', [], 400);
+            return;
+        }
+
+        // Kiểm tra booking có tồn tại không
+        $existingBooking = $this->booking->getById($id);
+        if (!$existingBooking) {
+            $this->jsonResponse(false, 'Không tìm thấy booking', [], 404);
+            return;
+        }
+
+        // Nếu cập nhật trạng thái booking
+        if (isset($data['status']) && $data['status'] !== $existingBooking['status']) {
+            $oldStatus = $existingBooking['status'];
+            $newStatus = $data['status'];
+            
+            // Logic cập nhật trạng thái phòng
+            if (($oldStatus === 'cancelled' || $oldStatus === 'checked_out') && 
+                ($newStatus === 'confirmed' || $newStatus === 'checked_in' || $newStatus === 'pending')) {
+                // Từ cancelled/checked_out sang active -> cập nhật phòng thành occupied
+                $this->room->updateStatus($existingBooking['room_id'], 'occupied');
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Room status updated to occupied for booking $id\n",
+                    FILE_APPEND
+                );
+            } elseif ($newStatus === 'cancelled' || $newStatus === 'checked_out') {
+                // Hủy booking hoặc đã trả phòng -> cập nhật phòng thành available
+                $this->room->updateStatus($existingBooking['room_id'], 'available');
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Room status updated to available for booking $id\n",
+                    FILE_APPEND
+                );
+            }
+        }
+
+        // Cập nhật booking
         try {
-            // Kiểm tra quyền admin hoặc booking thuộc về user
-            $this->checkBookingAccess($id);
+            $result = $this->booking->update($id, $data);
             
-            $bookingId = (int)$id;
-            
-            $query = "SELECT b.*, 
-                             t.name as tour_name,
-                             t.slug as tour_slug,
-                             t.destination,
-                             t.duration_days,
-                             t.duration_nights,
-                             t.featured_image,
-                             t.price_adult,
-                             t.price_child,
-                             t.price_infant,
-                             t.discount_percent,
-                             u.full_name as customer_name,
-                             u.email as customer_email,
-                             u.phone as customer_phone,
-                             u.address as customer_address
-                      FROM bookings b
-                      LEFT JOIN tours t ON b.tour_id = t.id
-                      LEFT JOIN users u ON b.user_id = u.id
-                      WHERE b.id = :id";
-            
+            if ($result) {
+                $this->jsonResponse(true, 'Cập nhật booking thành công');
+            } else {
+                $this->jsonResponse(false, 'Cập nhật booking thất bại', [], 500);
+            }
+        } catch (Exception $e) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Error updating booking: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
+        }
+    }
+
+    // Xóa booking (cho admin)
+    public function delete() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== DELETE BOOKING (ADMIN) CALLED ===\n",
+            FILE_APPEND
+        );
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            $this->jsonResponse(false, 'Method không được phép', [], 405);
+            return;
+        }
+
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập', [], 401);
+            return;
+        }
+
+        // Chỉ admin mới được xóa booking
+        if ($user['user_type'] !== 'admin') {
+            $this->jsonResponse(false, 'Chỉ admin mới có quyền xóa đặt phòng', [], 403);
+            return;
+        }
+
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            $this->jsonResponse(false, 'Thiếu ID booking', [], 400);
+            return;
+        }
+
+        // Kiểm tra booking có tồn tại không
+        $existingBooking = $this->booking->getById($id);
+        if (!$existingBooking) {
+            $this->jsonResponse(false, 'Không tìm thấy booking', [], 404);
+            return;
+        }
+
+        // Cập nhật trạng thái phòng về available trước khi xóa
+        $this->room->updateStatus($existingBooking['room_id'], 'available');
+
+        // Xóa booking
+        try {
+            $query = "DELETE FROM bookings WHERE id = ?";
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->bindParam(1, $id);
+            $result = $stmt->execute();
             
-            if ($stmt->rowCount() > 0) {
-                $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result) {
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Booking $id deleted successfully\n",
+                    FILE_APPEND
+                );
+                $this->jsonResponse(true, 'Xóa booking thành công');
+            } else {
+                $this->jsonResponse(false, 'Xóa booking thất bại', [], 500);
+            }
+        } catch (Exception $e) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Error deleting booking: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
+        }
+    }
+
+    // ========== CUSTOMER METHODS ==========
+
+    // Tạo booking mới (cho customer)
+    public function create() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== CREATE BOOKING CALLED ===\n",
+            FILE_APPEND
+        );
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse(false, 'Method không được phép', [], 405);
+            return;
+        }
+
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập để đặt phòng', [], 401);
+            return;
+        }
+
+        // Kiểm tra user có phải customer không
+        if ($user['user_type'] !== 'customer') {
+            $this->jsonResponse(false, 'Chỉ khách hàng mới có thể đặt phòng', [], 403);
+            return;
+        }
+
+        // Lấy dữ liệu
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "Raw input: " . $input . "\n" .
+            "Parsed data: " . print_r($data, true) . "\n",
+            FILE_APPEND
+        );
+        
+        if (!$data) {
+            $this->jsonResponse(false, 'Dữ liệu không hợp lệ', [], 400);
+            return;
+        }
+
+        // Validate required fields
+        $required = ['room_id', 'check_in', 'check_out', 'num_guests', 'total_price'];
+        foreach ($required as $field) {
+            if (empty($data[$field])) {
+                $this->jsonResponse(false, "Thiếu thông tin bắt buộc: $field", [], 400);
+                return;
+            }
+        }
+
+        // Kiểm tra phòng có tồn tại và available không
+        $room = $this->room->getById($data['room_id']);
+        
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "Room data: " . print_r($room, true) . "\n",
+            FILE_APPEND
+        );
+        
+        if (!$room) {
+            $this->jsonResponse(false, 'Phòng không tồn tại', [], 404);
+            return;
+        }
+
+        // Kiểm tra trạng thái phòng
+        if (!isset($room['status']) || $room['status'] !== 'available') {
+            $this->jsonResponse(false, 'Phòng hiện không khả dụng. Trạng thái: ' . ($room['status'] ?? 'unknown'), [], 400);
+            return;
+        }
+
+        // Set customer_id từ user
+        $data['customer_id'] = $user['id'];
+        
+        // Set default values
+        $data['status'] = $data['status'] ?? 'pending';
+        $data['payment_method'] = $data['payment_method'] ?? 'cash';
+        $data['payment_status'] = $data['payment_status'] ?? 'pending';
+        $data['special_requests'] = $data['special_requests'] ?? '';
+        
+        // Generate booking code
+        $data['booking_code'] = 'BK' . date('YmdHis') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        // Validate dates
+        $check_in = new DateTime($data['check_in']);
+        $check_out = new DateTime($data['check_out']);
+        if ($check_in >= $check_out) {
+            $this->jsonResponse(false, 'Ngày check-out phải sau ngày check-in', [], 400);
+            return;
+        }
+
+        // Validate number of guests
+        if ($data['num_guests'] > $room['capacity']) {
+            $this->jsonResponse(false, 'Số lượng khách vượt quá sức chứa của phòng', [], 400);
+            return;
+        }
+
+        // Tạo booking
+        try {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Attempting to create booking with data: " . print_r($data, true) . "\n",
+                FILE_APPEND
+            );
+            
+            $result = $this->booking->create($data);
+            
+            if ($result) {
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Booking created successfully. Booking ID: " . $this->booking->id . "\n",
+                    FILE_APPEND
+                );
                 
-                // Format dữ liệu
-                $booking['customer_info'] = json_decode($booking['customer_info'], true) ?: [];
-                $booking['total_price'] = (float)$booking['total_price'];
-                $booking['num_adults'] = (int)$booking['num_adults'];
-                $booking['num_children'] = (int)$booking['num_children'];
-                $booking['num_infants'] = (int)$booking['num_infants'];
+                // Cập nhật trạng thái phòng thành occupied
+                $updateResult = $this->room->updateStatus($data['room_id'], 'occupied');
                 
-                // Tính giá chi tiết
-                $adultPrice = $booking['price_adult'] * (1 - $booking['discount_percent'] / 100);
-                $childPrice = $booking['price_child'] * (1 - $booking['discount_percent'] / 100);
-                $infantPrice = $booking['price_infant'] * (1 - $booking['discount_percent'] / 100);
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Room status update result: " . ($updateResult ? 'success' : 'failed') . "\n",
+                    FILE_APPEND
+                );
                 
-                $booking['price_breakdown'] = [
-                    'adults' => [
-                        'count' => $booking['num_adults'],
-                        'price_per_person' => $adultPrice,
-                        'total' => $booking['num_adults'] * $adultPrice
-                    ],
-                    'children' => [
-                        'count' => $booking['num_children'],
-                        'price_per_person' => $childPrice,
-                        'total' => $booking['num_children'] * $childPrice
-                    ],
-                    'infants' => [
-                        'count' => $booking['num_infants'],
-                        'price_per_person' => $infantPrice,
-                        'total' => $booking['num_infants'] * $infantPrice
+                $this->jsonResponse(true, 'Đặt phòng thành công', [
+                    'booking_id' => $this->booking->id,
+                    'booking_code' => $data['booking_code'],
+                    'room_number' => $room['room_number'],
+                    'room_type' => $room['room_type'],
+                    'check_in' => $data['check_in'],
+                    'check_out' => $data['check_out'],
+                    'total_price' => $data['total_price'],
+                    'debug_info' => [
+                        'room_data_received' => $room,
+                        'user_id' => $user['id']
                     ]
-                ];
-                
-                http_response_code(200);
-                echo json_encode([
-                    'success' => true,
-                    'data' => $booking
-                ]);
+                ], 201);
             } else {
-                http_response_code(404);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Booking not found'
-                ]);
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Booking creation failed\n",
+                    FILE_APPEND
+                );
+                $this->jsonResponse(false, 'Đặt phòng thất bại', [], 500);
             }
-            
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Exception in booking creation: " . $e->getMessage() . "\n" .
+                "Stack trace: " . $e->getTraceAsString() . "\n",
+                FILE_APPEND
+            );
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
         }
     }
 
-    // Tạo booking mới
-    public function createBooking() {
-        try {
-            // Lấy dữ liệu từ request
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            // Validate required fields
-            $required = ['tour_id', 'departure_date', 'num_adults'];
-            foreach ($required as $field) {
-                if (empty($data[$field])) {
-                    http_response_code(400);
-                    echo json_encode([
-                        'success' => false,
-                        'message' => "Field '$field' is required"
-                    ]);
-                    return;
-                }
-            }
-            
-            // Kiểm tra tour tồn tại và còn chỗ
-            $tourId = (int)$data['tour_id'];
-            $departureDate = $data['departure_date'];
-            $numAdults = (int)$data['num_adults'];
-            $numChildren = (int)($data['num_children'] ?? 0);
-            $numInfants = (int)($data['num_infants'] ?? 0);
-            
-            $tour = $this->getTourDetails($tourId);
-            if (!$tour) {
-                http_response_code(404);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Tour not found'
-                ]);
-                return;
-            }
-            
-            // Kiểm tra số chỗ còn lại
-            $totalPassengers = $numAdults + $numChildren + $numInfants;
-            if ($totalPassengers > $tour['available_slots']) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Not enough available slots'
-                ]);
-                return;
-            }
-            
-            // Kiểm tra ngày khởi hành hợp lệ
-            $minDate = date('Y-m-d', strtotime('+3 days'));
-            if ($departureDate < $minDate) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Departure date must be at least 3 days from now'
-                ]);
-                return;
-            }
-            
-            // Tính giá
-            $adultPrice = $tour['price_adult'] * (1 - $tour['discount_percent'] / 100);
-            $childPrice = $tour['price_child'] * (1 - $tour['discount_percent'] / 100);
-            $infantPrice = $tour['price_infant'] * (1 - $tour['discount_percent'] / 100);
-            
-            $totalPrice = ($numAdults * $adultPrice) + 
-                         ($numChildren * $childPrice) + 
-                         ($numInfants * $infantPrice);
-            
-            // Generate booking code
-            $bookingCode = $this->generateBookingCode();
-            
-            // Lấy user ID từ token (nếu đã login)
-            $userId = $this->getUserIdFromToken();
-            
-            // Prepare booking data
-            $bookingData = [
-                'booking_code' => $bookingCode,
-                'user_id' => $userId,
-                'tour_id' => $tourId,
-                'booking_date' => date('Y-m-d'),
-                'departure_date' => $departureDate,
-                'num_adults' => $numAdults,
-                'num_children' => $numChildren,
-                'num_infants' => $numInfants,
-                'total_price' => $totalPrice,
-                'payment_method' => $data['payment_method'] ?? 'bank_transfer',
-                'payment_status' => 'pending',
-                'booking_status' => 'pending',
-                'special_requests' => $data['special_requests'] ?? '',
-                'customer_info' => json_encode([
-                    'full_name' => $data['customer_name'] ?? '',
-                    'email' => $data['customer_email'] ?? '',
-                    'phone' => $data['customer_phone'] ?? '',
-                    'address' => $data['customer_address'] ?? ''
-                ])
-            ];
-            
-            // Insert vào database
-            $columns = implode(', ', array_keys($bookingData));
-            $placeholders = ':' . implode(', :', array_keys($bookingData));
-            
-            $query = "INSERT INTO bookings ($columns) VALUES ($placeholders)";
-            $stmt = $this->db->prepare($query);
-            
-            foreach ($bookingData as $key => $value) {
-                $stmt->bindValue(":$key", $value);
-            }
-            
-            if ($stmt->execute()) {
-                $bookingId = $this->db->lastInsertId();
-                
-                // Cập nhật số chỗ còn lại của tour
-                $this->updateTourSlots($tourId, $totalPassengers);
-                
-                // Gửi email xác nhận
-                $this->sendBookingConfirmation($bookingId, $bookingCode, $data['customer_email'] ?? '');
-                
-                // Lấy booking vừa tạo
-                $createdBooking = $this->getBookingById($bookingId);
-                
-                http_response_code(201);
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Booking created successfully',
-                    'data' => [
-                        'booking_id' => $bookingId,
-                        'booking_code' => $bookingCode,
-                        'total_price' => $totalPrice,
-                        'booking_details' => $createdBooking
-                    ]
-                ]);
-            } else {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to create booking'
-                ]);
-            }
-            
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
+    // Lấy danh sách booking của user hiện tại (cho customer)
+    public function getMyBookings() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== GET MY BOOKINGS CALLED ===\n",
+            FILE_APPEND
+        );
+        
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập để xem đặt phòng', [], 401);
+            return;
         }
-    }
 
-    // Cập nhật booking (admin)
-    public function updateBooking($id) {
+        $user_id = $user['id'];
+        
+        // Lấy parameters
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $limit = isset($_GET['limit']) ? min(100, max(1, (int)$_GET['limit'])) : 10;
+        $offset = ($page - 1) * $limit;
+        
+        $status = $_GET['status'] ?? '';
+        
+        // Lấy bookings của user
         try {
-            // Kiểm tra quyền admin
-            $this->checkAdminAuth();
+            $bookings = $this->booking->getUserBookings($user_id, $status, $limit, $offset);
+            $total = $this->booking->countUserBookings($user_id, $status);
             
-            $bookingId = (int)$id;
-            
-            // Kiểm tra booking tồn tại
-            if (!$this->bookingExists($bookingId)) {
-                http_response_code(404);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Booking not found'
-                ]);
-                return;
-            }
-            
-            // Lấy dữ liệu từ request
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            // Prepare update data
-            $updateData = [];
-            if (isset($data['departure_date'])) $updateData['departure_date'] = $data['departure_date'];
-            if (isset($data['num_adults'])) $updateData['num_adults'] = (int)$data['num_adults'];
-            if (isset($data['num_children'])) $updateData['num_children'] = (int)$data['num_children'];
-            if (isset($data['num_infants'])) $updateData['num_infants'] = (int)$data['num_infants'];
-            if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
-            if (isset($data['booking_status'])) $updateData['booking_status'] = $data['booking_status'];
-            if (isset($data['special_requests'])) $updateData['special_requests'] = $data['special_requests'];
-            
-            // Recalculate total price if passenger numbers changed
-            if (isset($data['num_adults']) || isset($data['num_children']) || isset($data['num_infants'])) {
-                $booking = $this->getBookingDetails($bookingId);
-                $tour = $this->getTourDetails($booking['tour_id']);
-                
-                $numAdults = isset($data['num_adults']) ? (int)$data['num_adults'] : $booking['num_adults'];
-                $numChildren = isset($data['num_children']) ? (int)$data['num_children'] : $booking['num_children'];
-                $numInfants = isset($data['num_infants']) ? (int)$data['num_infants'] : $booking['num_infants'];
-                
-                $adultPrice = $tour['price_adult'] * (1 - $tour['discount_percent'] / 100);
-                $childPrice = $tour['price_child'] * (1 - $tour['discount_percent'] / 100);
-                $infantPrice = $tour['price_infant'] * (1 - $tour['discount_percent'] / 100);
-                
-                $updateData['total_price'] = ($numAdults * $adultPrice) + 
-                                            ($numChildren * $childPrice) + 
-                                            ($numInfants * $infantPrice);
-            }
-            
-            if (empty($updateData)) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'No data to update'
-                ]);
-                return;
-            }
-            
-            // Build update query
-            $setClause = [];
-            foreach ($updateData as $key => $value) {
-                $setClause[] = "$key = :$key";
-            }
-            
-            $query = "UPDATE bookings SET " . implode(', ', $setClause) . " WHERE id = :id";
-            $stmt = $this->db->prepare($query);
-            
-            foreach ($updateData as $key => $value) {
-                $stmt->bindValue(":$key", $value);
-            }
-            $stmt->bindValue(':id', $bookingId, PDO::PARAM_INT);
-            
-            if ($stmt->execute()) {
-                // Gửi thông báo nếu có thay đổi trạng thái
-                if (isset($data['booking_status'])) {
-                    $this->sendStatusUpdateNotification($bookingId, $data['booking_status']);
-                }
-                
-                // Lấy booking đã cập nhật
-                $updatedBooking = $this->getBookingById($bookingId);
-                
-                http_response_code(200);
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Booking updated successfully',
-                    'data' => $updatedBooking
-                ]);
-            } else {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to update booking'
-                ]);
-            }
-            
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    // Hủy booking
-    public function cancelBooking($id) {
-        try {
-            $bookingId = (int)$id;
-            
-            // Kiểm tra booking tồn tại
-            if (!$this->bookingExists($bookingId)) {
-                http_response_code(404);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Booking not found'
-                ]);
-                return;
-            }
-            
-            // Kiểm tra quyền (admin hoặc chủ booking)
-            $this->checkBookingAccess($bookingId);
-            
-            // Kiểm tra xem booking có thể hủy không
-            $booking = $this->getBookingDetails($bookingId);
-            $departureDate = new DateTime($booking['departure_date']);
-            $today = new DateTime();
-            $daysDifference = $today->diff($departureDate)->days;
-            
-            if ($daysDifference < 3) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Booking can only be cancelled at least 3 days before departure'
-                ]);
-                return;
-            }
-            
-            // Cập nhật trạng thái
-            $query = "UPDATE bookings SET booking_status = 'cancelled', updated_at = NOW() WHERE id = :id";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
-            
-            if ($stmt->execute()) {
-                // Hoàn lại số chỗ cho tour
-                $totalPassengers = $booking['num_adults'] + $booking['num_children'] + $booking['num_infants'];
-                $this->restoreTourSlots($booking['tour_id'], $totalPassengers);
-                
-                // Gửi thông báo hủy booking
-                $this->sendCancellationNotification($bookingId);
-                
-                http_response_code(200);
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Booking cancelled successfully'
-                ]);
-            } else {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to cancel booking'
-                ]);
-            }
-            
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    // Lấy bookings của user
-    public function getUserBookings() {
-        try {
-            // Lấy user ID từ token
-            $userId = $this->getUserIdFromToken();
-            
-            if (!$userId) {
-                http_response_code(401);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'User not authenticated'
-                ]);
-                return;
-            }
-            
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-            $status = isset($_GET['status']) ? $_GET['status'] : '';
-            
-            $offset = ($page - 1) * $limit;
-            
-            // Build query conditions
-            $conditions = ["b.user_id = :user_id"];
-            $params = [':user_id' => $userId];
-            
-            if (!empty($status)) {
-                $conditions[] = "b.booking_status = :status";
-                $params[':status'] = $status;
-            }
-            
-            $whereClause = implode(' AND ', $conditions);
-            
-            // Query tổng số records
-            $countQuery = "SELECT COUNT(*) as total FROM bookings b WHERE $whereClause";
-            $stmt = $this->db->prepare($countQuery);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->execute();
-            $totalResult = $stmt->fetch(PDO::FETCH_ASSOC);
-            $total = $totalResult['total'];
-            
-            // Query dữ liệu bookings
-            $query = "SELECT b.*, 
-                             t.name as tour_name,
-                             t.destination,
-                             t.duration_days,
-                             t.duration_nights,
-                             t.featured_image
-                      FROM bookings b
-                      LEFT JOIN tours t ON b.tour_id = t.id
-                      WHERE $whereClause
-                      ORDER BY b.created_at DESC
-                      LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->db->prepare($query);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Format dữ liệu
-            foreach ($bookings as &$booking) {
-                $booking['total_price'] = (float)$booking['total_price'];
-                $booking['departure_date'] = date('d/m/Y', strtotime($booking['departure_date']));
-                $booking['created_at'] = date('d/m/Y H:i', strtotime($booking['created_at']));
-            }
-            
+            // Tính toán pagination
             $totalPages = ceil($total / $limit);
-            
-            http_response_code(200);
-            echo json_encode([
-                'success' => true,
-                'data' => $bookings,
+
+            $this->jsonResponse(true, 'Lấy danh sách đặt phòng thành công', [
+                'bookings' => $bookings,
                 'pagination' => [
-                    'current_page' => $page,
-                    'per_page' => $limit,
                     'total' => $total,
-                    'total_pages' => $totalPages
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total_pages' => $totalPages,
+                    'has_next' => $page < $totalPages,
+                    'has_prev' => $page > 1
                 ]
             ]);
-            
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
         }
     }
 
-    // ===== HELPER METHODS =====
-
-    private function checkAdminAuth() {
-        // Kiểm tra admin authentication (giống trong TourController)
-        $headers = getallheaders();
+    // Lấy chi tiết booking (cho cả customer và admin)
+    public function getBookingById() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== GET BOOKING BY ID CALLED ===\n",
+            FILE_APPEND
+        );
         
-        if (!isset($headers['Authorization'])) {
-            http_response_code(401);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Unauthorized: No token provided'
-            ]);
-            exit;
+        $id = $_GET['id'] ?? 0;
+        
+        if (!$id || !is_numeric($id)) {
+            $this->jsonResponse(false, 'ID booking không hợp lệ', [], 400);
+            return;
         }
-        
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
-        
-        if ($token !== 'admin-secret-token') {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Forbidden: Invalid token'
-            ]);
-            exit;
+
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập', [], 401);
+            return;
         }
-    }
 
-    private function checkBookingAccess($bookingId) {
-        // Kiểm tra user có quyền truy cập booking không
-        $headers = getallheaders();
+        $user_id = $user['id'];
+        $user_type = $user['user_type'];
         
-        if (!isset($headers['Authorization'])) {
-            // Public access not allowed for specific booking
-            http_response_code(401);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ]);
-            exit;
-        }
-        
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
-        
-        // Trong thực tế, bạn sẽ decode JWT để lấy user_id
-        // Ở đây giả sử token là user_id đơn giản
-        $userId = (int)$token;
-        
-        // Kiểm tra xem booking có thuộc về user không
-        $query = "SELECT user_id FROM bookings WHERE id = :booking_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':booking_id', $bookingId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$booking || ($booking['user_id'] != $userId && $token !== 'admin-secret-token')) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Access denied'
-            ]);
-            exit;
-        }
-    }
-
-    private function generateBookingCode() {
-        $prefix = 'OPL';
-        $date = date('Ymd');
-        $random = strtoupper(substr(md5(uniqid()), 0, 6));
-        return $prefix . '-' . $date . '-' . $random;
-    }
-
-    private function getTourDetails($tourId) {
-        $query = "SELECT * FROM tours WHERE id = :id AND status = 'active' AND deleted_at IS NULL";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $tourId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        if ($stmt->rowCount() > 0) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        
-        return null;
-    }
-
-    private function updateTourSlots($tourId, $bookedSlots) {
-        $query = "UPDATE tours SET available_slots = available_slots - :slots WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $tourId, PDO::PARAM_INT);
-        $stmt->bindParam(':slots', $bookedSlots, PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-    private function restoreTourSlots($tourId, $slots) {
-        $query = "UPDATE tours SET available_slots = available_slots + :slots WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $tourId, PDO::PARAM_INT);
-        $stmt->bindParam(':slots', $slots, PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-    private function getBookingById($bookingId) {
-        $query = "SELECT b.*, t.name as tour_name, t.destination 
-                  FROM bookings b
-                  LEFT JOIN tours t ON b.tour_id = t.id
-                  WHERE b.id = :id";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        if ($stmt->rowCount() > 0) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        
-        return null;
-    }
-
-    private function getBookingDetails($bookingId) {
-        return $this->getBookingById($bookingId);
-    }
-
-    private function bookingExists($bookingId) {
-        $query = "SELECT id FROM bookings WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
-    }
-
-    private function getUserIdFromToken() {
-        // Trong thực tế, bạn sẽ decode JWT để lấy user_id
-        // Ở đây trả về null nếu không có user
-        $headers = getallheaders();
-        
-        if (isset($headers['Authorization'])) {
-            $token = str_replace('Bearer ', '', $headers['Authorization']);
+        // Lấy booking
+        try {
+            $booking = $this->booking->getById($id);
             
-            // Giả sử token là user_id đơn giản
-            if (is_numeric($token) && $token > 0) {
-                return (int)$token;
+            if (!$booking) {
+                $this->jsonResponse(false, 'Không tìm thấy booking', [], 404);
+                return;
             }
+
+            // Kiểm tra quyền xem
+            // Admin có thể xem tất cả, user chỉ xem booking của mình
+            if ($user_type !== 'admin' && $booking['customer_id'] != $user_id) {
+                $this->jsonResponse(false, 'Không có quyền xem booking này', [], 403);
+                return;
+            }
+
+            $this->jsonResponse(true, 'Lấy thông tin booking thành công', [
+                'booking' => $booking
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
         }
+    }
+
+    // Hủy booking (cho customer)
+    public function cancelBooking() {
+        file_put_contents(__DIR__ . '/booking_debug.log', 
+            "=== CANCEL BOOKING CALLED ===\n",
+            FILE_APPEND
+        );
         
-        return null;
-    }
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method !== 'POST' && $method !== 'DELETE') {
+            $this->jsonResponse(false, 'Method không được phép', [], 405);
+            return;
+        }
 
-    private function sendBookingConfirmation($bookingId, $bookingCode, $email) {
-        // Gửi email xác nhận booking
-        // Trong thực tế, bạn sẽ sử dụng PHPMailer hoặc service khác
-        if (!empty($email)) {
-            // Log để debug
-            error_log("Booking confirmation sent to $email - Booking #$bookingCode");
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            $this->jsonResponse(false, 'Thiếu ID booking', [], 400);
+            return;
+        }
+
+        // Xác thực user
+        $user = $this->authenticateUser();
+        if (!$user) {
+            $this->jsonResponse(false, 'Vui lòng đăng nhập', [], 401);
+            return;
+        }
+
+        $user_id = $user['id'];
+        $user_type = $user['user_type'];
+        
+        // Lấy booking
+        try {
+            $booking = $this->booking->getById($id);
+            
+            if (!$booking) {
+                $this->jsonResponse(false, 'Không tìm thấy booking', [], 404);
+                return;
+            }
+
+            // Kiểm tra quyền hủy
+            // Admin có thể hủy tất cả, user chỉ hủy booking của mình
+            if ($user_type !== 'admin' && $booking['customer_id'] != $user_id) {
+                $this->jsonResponse(false, 'Không có quyền hủy booking này', [], 403);
+                return;
+            }
+
+            // Chỉ có thể hủy booking ở trạng thái pending hoặc confirmed
+            if (!in_array($booking['status'], ['pending', 'confirmed'])) {
+                $this->jsonResponse(false, 'Không thể hủy booking ở trạng thái này', [], 400);
+                return;
+            }
+
+            // Kiểm tra thời gian hủy (không hủy trong vòng 24h trước check-in)
+            $check_in = new DateTime($booking['check_in']);
+            $now = new DateTime();
+            $hours_diff = ($check_in->getTimestamp() - $now->getTimestamp()) / 3600;
+            
+            if ($hours_diff < 24) {
+                $this->jsonResponse(false, 'Không thể hủy trong vòng 24 giờ trước check-in', [], 400);
+                return;
+            }
+
+            // Hủy booking
+            $result = $this->booking->update($id, ['status' => 'cancelled']);
+            
+            if ($result) {
+                // Cập nhật trạng thái phòng về available
+                $this->room->updateStatus($booking['room_id'], 'available');
+                
+                file_put_contents(__DIR__ . '/booking_debug.log', 
+                    "Booking $id cancelled successfully\n",
+                    FILE_APPEND
+                );
+                
+                $this->jsonResponse(true, 'Hủy booking thành công');
+            } else {
+                $this->jsonResponse(false, 'Hủy booking thất bại', [], 500);
+            }
+        } catch (Exception $e) {
+            file_put_contents(__DIR__ . '/booking_debug.log', 
+                "Error cancelling booking: " . $e->getMessage() . "\n",
+                FILE_APPEND
+            );
+            $this->jsonResponse(false, 'Lỗi server: ' . $e->getMessage(), [], 500);
         }
     }
 
-    private function sendStatusUpdateNotification($bookingId, $newStatus) {
-        // Gửi thông báo cập nhật trạng thái
-        $booking = $this->getBookingDetails($bookingId);
-        if ($booking && !empty($booking['customer_email'])) {
-            error_log("Status update sent for Booking #{$booking['booking_code']} - New status: $newStatus");
-        }
-    }
-
-    private function sendCancellationNotification($bookingId) {
-        // Gửi thông báo hủy booking
-        $booking = $this->getBookingDetails($bookingId);
-        if ($booking && !empty($booking['customer_email'])) {
-            error_log("Cancellation notification sent for Booking #{$booking['booking_code']}");
-        }
+    // Helper function cho JSON response
+    private function jsonResponse($success, $message, $data = [], $code = 200) {
+        http_response_code($code);
+        echo json_encode([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+            'code' => $code
+        ], JSON_UNESCAPED_UNICODE);
+        exit();
     }
 }
+
+// Xử lý request
+$action = $_GET['action'] ?? '';
+
+// Khởi tạo controller
+try {
+    $booking = new BookingController();
+
+    switch ($action) {
+        // Customer actions
+        case 'create':
+            $booking->create();
+            break;
+            
+        case 'my':
+            $booking->getMyBookings();
+            break;
+            
+        case 'get':
+            $booking->getBookingById();
+            break;
+            
+        case 'cancel':
+            $booking->cancelBooking();
+            break;
+            
+        // Admin actions
+        case 'getAll':
+            $booking->getAll();
+            break;
+            
+        case 'update':
+            $booking->update();
+            break;
+            
+        case 'delete':
+            $booking->delete();
+            break;
+            
+        default:
+            echo json_encode([
+                'success' => false,
+                'message' => 'Action không hợp lệ',
+                'valid_actions' => [
+                    'create', 'my', 'get', 'cancel',  // Customer actions
+                    'getAll', 'update', 'delete'      // Admin actions
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+            break;
+    }
+} catch (Exception $e) {
+    // Log lỗi khởi tạo controller
+    file_put_contents(__DIR__ . '/booking_errors.log', 
+        date('Y-m-d H:i:s') . " - Controller init failed: " . $e->getMessage() . "\n",
+        FILE_APPEND
+    );
+    
+    echo json_encode([
+        'success' => false,
+        'message' => 'Server error: ' . $e->getMessage(),
+        'debug' => 'Controller initialization failed'
+    ], JSON_UNESCAPED_UNICODE);
+}
+?>

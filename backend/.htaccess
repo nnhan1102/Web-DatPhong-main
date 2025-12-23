@@ -1,20 +1,15 @@
+# SIMPLE VERSION - WORKING
 RewriteEngine On
-RewriteBase /hotel_opulent/backend/api/
+RewriteBase /Web-DatPhong-main/backend/
 
-# CORS headers
-Header always set Access-Control-Allow-Origin "http://127.0.0.1:5500"
-Header always set Access-Control-Allow-Credentials "true"
-Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+# CORS
+Header set Access-Control-Allow-Origin "*"
 
-# Xử lý preflight requests
+# Handle OPTIONS
 RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ $1 [R=200,L]
+RewriteRule ^ - [L]
 
-# Nếu truy cập trực tiếp tên file, chuyển về root
-RewriteRule ^index\.php$ - [L]
-
-# Chuyển tất cả các request không phải file/directory đến index.php
+# API routing
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-d  
+RewriteRule ^api/(.*)$ api/controllers/$1 [L,QSA]

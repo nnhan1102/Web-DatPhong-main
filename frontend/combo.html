@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Combo - Opulent</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Header */
+      .site-header {
+        width: 100%;
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .logo-img {
+        height: 40px;
+        width: auto;
+      }
+
+      .brand {
+        font-size: 24px;
+        font-weight: bold;
+        color: #00aeef;
+        text-decoration: none;
+      }
+
+      .main-nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .main-nav a {
+        font-size: 16px;
+        color: #333;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .main-nav a:hover {
+        color: #00aeef;
+        background-color: rgba(0, 174, 239, 0.1);
+      }
+
+      .main-nav a.active {
+        color: #00aeef;
+        font-weight: 600;
+        background-color: rgba(0, 174, 239, 0.15);
+      }
+
+      /* User Info Section */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #333;
+      }
+
+      .user-name {
+        font-weight: bold;
+        color: #00aeef;
+      }
+
+      .logout-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .logout-btn:hover {
+        background: #ff5252;
+      }
+
+      .login-btn {
+        background: #00aeef;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .login-btn:hover {
+        background: #008ac0;
+      }
+
+      /* Hero Section */
+      .hero {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+        margin-bottom: 40px;
+      }
+
+      .hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(60%);
+        position: absolute;
+        z-index: 1;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: white;
+        padding-top: 80px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .hero p {
+        font-size: 18px;
+        margin-bottom: 25px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Button styles */
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+        font-size: 16px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+      }
+
+      .btn-secondary {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+      }
+
+      .btn-outline:hover {
+        background: white;
+        color: #2c3e50;
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c0392b;
+      }
+
+      /* Main content */
+      main {
+        padding: 40px 0;
+        min-height: 70vh;
+      }
+
+      .page-title {
+        font-size: 36px;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+      }
+
+      .page-title:after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, #3498db, #2c3e50);
+      }
+
+      /* Combo List View */
+      .combo-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .combo-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.2s;
+      }
+
+      .combo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .combo-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .combo-body {
+        padding: 20px;
+      }
+
+      .combo-body h3 {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .combo-body p {
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.6;
+        min-height: 60px;
+      }
+
+      .combo-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+      }
+
+      .price-tag {
+        font-size: 20px;
+        font-weight: bold;
+        color: #e74c3c;
+      }
+
+      /* Detail View */
+      #detail-view {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+      }
+
+      #detail-title {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #3498db;
+      }
+
+      .detail-section {
+        margin-bottom: 30px;
+      }
+
+      .detail-section h4 {
+        font-size: 20px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .detail-section h4 i {
+        color: #3498db;
+      }
+
+      #detail-intro {
+        color: #555;
+        line-height: 1.7;
+        font-size: 16px;
+      }
+
+      #detail-activities,
+      #detail-offers,
+      #detail-rooms,
+      #detail-services {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      #detail-activities li,
+      #detail-offers li,
+      #detail-rooms li,
+      #detail-services li {
+        padding: 10px 15px;
+        margin-bottom: 8px;
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      #detail-activities li i,
+      #detail-offers li i,
+      #detail-rooms li i,
+      #detail-services li i {
+        color: #2ecc71;
+        font-size: 14px;
+      }
+
+      .detail-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .detail-gallery img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+      }
+
+      .detail-gallery img:hover {
+        transform: scale(1.05);
+      }
+
+      .combo-summary {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .summary-item {
+        text-align: center;
+        padding: 15px;
+      }
+
+      .summary-item i {
+        font-size: 24px;
+        color: #3498db;
+        margin-bottom: 10px;
+      }
+
+      .summary-item h5 {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .summary-item p {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      .booking-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .booking-info .final-price {
+        font-size: 28px;
+        color: #e74c3c;
+        font-weight: 700;
+      }
+
+      .booking-info .original-price {
+        font-size: 18px;
+        color: #999;
+        text-decoration: line-through;
+        margin-left: 10px;
+      }
+
+      .booking-info .save {
+        display: inline-block;
+        background: #2ecc71;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        margin-left: 10px;
+      }
+
+      /* Room and Service Cards in Detail */
+      .room-grid,
+      .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 15px;
+      }
+
+      .room-card,
+      .service-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eee;
+      }
+
+      .room-card h5,
+      .service-card h5 {
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+
+      .room-card p,
+      .service-card p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .room-card .price,
+      .service-card .price {
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      /* Back button */
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 10px 15px;
+        border-radius: 5px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: #3498db;
+        color: white;
+      }
+
+      /* Footer */
+      .site-footer {
+        text-align: center;
+        padding: 20px;
+        background: #f2f2f2;
+        margin-top: 40px;
+      }
+
+      /* Loading and empty states */
+      .loading {
+        text-align: center;
+        padding: 60px;
+        grid-column: 1 / -1;
+      }
+
+      .loading i {
+        font-size: 40px;
+        color: #3498db;
+        margin-bottom: 20px;
+      }
+
+      .loading p {
+        font-size: 18px;
+        color: #666;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 60px;
+        grid-column: 1 / -1;
+      }
+
+      .no-results i {
+        font-size: 60px;
+        color: #ddd;
+        margin-bottom: 20px;
+      }
+
+      .no-results p {
+        font-size: 18px;
+        color: #666;
+      }
+
+      /* Responsive */
+      @media (max-width: 992px) {
+        .header-row {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .main-nav {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 15px;
+        }
+
+        .combo-list {
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .booking-section {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .site-header {
+          padding: 15px 20px;
+        }
+
+        .main-nav {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .combo-list {
+          grid-template-columns: 1fr;
+        }
+
+        .user-info {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .hero p {
+          font-size: 16px;
+        }
+
+        .page-title {
+          font-size: 28px;
+        }
+
+        #detail-title {
+          font-size: 24px;
+        }
+
+        .combo-card {
+          margin: 0 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .user-info {
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        .hero {
+          height: 250px;
+        }
+
+        .hero-content {
+          padding-top: 60px;
+        }
+
+        .hero h1 {
+          font-size: 24px;
+        }
+
+        .hero p {
+          font-size: 14px;
+        }
+
+        .combo-summary {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-row">
+        <div class="header-left">
+          <img
+            src="assets/images/logo.png"
+            alt="Logo Opulent"
+            class="logo-img"
+            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBhZWVmIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCI+TzwvdGV4dD48L3N2Zz4='"
+          />
+          <a class="brand" href="index.html">Opulent</a>
+        </div>
+
+        <nav class="main-nav">
+          <a href="index.html">Trang chủ</a>
+          <a href="hotels.html">Khách sạn</a>
+          <a href="combo.html" class="active">Combo</a>
+          <a href="services.html">Dịch vụ</a>
+          <!-- User Info Section -->
+          <div class="user-info" id="userInfoSection">
+            <a href="login.html" class="login-btn" id="loginBtnNav"
+              >Đăng nhập</a
+            >
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <img
+        src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+        class="hero-img"
+        onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIwIiBoZWlnaHQ9IjMwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzAwYWVlZiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkNvbWJvIE9wdWxlbnQ8L3RleHQ+PC9zdmc+'"
+      />
+      <div class="hero-content">
+        <h1>Combo Ưu Đãi Đặc Biệt</h1>
+        <p id="welcomeMessage">
+          Khám phá những gói combo hoàn hảo cho kỳ nghỉ của bạn. Tiết kiệm đến
+          40% khi đặt trọn gói.
+        </p>
+      </div>
+    </section>
+
+    <main class="container combos-page" id="page-root">
+      <!-- List view -->
+      <section id="list-view">
+        <div class="combo-list" id="combo-list-container">
+          <!-- Combos will be loaded by JavaScript -->
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải combo...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detail view (hidden by default) -->
+      <section id="detail-view" class="hidden">
+        <a href="#" class="back-button" id="back-button">
+          <i class="fas fa-arrow-left"></i> Quay lại danh sách combo
+        </a>
+
+        <h3 id="detail-title">Chi tiết Combo</h3>
+
+        <div class="combo-summary" id="combo-summary">
+          <!-- Summary info will be filled by JavaScript -->
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-info-circle"></i> Giới thiệu</h4>
+          <p id="detail-intro"></p>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-bed"></i> Phòng bao gồm</h4>
+          <div class="room-grid" id="detail-rooms">
+            <!-- Room cards will be added by JavaScript -->
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-concierge-bell"></i> Dịch vụ bao gồm</h4>
+          <div class="service-grid" id="detail-services">
+            <!-- Service cards will be added by JavaScript -->
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-calendar-check"></i> Hoạt động & Trải nghiệm</h4>
+          <ul id="detail-activities"></ul>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-gift"></i> Ưu đãi đặc biệt</h4>
+          <ul id="detail-offers"></ul>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-images"></i> Hình ảnh</h4>
+          <div id="detail-gallery" class="detail-gallery"></div>
+        </div>
+
+        <div class="booking-section">
+          <div class="booking-info">
+            <div>
+              <span class="final-price" id="combo-final-price"></span>
+              <span class="original-price" id="combo-original-price"></span>
+              <span class="save" id="combo-save"></span>
+            </div>
+            <p style="color: #666; margin-top: 5px">
+              <i class="fas fa-clock"></i> Giá đã bao gồm thuế và phí dịch vụ
+            </p>
+          </div>
+          <button class="btn btn-primary" id="book-combo-btn">
+            <i class="fas fa-shopping-cart"></i> Đặt Combo Ngay
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© 2025 Opulent - Đặt phòng nhanh chóng, tiện lợi</p>
+      </div>
+    </footer>
+
+    <script>
+      // ==================== USER AUTHENTICATION FUNCTIONS ====================
+
+      // Hàm kiểm tra đăng nhập và cập nhật UI
+      function updateUserUI() {
+        const userInfoSection = document.getElementById("userInfoSection");
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        const userData = localStorage.getItem("opulent_user");
+
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+
+            if (user.isLoggedIn) {
+              // Hiển thị thông tin user
+              userInfoSection.innerHTML = `
+              <div class="user-greeting">
+                Xin chào, <span class="user-name">${
+                  user.full_name || user.username || user.email
+                }</span>
+              </div>
+              <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+            `;
+
+              // Cập nhật welcome message
+              if (welcomeMessage) {
+                welcomeMessage.innerHTML = `Chào mừng <strong>${
+                  user.full_name || user.username
+                }</strong> đến với Combo Opulent! Khám phá những ưu đãi đặc biệt dành riêng cho bạn.`;
+              }
+
+              // Thêm sự kiện logout
+              document
+                .getElementById("logoutBtn")
+                .addEventListener("click", logout);
+            } else {
+              showLoginButton();
+            }
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+            showLoginButton();
+          }
+        } else {
+          showLoginButton();
+        }
+      }
+
+      // Hiển thị nút đăng nhập
+      function showLoginButton() {
+        const userInfoSection = document.getElementById("userInfoSection");
+        userInfoSection.innerHTML = `
+        <a href="login.html" class="login-btn">Đăng nhập</a>
+      `;
+
+        // Reset welcome message
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        if (welcomeMessage) {
+          welcomeMessage.innerHTML =
+            "Khám phá những gói combo hoàn hảo cho kỳ nghỉ của bạn. Tiết kiệm đến 40% khi đặt trọn gói.";
+        }
+      }
+
+      // Hàm đăng xuất
+      function logout() {
+        // Xóa thông tin user khỏi localStorage
+        localStorage.removeItem("opulent_user");
+        localStorage.removeItem("remember_me");
+
+        // Gọi API logout nếu cần (tùy chọn)
+        fetch("../../backend/api/auth/logout.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).catch((error) => {
+          console.error("Logout API error:", error);
+        });
+
+        // Cập nhật UI
+        updateUserUI();
+
+        // Hiển thị thông báo
+        alert("Đã đăng xuất thành công!");
+      }
+
+      // Hàm lắng nghe thay đổi localStorage (để cập nhật khi login từ trang khác)
+      function setupStorageListener() {
+        window.addEventListener("storage", function (event) {
+          if (event.key === "opulent_user") {
+            updateUserUI();
+          }
+        });
+      }
+
+      // Kiểm tra mỗi 5 giây để cập nhật trạng thái đăng nhập (cho trường hợp mở nhiều tab)
+      function setupLoginChecker() {
+        setInterval(updateUserUI, 5000);
+      }
+
+      // ==================== COMBO FUNCTIONS ====================
+
+      // Sample data - In real app, this would come from API
+      const combos = {
+        "weekend-relax": {
+          id: "weekend-relax",
+          title: "Combo Weekend Thư Giãn",
+          intro:
+            "Trải nghiệm kỳ nghỉ cuối tuần hoàn hảo với gói combo bao gồm phòng sang trọng, bữa sáng buffet đa dạng, và các hoạt động giải trí trong khuôn viên khách sạn.",
+          duration: "2 ngày 1 đêm",
+          people: "2 người",
+          originalPrice: 3500000,
+          finalPrice: 2990000,
+          savePercent: 15,
+          images: [
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          ],
+          rooms: [
+            {
+              name: "Phòng Deluxe",
+              description: "Phòng rộng 35m² với view thành phố",
+              features: ["Giường King", "Ban công", "Mini bar"],
+              price: 1800000,
+            },
+            {
+              name: "Phòng Suite",
+              description: "Phòng cao cấp với view biển",
+              features: ["Giường King", "Phòng khách riêng", "Bồn tắm"],
+              price: 2500000,
+            },
+          ],
+          services: [
+            {
+              name: "Buffet sáng",
+              description: "Buffet ăn sáng đa dạng tại nhà hàng chính",
+              price: 200000,
+            },
+            {
+              name: "Đưa đón sân bay",
+              description: "Dịch vụ đưa đón bằng xe sang",
+              price: 300000,
+            },
+            {
+              name: "Massage thư giãn",
+              description: "Massage toàn thân 60 phút tại spa",
+              price: 500000,
+            },
+          ],
+          activities: [
+            "Sử dụng bể bơi vô cực và phòng gym",
+            "Tham quan vườn thực vật trong khuôn viên",
+            "Tham gia lớp học yoga buổi sáng",
+            "Xem phim tại phòng chiếu phim riêng",
+          ],
+          offers: [
+            "Miễn phí trà chiều tại lounge",
+            "Giảm 20% tại nhà hàng Ý",
+            "Voucher 500.000đ cho lần đặt tiếp theo",
+            "Check-out muộn đến 14:00",
+          ],
+        },
+        "family-fun": {
+          id: "family-fun",
+          title: "Combo Gia Đình Vui Vẻ",
+          intro:
+            "Gói combo hoàn hảo cho gia đình với phòng gia đình rộng rãi, hoạt động giải trí cho trẻ em và ưu đãi đặc biệt.",
+          duration: "3 ngày 2 đêm",
+          people: "4 người",
+          originalPrice: 8500000,
+          finalPrice: 6990000,
+          savePercent: 18,
+          images: [
+            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1564501049418-3c27787d01e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          ],
+          rooms: [
+            {
+              name: "Phòng Gia Đình",
+              description: "Phòng rộng 50m² với 2 phòng ngủ",
+              features: ["2 giường Queen", "Phòng chơi trẻ em", "Bếp nhỏ"],
+              price: 3200000,
+            },
+          ],
+          services: [
+            {
+              name: "Ăn sáng gia đình",
+              description: "Buffet sáng cho cả gia đình",
+              price: 600000,
+            },
+            {
+              name: "Giữ trẻ",
+              description: "Dịch vụ giữ trẻ 4 giờ mỗi ngày",
+              price: 400000,
+            },
+            {
+              name: "Vé công viên nước",
+              description: "Vé vào cổng công viên nước",
+              price: 1200000,
+            },
+          ],
+          activities: [
+            "Tham gia lớp nấu ăn gia đình",
+            "Chơi tại khu vui chơi trẻ em",
+            "Xem phim hoạt hình tại rạp",
+            "Tham quan vườn thú mini",
+          ],
+          offers: [
+            "Miễn phí bữa trưa cho trẻ em",
+            "Tặng bộ đồ chơi cho trẻ",
+            "Giảm 30% dịch vụ spa",
+            "Chụp ảnh gia đình miễn phí",
+          ],
+        },
+        "romantic-getaway": {
+          id: "romantic-getaway",
+          title: "Combo Lãng Mạn",
+          intro:
+            "Kỳ nghỉ lãng mạn dành cho các cặp đôi với phòng Suite đặc biệt, bữa tối riêng tư và các trải nghiệm độc quyền.",
+          duration: "2 ngày 1 đêm",
+          people: "2 người",
+          originalPrice: 5000000,
+          finalPrice: 3990000,
+          savePercent: 20,
+          images: [
+            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          ],
+          rooms: [
+            {
+              name: "Honeymoon Suite",
+              description: "Phòng Suite sang trọng với view biển",
+              features: ["Giường King", "Bồn tắm sang trọng", "Ban công riêng"],
+              price: 3500000,
+            },
+          ],
+          services: [
+            {
+              name: "Bữa tối lãng mạn",
+              description: "Bữa tối 5 món tại nhà hàng riêng tư",
+              price: 800000,
+            },
+            {
+              name: "Spa đôi",
+              description: "Massage đôi 90 phút tại spa",
+              price: 1000000,
+            },
+            {
+              name: "Trang trí phòng",
+              description: "Trang trí phòng với hoa hồng",
+              price: 300000,
+            },
+          ],
+          activities: [
+            "Đi dạo trên bãi biển riêng tư",
+            "Thưởng thức rượu vang tại lounge",
+            "Tham gia lớp khiêu vũ buổi tối",
+            "Ngắm hoàng hôn tại rooftop bar",
+          ],
+          offers: [
+            "Miễn phí chocolate và rượu vang",
+            "Tặng album ảnh kỷ niệm",
+            "Giảm 25% đặt phòng lần sau",
+            "Check-in sớm từ 12:00",
+          ],
+        },
+      };
+
+      // Format currency
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount);
+      }
+
+      // DOM Elements
+      const listView = document.getElementById("list-view");
+      const detailView = document.getElementById("detail-view");
+      const comboListContainer = document.getElementById(
+        "combo-list-container"
+      );
+      const backButton = document.getElementById("back-button");
+      const bookComboBtn = document.getElementById("book-combo-btn");
+
+      // Show view function
+      function showView(view) {
+        listView.classList.add("hidden");
+        detailView.classList.add("hidden");
+        view.classList.remove("hidden");
+        window.scrollTo(0, 0);
+      }
+
+      // Render combo list
+      function renderComboList() {
+        comboListContainer.innerHTML = Object.values(combos)
+          .map((combo) => {
+            const saveAmount = combo.originalPrice - combo.finalPrice;
+            const placeholderSVG = `data:image/svg+xml;base64,${btoa(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="16">${combo.title}</text></svg>`
+            )}`;
+
+            return `
+          <article class="combo-card">
+            <img src="${combo.images[0]}" alt="${
+              combo.title
+            }" class="combo-img" onerror="this.src='${placeholderSVG}'">
+            <div class="combo-body">
+              <h3>${combo.title}</h3>
+              <p>${combo.intro.substring(0, 100)}...</p>
+              <div class="combo-price">
+                <div class="price-tag">${formatCurrency(combo.finalPrice)}</div>
+                <button class="btn btn-primary" onclick="showComboDetail('${
+                  combo.id
+                }')">
+                  <i class="fas fa-eye"></i> Xem chi tiết
+                </button>
+              </div>
+              <div style="display: flex; gap: 15px; margin-top: 10px; color: #666; font-size: 14px;">
+                <span><i class="far fa-clock"></i> ${combo.duration}</span>
+                <span><i class="fas fa-users"></i> ${combo.people}</span>
+                <span style="color: #2ecc71;"><i class="fas fa-tag"></i> Tiết kiệm ${
+                  combo.savePercent
+                }%</span>
+              </div>
+            </div>
+          </article>
+        `;
+          })
+          .join("");
+      }
+
+      // Show combo detail
+      function showComboDetail(comboId) {
+        const combo = combos[comboId];
+        if (!combo) return;
+
+        // Update URL
+        history.pushState({ comboId }, "", `#${comboId}`);
+
+        // Set basic info
+        document.getElementById("detail-title").textContent = combo.title;
+        document.getElementById("detail-intro").textContent = combo.intro;
+
+        // Set summary
+        const summary = document.getElementById("combo-summary");
+        summary.innerHTML = `
+        <div class="summary-item">
+          <i class="far fa-clock"></i>
+          <h5>Thời gian</h5>
+          <p>${combo.duration}</p>
+        </div>
+        <div class="summary-item">
+          <i class="fas fa-users"></i>
+          <h5>Số người</h5>
+          <p>${combo.people}</p>
+        </div>
+        <div class="summary-item">
+          <i class="fas fa-bed"></i>
+          <h5>Số phòng</h5>
+          <p>${combo.rooms.length} phòng</p>
+        </div>
+        <div class="summary-item">
+          <i class="fas fa-gift"></i>
+          <h5>Tiết kiệm</h5>
+          <p>${combo.savePercent}%</p>
+        </div>
+      `;
+
+        // Set rooms
+        const roomsContainer = document.getElementById("detail-rooms");
+        roomsContainer.innerHTML = combo.rooms
+          .map(
+            (room) => `
+        <div class="room-card">
+          <h5>${room.name}</h5>
+          <p>${room.description}</p>
+          <p style="font-size: 12px; color: #3498db;">
+            <i class="fas fa-check-circle"></i> ${room.features.join(" • ")}
+          </p>
+          <p class="price">${formatCurrency(room.price)}/đêm</p>
+        </div>
+      `
+          )
+          .join("");
+
+        // Set services
+        const servicesContainer = document.getElementById("detail-services");
+        servicesContainer.innerHTML = combo.services
+          .map(
+            (service) => `
+        <div class="service-card">
+          <h5>${service.name}</h5>
+          <p>${service.description}</p>
+          <p class="price">${formatCurrency(service.price)}</p>
+        </div>
+      `
+          )
+          .join("");
+
+        // Set activities
+        const activitiesList = document.getElementById("detail-activities");
+        activitiesList.innerHTML = combo.activities
+          .map(
+            (activity) => `
+        <li><i class="fas fa-check"></i> ${activity}</li>
+      `
+          )
+          .join("");
+
+        // Set offers
+        const offersList = document.getElementById("detail-offers");
+        offersList.innerHTML = combo.offers
+          .map(
+            (offer) => `
+        <li><i class="fas fa-gift"></i> ${offer}</li>
+      `
+          )
+          .join("");
+
+        // Set gallery
+        const gallery = document.getElementById("detail-gallery");
+        gallery.innerHTML = combo.images
+          .map(
+            (img) => `
+        <img src="${img}" alt="${
+              combo.title
+            }" onerror="this.src='data:image/svg+xml;base64,${btoa(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="12">Ảnh combo</text></svg>`
+            )}'">
+      `
+          )
+          .join("");
+
+        // Set prices
+        document.getElementById("combo-final-price").textContent =
+          formatCurrency(combo.finalPrice);
+        document.getElementById("combo-original-price").textContent =
+          formatCurrency(combo.originalPrice);
+        const saveAmount = combo.originalPrice - combo.finalPrice;
+        document.getElementById(
+          "combo-save"
+        ).textContent = `Tiết kiệm ${formatCurrency(saveAmount)}`;
+
+        // Set booking button
+        bookComboBtn.onclick = () => {
+          const userData = localStorage.getItem("opulent_user");
+          const isLoggedIn = userData ? JSON.parse(userData).isLoggedIn : false;
+
+          if (!isLoggedIn) {
+            alert("Vui lòng đăng nhập để đặt combo!");
+            window.location.href = "login.html";
+            return;
+          }
+
+          alert(
+            `Đặt combo "${combo.title}" thành công!\nGiá: ${formatCurrency(
+              combo.finalPrice
+            )}\nChúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.`
+          );
+          // In real app: window.location.href = `booking.html?combo=${combo.id}`;
+        };
+
+        // Show detail view
+        showView(detailView);
+      }
+
+      // Back button event
+      backButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        history.pushState({}, "", "combo.html");
+        showView(listView);
+      });
+
+      // Handle browser back/forward
+      window.addEventListener("popstate", (e) => {
+        const hash = window.location.hash.replace("#", "");
+        if (hash && combos[hash]) {
+          showComboDetail(hash);
+        } else {
+          showView(listView);
+        }
+      });
+
+      // ==================== INITIALIZATION ====================
+
+      // Khởi tạo khi trang load
+      document.addEventListener("DOMContentLoaded", () => {
+        // Cập nhật UI user
+        updateUserUI();
+
+        // Thiết lập lắng nghe storage
+        setupStorageListener();
+
+        // Thiết lập kiểm tra đăng nhập định kỳ
+        setupLoginChecker();
+
+        // Render combo list
+        renderComboList();
+
+        // Check if there's a hash in URL
+        const hash = window.location.hash.replace("#", "");
+        if (hash && combos[hash]) {
+          showComboDetail(hash);
+        } else {
+          showView(listView);
+        }
+
+        // Handle image errors
+        document.querySelectorAll("img").forEach((img) => {
+          img.addEventListener("error", function () {
+            this.onerror = null;
+            this.src = `data:image/svg+xml;base64,${btoa(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="16">Ảnh không có sẵn</text></svg>`
+            )}`;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

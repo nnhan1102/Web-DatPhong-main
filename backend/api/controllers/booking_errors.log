@@ -1,0 +1,12 @@
+[21-Dec-2025 10:46:33 Europe/Berlin] PHP Warning:  Undefined array key "capacity" in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php on line 214
+[21-Dec-2025 10:47:11 Europe/Berlin] PHP Warning:  Undefined array key "capacity" in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php on line 214
+[21-Dec-2025 11:11:41 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method Room::updateStatus() in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php:235
+Stack trace:
+#0 C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php(445): BookingController->create()
+#1 {main}
+  thrown in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php on line 235
+[21-Dec-2025 11:12:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method Room::updateStatus() in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php:235
+Stack trace:
+#0 C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php(445): BookingController->create()
+#1 {main}
+  thrown in C:\xampp\htdocs\Web-DatPhong-main\backend\api\controllers\BookingController.php on line 235

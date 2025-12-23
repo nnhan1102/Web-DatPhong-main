@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phòng & Tiện Nghi - Opulent Hotel</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Reset và base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        color: #333;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: white;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 28px;
+        font-weight: bold;
+        color: #00aeef;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo i {
+        font-size: 24px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        font-weight: 500;
+        color: #555;
+        transition: color 0.3s;
+        padding: 8px 12px;
+        border-radius: 6px;
+      }
+
+      .nav-links a:hover {
+        color: #00aeef;
+        background: #f0f9ff;
+      }
+
+      .nav-links a.active {
+        color: #00aeef;
+        background: #f0f9ff;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 15px;
+        background: #f8f9fa;
+        border-radius: 20px;
+      }
+
+      .user-info i {
+        color: #00aeef;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: #00aeef;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #008ac0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 174, 239, 0.3);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #00aeef;
+        color: #00aeef;
+      }
+
+      .btn-outline:hover {
+        background: #00aeef;
+        color: white;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url("image/anh52.jpg") center/cover;
+        color: white;
+        text-align: center;
+        padding: 80px 20px;
+        margin-bottom: 50px;
+      }
+
+      .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        opacity: 0.9;
+      }
+
+      /* Main Container */
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        padding: 0 20px;
+      }
+
+      /* Tiện Nghi Section */
+      .amenities-intro {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 40px;
+        text-align: center;
+      }
+
+      .amenities-intro h2 {
+        font-size: 32px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+      }
+
+      .amenities-intro p {
+        color: #666;
+        font-size: 16px;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      /* Categories */
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .category-card {
+        background: white;
+        padding: 30px 25px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 174, 239, 0.15);
+      }
+
+      .category-card i {
+        font-size: 40px;
+        color: #00aeef;
+        margin-bottom: 15px;
+      }
+
+      .category-card h3 {
+        font-size: 20px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .category-card p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      /* Rooms Grid */
+      .rooms-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+      }
+
+      .room-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+      }
+
+      .room-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .room-image {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .room-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+      }
+
+      .room-card:hover .room-image img {
+        transform: scale(1.05);
+      }
+
+      .room-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        background: #28a745;
+      }
+
+      .room-badge.unavailable {
+        background: #dc3545;
+      }
+
+      .room-info {
+        padding: 25px;
+      }
+
+      .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .room-type {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .room-price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #00aeef;
+      }
+
+      .room-price span {
+        font-size: 14px;
+        color: #666;
+        font-weight: normal;
+      }
+
+      .room-details {
+        margin: 15px 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .room-detail {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+        font-size: 14px;
+      }
+
+      .room-detail i {
+        color: #00aeef;
+        width: 20px;
+      }
+
+      .room-description {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 15px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .room-amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .amenity-tag {
+        background: #f0f9ff;
+        color: #00aeef;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .room-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn-sm {
+        padding: 10px 15px;
+        font-size: 14px;
+        flex: 1;
+        text-align: center;
+      }
+
+      /* Room Details Modal - Popup chi tiết */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        width: 100%;
+        max-width: 900px;
+        max-height: 85vh;
+        border-radius: 15px;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        padding: 25px 30px;
+        background: #00aeef;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .modal-header h3 {
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 0;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+      }
+
+      .modal-close:hover {
+        transform: rotate(90deg);
+      }
+
+      .modal-body {
+        padding: 0;
+        max-height: calc(85vh - 90px);
+        overflow-y: auto;
+      }
+
+      /* Gallery trong modal */
+      .room-gallery {
+        padding: 30px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .gallery-main {
+        margin-bottom: 15px;
+      }
+
+      .gallery-main img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #f5f5f5;
+      }
+
+      .gallery-thumbs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .gallery-thumb {
+        height: 80px;
+        overflow: hidden;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+        background: #f5f5f5;
+      }
+
+      .gallery-thumb:hover {
+        border-color: #00aeef;
+      }
+
+      .gallery-thumb.active {
+        border-color: #00aeef;
+      }
+
+      .gallery-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Room Details trong modal */
+      .room-details-content {
+        padding: 30px;
+      }
+
+      .room-overview {
+        margin-bottom: 30px;
+      }
+
+      .room-overview h2 {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .room-meta {
+        display: flex;
+        gap: 25px;
+        margin-bottom: 20px;
+        color: #666;
+        font-size: 15px;
+      }
+
+      .room-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .room-meta-item i {
+        color: #00aeef;
+      }
+
+      .price-highlight {
+        background: linear-gradient(135deg, #00aeef, #008ac0);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin: 25px 0;
+      }
+
+      .price-highlight .amount {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .price-highlight .note {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .description-section {
+        margin: 30px 0;
+      }
+
+      .description-section h3 {
+        font-size: 22px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .description-section h3 i {
+        color: #00aeef;
+      }
+
+      .description-section p {
+        color: #555;
+        line-height: 1.8;
+        font-size: 16px;
+      }
+
+      /* Amenities Grid */
+      .amenities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .amenity-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+
+      .amenity-item:hover {
+        background: #f0f9ff;
+        transform: translateX(5px);
+      }
+
+      .amenity-item i {
+        color: #00aeef;
+        font-size: 18px;
+        width: 24px;
+      }
+
+      .amenity-item span {
+        color: #444;
+        font-weight: 500;
+      }
+
+      /* Booking CTA trong modal */
+      .booking-cta {
+        margin-top: 30px;
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .booking-cta h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 20px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .header-container {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 15px;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .rooms-container {
+          grid-template-columns: 1fr;
+        }
+
+        .amenities-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+          max-height: 90vh;
+        }
+
+        .modal-body {
+          max-height: calc(90vh - 90px);
+        }
+
+        .gallery-main img {
+          height: 250px;
+        }
+
+        .gallery-thumbs {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* Loading và Empty States */
+      .loading {
+        text-align: center;
+        padding: 50px;
+        font-size: 18px;
+        color: #666;
+        grid-column: 1 / -1;
+      }
+
+      .loading i {
+        font-size: 40px;
+        color: #00aeef;
+        margin-bottom: 20px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        grid-column: 1 / -1;
+      }
+
+      .empty-state i {
+        font-size: 60px;
+        color: #ddd;
+        margin-bottom: 20px;
+      }
+
+      .empty-state h3 {
+        font-size: 24px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      /* Footer */
+      .footer {
+        background: #2c3e50;
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .footer-section h3 {
+        color: #00aeef;
+        margin-bottom: 15px;
+      }
+
+      .footer-section p {
+        color: #bbb;
+        line-height: 1.6;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 15px;
+      }
+
+      .social-links a {
+        color: #bbb;
+        font-size: 20px;
+        transition: color 0.3s;
+      }
+
+      .social-links a:hover {
+        color: #00aeef;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid #444;
+        padding-top: 20px;
+        color: #bbb;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-container">
+        <div class="logo">
+          <i class="fas fa-hotel"></i>
+          Opulent Hotel
+        </div>
+        <nav class="nav-links">
+          <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+          <a href="hotels.html"><i class="fas fa-building"></i> Khách sạn</a>
+          <a href="room.html" class="active"
+            ><i class="fas fa-door-closed"></i> Phòng</a
+          >
+          <a href="combo.html"><i class="fas fa-gift"></i> Combo</a>
+          <a href="services.html"><i class="fas fa-gift"></i> Dịch Vụ </a>
+          <a href="booking.html"
+            ><i class="fas fa-calendar-check"></i> Đặt phòng</a
+          >
+        </nav>
+        <div class="user-section" id="userSection">
+          <!-- Dynamic user info -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Khám Phá Tiện Nghi Đẳng Cấp</h1>
+      <p>
+        Mỗi phòng tại Opulent Hotel là một không gian sang trọng với đầy đủ tiện
+        nghi hiện đại, mang đến trải nghiệm nghỉ dưỡng tuyệt vời nhất
+      </p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-container">
+      <!-- Tiện Nghi Tổng Quan -->
+      <div class="amenities-intro">
+        <h2>Tiện Nghi Toàn Diện</h2>
+        <p>
+          Tại Opulent Hotel, chúng tôi tự hào mang đến những phòng nghỉ được
+          trang bị đầy đủ tiện nghi 5 sao. Từ phòng tiêu chuẩn đến suite cao
+          cấp, mỗi không gian đều được thiết kế tinh tế với sự chăm chút đến
+          từng chi tiết.
+        </p>
+      </div>
+
+      <!-- Danh mục tiện nghi -->
+      <div class="categories">
+        <div class="category-card" onclick="filterByAmenity('wifi')">
+          <i class="fas fa-wifi"></i>
+          <h3>Kết Nối Internet</h3>
+          <p>Wi-Fi tốc độ cao miễn phí</p>
+        </div>
+        <div class="category-card" onclick="filterByAmenity('breakfast')">
+          <i class="fas fa-utensils"></i>
+          <h3>Ẩm Thực</h3>
+          <p>Bữa sáng buffet đa dạng</p>
+        </div>
+        <div class="category-card" onclick="filterByAmenity('parking')">
+          <i class="fas fa-parking"></i>
+          <h3>Bãi Đỗ Xe</h3>
+          <p>Bãi đỗ xe rộng rãi miễn phí</p>
+        </div>
+        <div class="category-card" onclick="filterByAmenity('pool')">
+          <i class="fas fa-swimming-pool"></i>
+          <h3>Hồ Bơi</h3>
+          <p>Hồ bơi vô cực view thành phố</p>
+        </div>
+      </div>
+
+      <!-- Phòng -->
+      <h2
+        style="
+          font-size: 32px;
+          color: #2c3e50;
+          margin-bottom: 25px;
+          text-align: center;
+        "
+      >
+        Các Loại Phòng
+      </h2>
+      <div id="roomsGrid" class="rooms-container">
+        <!-- Rooms will be loaded here -->
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Đang tải danh sách phòng...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Room Details Modal (Popup) -->
+    <div class="modal" id="roomModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="roomModalTitle">Chi tiết phòng</h3>
+          <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Room details will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h3>Opulent Hotel</h3>
+            <p>
+              Khách sạn 5 sao với dịch vụ đẳng cấp và không gian sang trọng bậc
+              nhất.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Liên hệ</h3>
+            <p>
+              <i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận 1,
+              TP.HCM
+            </p>
+            <p><i class="fas fa-phone"></i> (028) 1234 5678</p>
+            <p><i class="fas fa-envelope"></i> info@opulenthotel.com</p>
+          </div>
+          <div class="footer-section">
+            <h3>Kết nối với chúng tôi</h3>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-tiktok"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          © 2024 Opulent Hotel. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Global variables
+      let rooms = [];
+      let currentRoom = null;
+      const API_BASE_URL = "../../backend/api/controller";
+
+      // DOM Elements
+      const roomsGrid = document.getElementById("roomsGrid");
+      const roomModal = document.getElementById("roomModal");
+      const closeModal = document.getElementById("closeModal");
+      const userSection = document.getElementById("userSection");
+
+      // Check authentication
+      function checkAuth() {
+        const userData = localStorage.getItem("opulent_user");
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            if (user.isLoggedIn) {
+              updateUserUI(user);
+            }
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+          }
+        }
+      }
+
+      function updateUserUI(user) {
+        userSection.innerHTML = `
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>${user.full_name || user.username}</span>
+                </div>
+                <button class="btn btn-primary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                </button>
+            `;
+      }
+
+      function logout() {
+        localStorage.removeItem("opulent_user");
+        window.location.href = "../login/login.html";
+      }
+
+      // Load rooms from API
+      async function loadRooms() {
+        try {
+          roomsGrid.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        <p>Đang tải danh sách phòng...</p>
+                    </div>
+                `;
+
+          const response = await fetch(
+            `../backend/api/controllers/RoomController.php?action=getAll`
+          );
+          const result = await response.json();
+
+          if (result.success) {
+            rooms = result.data || [];
+            renderRooms(rooms);
+          } else {
+            showError("Không thể tải danh sách phòng: " + result.message);
+          }
+        } catch (error) {
+          console.error("Error loading rooms:", error);
+          // Fallback to sample data
+          loadSampleRooms();
+        }
+      }
+
+      // Sample data
+      function loadSampleRooms() {
+        rooms = [
+          {
+            id: 1,
+            room_number: "101",
+            room_type: "Phòng Tiêu Chuẩn",
+            price_per_night: 1200000,
+            capacity: 2,
+            floor: 1,
+            description:
+              "Phòng tiêu chuẩn với không gian ấm cúng, được trang bị đầy đủ tiện nghi cơ bản. Phòng có view hướng thành phố, phù hợp cho khách du lịch hoặc công tác ngắn ngày.",
+            amenities:
+              "Wi-Fi tốc độ cao, TV màn hình phẳng 42 inch, Điều hòa nhiệt độ, Mini bar, Bàn làm việc, Tủ lạnh mini, Ấm đun nước",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "25 m²",
+          },
+          {
+            id: 2,
+            room_number: "201",
+            room_type: "Phòng Deluxe",
+            price_per_night: 1800000,
+            capacity: 2,
+            floor: 2,
+            description:
+              "Phòng Deluxe rộng rãi với view biển tuyệt đẹp. Phòng được trang bị nội thất cao cấp và các tiện nghi hiện đại, mang đến trải nghiệm nghỉ dưỡng sang trọng.",
+            amenities:
+              "Wi-Fi tốc độ cao, TV màn hình phẳng 55 inch, Điều hòa nhiệt độ, Mini bar đầy đủ, Bàn làm việc, Tủ lạnh mini, Ấm đun nước, Bồn tắm sang trọng, Đồ vệ sinh cá nhân cao cấp",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "35 m²",
+          },
+          {
+            id: 3,
+            room_number: "301",
+            room_type: "Suite Cao Cấp",
+            price_per_night: 3500000,
+            capacity: 3,
+            floor: 3,
+            description:
+              "Suite cao cấp với không gian rộng rãi bao gồm phòng khách riêng và phòng ngủ. Phòng có view toàn cảnh thành phố, trang bị đầy đủ tiện nghi 5 sao, lý tưởng cho kỳ nghỉ đặc biệt hoặc công tác dài ngày.",
+            amenities:
+              "Wi-Fi tốc độ cao, 2 TV màn hình phẳng 55 inch, Điều hòa nhiệt độ, Mini bar cao cấp, Bếp nhỏ, Bàn ăn, Phòng khách riêng, Bồn tắm massage, Sauna mini, Đồ vệ sinh cá nhân thương hiệu cao cấp",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "50 m²",
+          },
+          {
+            id: 4,
+            room_number: "401",
+            room_type: "Phòng Gia Đình",
+            price_per_night: 2500000,
+            capacity: 4,
+            floor: 4,
+            description:
+              "Phòng gia đình rộng rãi với 2 phòng ngủ riêng biệt, phù hợp cho gia đình hoặc nhóm bạn. Phòng được thiết kế ấm cúng với đầy đủ tiện nghi cho cả gia đình.",
+            amenities:
+              "Wi-Fi tốc độ cao, 2 TV màn hình phẳng 42 inch, Điều hòa nhiệt độ, Mini bar, Bếp nhỏ, Bàn ăn, Tủ lạnh lớn, Máy giặt mini, Khu vực vui chơi trẻ em",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "45 m²",
+          },
+          {
+            id: 5,
+            room_number: "202",
+            room_type: "Phòng Deluxe View Biển",
+            price_per_night: 2000000,
+            capacity: 2,
+            floor: 2,
+            description:
+              "Phòng Deluxe với ban công riêng hướng biển. Tận hưởng không khí trong lành và view biển tuyệt đẹp ngay từ phòng của bạn.",
+            amenities:
+              "Wi-Fi tốc độ cao, TV màn hình phẳng 50 inch, Điều hòa nhiệt độ, Mini bar, Ban công riêng, Bàn làm việc, Tủ lạnh mini, Ấm đun nước, Bồn tắm view biển",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "32 m²",
+          },
+          {
+            id: 6,
+            room_number: "102",
+            room_type: "Phòng Tiêu Chuẩn View Vườn",
+            price_per_night: 1000000,
+            capacity: 2,
+            floor: 1,
+            description:
+              "Phòng tiêu chuẩn với view vườn yên tĩnh. Phòng được trang bị đầy đủ tiện nghi cơ bản với giá cả hợp lý, phù hợp cho mọi đối tượng khách hàng.",
+            amenities:
+              "Wi-Fi tốc độ cao, TV màn hình phẳng 40 inch, Điều hòa nhiệt độ, Bàn làm việc, Tủ lạnh mini, Ấm đun nước, Đồ vệ sinh cá nhân cơ bản",
+            image_url: "image/anh49.jpg",
+            status: "available",
+            size: "22 m²",
+          },
+        ];
+        renderRooms(rooms);
+      }
+
+      // Render rooms to grid
+      function renderRooms(roomsToRender) {
+        if (!roomsToRender || roomsToRender.length === 0) {
+          roomsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-door-closed"></i>
+                        <h3>Không tìm thấy phòng phù hợp</h3>
+                        <p>Hãy thử chọn loại tiện nghi khác.</p>
+                    </div>
+                `;
+          return;
+        }
+
+        roomsGrid.innerHTML = roomsToRender
+          .map(
+            (room) => `
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="${getRoomImage(room)}" 
+                             alt="${room.room_type}"
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400x250/00aeef/ffffff?text=Opulent+Hotel'">
+                        <div class="room-badge ${
+                          room.status !== "available" ? "unavailable" : ""
+                        }">
+                            ${room.status === "available" ? "Có sẵn" : "Đã đặt"}
+                        </div>
+                    </div>
+                    <div class="room-info">
+                        <div class="room-header">
+                            <div class="room-type">${room.room_type}</div>
+                            <div class="room-price">
+                                ${formatCurrency(room.price_per_night)}
+                                <span>/ đêm</span>
+                            </div>
+                        </div>
+                        <div class="room-details">
+                            <div class="room-detail">
+                                <i class="fas fa-user-friends"></i>
+                                <span>Tối đa ${room.capacity} người</span>
+                            </div>
+                            <div class="room-detail">
+                                <i class="fas fa-layer-group"></i>
+                                <span>Tầng ${room.floor}</span>
+                            </div>
+                            <div class="room-detail">
+                                <i class="fas fa-expand"></i>
+                                <span>${room.size || "25-35 m²"}</span>
+                            </div>
+                        </div>
+                        <p class="room-description">
+                            ${
+                              room.description
+                                ? room.description.substring(0, 120) + "..."
+                                : "Phòng được thiết kế hiện đại với đầy đủ tiện nghi cao cấp."
+                            }
+                        </p>
+                        ${
+                          room.amenities
+                            ? `
+                            <div class="room-amenities">
+                                ${getAmenityTags(room.amenities)
+                                  .slice(0, 3)
+                                  .map(
+                                    (amenity) => `
+                                    <span class="amenity-tag">${amenity}</span>
+                                `
+                                  )
+                                  .join("")}
+                                ${
+                                  getAmenityTags(room.amenities).length > 3
+                                    ? `<span class="amenity-tag">+${
+                                        getAmenityTags(room.amenities).length -
+                                        3
+                                      }</span>`
+                                    : ""
+                                }
+                            </div>
+                        `
+                            : ""
+                        }
+                        <div class="room-actions">
+                            <button class="btn btn-sm btn-outline" onclick="viewRoomDetails(${
+                              room.id
+                            })">
+                                <i class="fas fa-eye"></i> Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="bookRoom(${
+                              room.id
+                            })" ${
+              room.status !== "available"
+                ? 'disabled style="opacity: 0.5; cursor: not-allowed;"'
+                : ""
+            }>
+                                <i class="fas fa-calendar-check"></i> Đặt ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // View room details in modal
+      async function viewRoomDetails(roomId) {
+        try {
+          let room;
+
+          // First try to get from API
+          try {
+            const response = await fetch(
+              `${API_BASE_URL}/RoomController.php?action=getById&id=${roomId}`
+            );
+            const result = await response.json();
+
+            if (result.success) {
+              room = result.data;
+            } else {
+              // Fallback to sample data
+              room = rooms.find((r) => r.id == roomId) || rooms[0];
+            }
+          } catch (apiError) {
+            console.error("API Error:", apiError);
+            // Fallback to sample data
+            room = rooms.find((r) => r.id == roomId) || rooms[0];
+          }
+
+          if (!room) {
+            alert("Không tìm thấy thông tin phòng");
+            return;
+          }
+
+          currentRoom = room;
+          const modalBody = document.querySelector("#roomModal .modal-body");
+
+          // Prepare images with fallback
+          const roomImages = [
+            getRoomImage(room, 0),
+            getRoomImage(room, 1),
+            getRoomImage(room, 2),
+          ].filter((img) => img);
+
+          modalBody.innerHTML = `
+                    <!-- Gallery -->
+                    <div class="room-gallery">
+                        <div class="gallery-main">
+                            <img id="mainImage" src="${roomImages[0]}" alt="${
+            room.room_type
+          }"
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400/00aeef/ffffff?text=${encodeURIComponent(
+                                   room.room_type
+                                 )}'">
+                        </div>
+                        ${
+                          roomImages.length > 1
+                            ? `
+                            <div class="gallery-thumbs">
+                                ${roomImages
+                                  .map(
+                                    (img, index) => `
+                                    <div class="gallery-thumb ${
+                                      index === 0 ? "active" : ""
+                                    }" onclick="changeMainImage('${img}', this)">
+                                        <img src="${img}" alt="Room image ${
+                                      index + 1
+                                    }"
+                                             onerror="this.onerror=null; this.src='https://via.placeholder.com/200x100/00aeef/ffffff?text=Ảnh+${
+                                               index + 1
+                                             }'">
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                    
+                    <!-- Room Details -->
+                    <div class="room-details-content">
+                        <!-- Overview -->
+                        <div class="room-overview">
+                            <h2>${room.room_type} - Phòng ${
+            room.room_number
+          }</h2>
+                            <div class="room-meta">
+                                <div class="room-meta-item">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span>Tối đa ${room.capacity} người</span>
+                                </div>
+                                <div class="room-meta-item">
+                                    <i class="fas fa-layer-group"></i>
+                                    <span>Tầng ${room.floor}</span>
+                                </div>
+                                <div class="room-meta-item">
+                                    <i class="fas fa-expand"></i>
+                                    <span>${room.size || "25-35 m²"}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="price-highlight">
+                                <div class="amount">${formatCurrency(
+                                  room.price_per_night
+                                )}</div>
+                                <div class="note">Giá mỗi đêm (đã bao gồm thuế VAT 10%)</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="description-section">
+                            <h3><i class="fas fa-align-left"></i> Mô tả phòng</h3>
+                            <p>${
+                              room.description ||
+                              "Phòng được thiết kế tinh tế với không gian rộng rãi, trang bị đầy đủ tiện nghi hiện đại. Từ cửa sổ phòng bạn có thể ngắm nhìn toàn cảnh thành phố tuyệt đẹp."
+                            }</p>
+                        </div>
+                        
+                        <!-- Amenities -->
+                        <div class="description-section">
+                            <h3><i class="fas fa-star"></i> Tiện nghi đầy đủ</h3>
+                            <div class="amenities-grid">
+                                ${getAmenityTags(room.amenities)
+                                  .map(
+                                    (amenity) => `
+                                    <div class="amenity-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>${amenity}</span>
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Info -->
+                        <div class="description-section">
+                            <h3><i class="fas fa-info-circle"></i> Thông tin thêm</h3>
+                            <div class="amenities-grid">
+                                <div class="amenity-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Check-in: 14:00 | Check-out: 12:00</span>
+                                </div>
+                                <div class="amenity-item">
+                                    <i class="fas fa-wifi"></i>
+                                    <span>Wi-Fi miễn phí tốc độ cao</span>
+                                </div>
+                                <div class="amenity-item">
+                                    <i class="fas fa-utensils"></i>
+                                    <span>Bao gồm bữa sáng buffet</span>
+                                </div>
+                                <div class="amenity-item">
+                                    <i class="fas fa-car"></i>
+                                    <span>Bãi đỗ xe miễn phí</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking CTA -->
+                        <div class="booking-cta">
+                            <h4>Sẵn sàng đặt phòng?</h4>
+                            <button class="btn btn-primary" onclick="bookRoom(${
+                              room.id
+                            })" style="padding: 15px 30px; font-size: 18px;">
+                                <i class="fas fa-calendar-check"></i>
+                                Đặt phòng ngay - ${formatCurrency(
+                                  room.price_per_night
+                                )}/đêm
+                            </button>
+                            <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                                <i class="fas fa-shield-alt"></i> Miễn phí hủy phòng trước 24 giờ • Thanh toán an toàn
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+          document.getElementById(
+            "roomModalTitle"
+          ).textContent = `${room.room_type} - Phòng ${room.room_number}`;
+          roomModal.classList.add("active");
+        } catch (error) {
+          console.error("Error loading room details:", error);
+          alert(
+            "Không thể tải thông tin chi tiết phòng. Vui lòng thử lại sau."
+          );
+        }
+      }
+
+      // Change main image in gallery
+      function changeMainImage(src, element) {
+        const mainImage = document.getElementById("mainImage");
+        mainImage.src = src;
+
+        // Handle image error
+        mainImage.onerror = function () {
+          this.onerror = null;
+          this.src =
+            "https://via.placeholder.com/800x400/00aeef/ffffff?text=Ảnh+phòng";
+        };
+
+        // Remove active class from all thumbnails
+        document.querySelectorAll(".gallery-thumb").forEach((thumb) => {
+          thumb.classList.remove("active");
+        });
+        // Add active class to clicked thumbnail
+        element.classList.add("active");
+      }
+
+      // Book room
+      function bookRoom(roomId) {
+        const userData = localStorage.getItem("opulent_user");
+        if (!userData) {
+          alert("Vui lòng đăng nhập để đặt phòng");
+          window.location.href = "../login/login.html";
+          return;
+        }
+
+        try {
+          const user = JSON.parse(userData);
+          if (!user.isLoggedIn) {
+            alert("Vui lòng đăng nhập để đặt phòng");
+            window.location.href = "../login/login.html";
+            return;
+          }
+
+          // Store selected room in session storage
+          const room = rooms.find((r) => r.id == roomId);
+          if (room) {
+            sessionStorage.setItem("selected_room", JSON.stringify(room));
+            roomModal.classList.remove("active");
+            window.location.href = "booking.html";
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Vui lòng đăng nhập để đặt phòng");
+          window.location.href = "../login/login.html";
+        }
+      }
+
+      // Filter by amenity
+      function filterByAmenity(amenity) {
+        let filtered = rooms;
+
+        if (amenity === "wifi") {
+          filtered = filtered.filter(
+            (room) =>
+              (room.amenities &&
+                room.amenities.toLowerCase().includes("wi-fi")) ||
+              room.amenities.toLowerCase().includes("wifi")
+          );
+        } else if (amenity === "breakfast") {
+          filtered = filtered.filter(
+            (room) =>
+              room.amenities &&
+              (room.amenities.toLowerCase().includes("buffet") ||
+                room.amenities.toLowerCase().includes("ăn sáng") ||
+                room.amenities.toLowerCase().includes("breakfast"))
+          );
+        } else if (amenity === "parking") {
+          filtered = filtered.filter(
+            (room) =>
+              (room.amenities &&
+                room.amenities.toLowerCase().includes("đỗ xe")) ||
+              room.amenities.toLowerCase().includes("parking")
+          );
+        } else if (amenity === "pool") {
+          filtered = filtered.filter(
+            (room) =>
+              room.amenities &&
+              (room.amenities.toLowerCase().includes("bơi") ||
+                room.amenities.toLowerCase().includes("pool"))
+          );
+        }
+
+        renderRooms(filtered);
+      }
+
+      // Helper functions
+      function getRoomImage(room, index = 0) {
+        // Use the image_url from room data if available
+        if (room.image_url && room.image_url.trim() !== "") {
+          return room.image_url;
+        }
+
+        // Fallback to placeholder based on room type
+        const roomType = (room.room_type || "").toLowerCase();
+        const placeholderColors = {
+          "tiêu chuẩn": "3498db",
+          standard: "3498db",
+          deluxe: "e74c3c",
+          suite: "9b59b6",
+          "gia đình": "2ecc71",
+          family: "2ecc71",
+        };
+
+        const color = placeholderColors[roomType] || "00aeef";
+        return `https://via.placeholder.com/400x250/${color}/ffffff?text=${encodeURIComponent(
+          room.room_type || "Phòng"
+        )}`;
+      }
+
+      function getAmenityTags(amenities) {
+        if (!amenities) return [];
+        // Split by comma and clean up
+        return amenities
+          .split(",")
+          .map((a) => a.trim())
+          .filter((a) => a && a.length > 0)
+          .slice(0, 12); // Limit to 12 amenities for display
+      }
+
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          minimumFractionDigits: 0,
+        }).format(amount || 0);
+      }
+
+      function showError(message) {
+        roomsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Đã xảy ra lỗi</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="loadRooms()">
+                        <i class="fas fa-redo"></i>
+                        Thử lại
+                    </button>
+                </div>
+            `;
+      }
+
+      // Event Listeners
+      closeModal.addEventListener("click", () =>
+        roomModal.classList.remove("active")
+      );
+
+      // Close modal on outside click
+      window.addEventListener("click", (e) => {
+        if (e.target === roomModal) roomModal.classList.remove("active");
+      });
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && roomModal.classList.contains("active")) {
+          roomModal.classList.remove("active");
+        }
+      });
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        loadRooms();
+      });
+    </script>
+  </body>
+</html>

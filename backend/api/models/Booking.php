@@ -1,8 +1,9 @@
 <?php
+// models/Booking.php - VERSION ĐẦY ĐỦ CHO CẢ ADMIN VÀ CUSTOMER
+
 class Booking {
     private $conn;
-    private $table = 'bookings';
-    private $bookingServicesTable = 'booking_services';
+    public $table_name = "bookings";
 
     public $id;
     public $booking_code;
@@ -13,466 +14,290 @@ class Booking {
     public $num_guests;
     public $total_price;
     public $status;
-    public $special_requests;
     public $payment_method;
     public $payment_status;
+    public $special_requests;
     public $created_at;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // Tạo mã booking
-    private function generateBookingCode() {
-        $prefix = 'BK';
-        $date = date('Ymd');
-        $random = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
-        return $prefix . $date . $random;
-    }
-
-    // Tạo booking mới
+    // Create new booking
     public function create($data) {
-        // Tạo booking code
-        $booking_code = $this->generateBookingCode();
-        
-        $query = "INSERT INTO {$this->table} 
-                  (booking_code, customer_id, room_id, check_in, check_out, 
-                   num_guests, total_price, special_requests, payment_method, payment_status, status) 
-                  VALUES (:booking_code, :customer_id, :room_id, :check_in, :check_out, 
-                          :num_guests, :total_price, :special_requests, :payment_method, :payment_status, :status)";
-        
+        $query = "INSERT INTO " . $this->table_name . " 
+                  SET booking_code = :booking_code,
+                      customer_id = :customer_id,
+                      room_id = :room_id,
+                      check_in = :check_in,
+                      check_out = :check_out,
+                      num_guests = :num_guests,
+                      total_price = :total_price,
+                      status = :status,
+                      payment_method = :payment_method,
+                      payment_status = :payment_status,
+                      special_requests = :special_requests";
+
         $stmt = $this->conn->prepare($query);
-        
-        $stmt->bindParam(':booking_code', $booking_code);
-        $stmt->bindParam(':customer_id', $data['customer_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':room_id', $data['room_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':check_in', $data['check_in']);
-        $stmt->bindParam(':check_out', $data['check_out']);
-        $stmt->bindParam(':num_guests', $data['num_guests'], PDO::PARAM_INT);
-        $stmt->bindParam(':total_price', $data['total_price']);
-        $stmt->bindParam(':special_requests', $data['special_requests']);
-        $stmt->bindParam(':payment_method', $data['payment_method']);
-        $stmt->bindParam(':payment_status', $data['payment_status'] ?? 'pending');
-        $stmt->bindParam(':status', $data['status'] ?? 'pending');
-        
+
+        // Sanitize input
+        $this->booking_code = htmlspecialchars(strip_tags($data['booking_code']));
+        $this->customer_id = htmlspecialchars(strip_tags($data['customer_id']));
+        $this->room_id = htmlspecialchars(strip_tags($data['room_id']));
+        $this->check_in = htmlspecialchars(strip_tags($data['check_in']));
+        $this->check_out = htmlspecialchars(strip_tags($data['check_out']));
+        $this->num_guests = htmlspecialchars(strip_tags($data['num_guests']));
+        $this->total_price = htmlspecialchars(strip_tags($data['total_price']));
+        $this->status = htmlspecialchars(strip_tags($data['status']));
+        $this->payment_method = htmlspecialchars(strip_tags($data['payment_method']));
+        $this->payment_status = htmlspecialchars(strip_tags($data['payment_status']));
+        $this->special_requests = htmlspecialchars(strip_tags($data['special_requests']));
+
+        // Bind parameters
+        $stmt->bindParam(":booking_code", $this->booking_code);
+        $stmt->bindParam(":customer_id", $this->customer_id);
+        $stmt->bindParam(":room_id", $this->room_id);
+        $stmt->bindParam(":check_in", $this->check_in);
+        $stmt->bindParam(":check_out", $this->check_out);
+        $stmt->bindParam(":num_guests", $this->num_guests);
+        $stmt->bindParam(":total_price", $this->total_price);
+        $stmt->bindParam(":status", $this->status);
+        $stmt->bindParam(":payment_method", $this->payment_method);
+        $stmt->bindParam(":payment_status", $this->payment_status);
+        $stmt->bindParam(":special_requests", $this->special_requests);
+
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
-            $this->booking_code = $booking_code;
-            
-            // Thêm dịch vụ nếu có
-            if (!empty($data['services'])) {
-                $this->addServices($this->id, $data['services']);
-            }
-            
             return true;
         }
         return false;
     }
 
-    // Thêm dịch vụ vào booking
-    private function addServices($booking_id, $services) {
-        foreach ($services as $service) {
-            $query = "INSERT INTO {$this->bookingServicesTable} 
-                      (booking_id, service_id, quantity, price, service_date) 
-                      VALUES (:booking_id, :service_id, :quantity, :price, :service_date)";
+    // Get booking by ID
+    public function getById($id) {
+        $query = "SELECT b.*, r.room_number, r.room_type, r.price_per_night,
+                         c.full_name as customer_name, c.email as customer_email, 
+                         c.phone as customer_phone
+                  FROM " . $this->table_name . " b
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN customers c ON b.customer_id = c.id
+                  WHERE b.id = ? LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            $stmt = $this->conn->prepare($query);
+            // Tính số đêm
+            $check_in = new DateTime($row['check_in']);
+            $check_out = new DateTime($row['check_out']);
+            $row['nights'] = $check_out->diff($check_in)->days;
             
-            $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
-            $stmt->bindParam(':service_id', $service['service_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':quantity', $service['quantity'], PDO::PARAM_INT);
-            $stmt->bindParam(':price', $service['price']);
-            $stmt->bindParam(':service_date', $service['service_date'] ?? null);
-            
-            $stmt->execute();
+            return $row;
         }
+        return null;
     }
 
-    // Lấy tất cả bookings
-    public function getAll($page = 1, $limit = 20, $filters = []) {
-        $offset = ($page - 1) * $limit;
+    // Lấy tất cả bookings (cho admin)
+    public function getAllBookings($search = '', $status = '', $date_from = '', $date_to = '', $limit = 10, $offset = 0) {
+        $query = "SELECT 
+                    b.*, 
+                    r.room_number, 
+                    r.room_type,
+                    r.price_per_night,
+                    c.full_name as customer_name, 
+                    c.email as customer_email, 
+                    c.phone as customer_phone,
+                    DATE_FORMAT(b.created_at, '%d/%m/%Y %H:%i') as created_date,
+                    DATE_FORMAT(b.check_in, '%d/%m/%Y') as check_in_formatted,
+                    DATE_FORMAT(b.check_out, '%d/%m/%Y') as check_out_formatted
+                  FROM " . $this->table_name . " b
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  LEFT JOIN customers c ON b.customer_id = c.id
+                  WHERE 1=1";
         
-        $whereClause = "WHERE 1=1";
         $params = [];
         
-        if (!empty($filters['status'])) {
-            $whereClause .= " AND b.status = :status";
-            $params[':status'] = $filters['status'];
+        // Add search conditions
+        if (!empty($search)) {
+            $query .= " AND (
+                b.booking_code LIKE ? OR 
+                c.full_name LIKE ? OR 
+                c.email LIKE ? OR 
+                r.room_number LIKE ?
+            )";
+            $searchTerm = "%" . $search . "%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
         }
         
-        if (!empty($filters['payment_status'])) {
-            $whereClause .= " AND b.payment_status = :payment_status";
-            $params[':payment_status'] = $filters['payment_status'];
+        if (!empty($status)) {
+            $query .= " AND b.status = ?";
+            $params[] = $status;
         }
         
-        if (!empty($filters['customer_id'])) {
-            $whereClause .= " AND b.customer_id = :customer_id";
-            $params[':customer_id'] = $filters['customer_id'];
+        if (!empty($date_from)) {
+            $query .= " AND DATE(b.check_in) >= ?";
+            $params[] = $date_from;
         }
         
-        if (!empty($filters['room_id'])) {
-            $whereClause .= " AND b.room_id = :room_id";
-            $params[':room_id'] = $filters['room_id'];
+        if (!empty($date_to)) {
+            $query .= " AND DATE(b.check_in) <= ?";
+            $params[] = $date_to;
         }
         
-        if (!empty($filters['check_in_from'])) {
-            $whereClause .= " AND b.check_in >= :check_in_from";
-            $params[':check_in_from'] = $filters['check_in_from'];
-        }
-        
-        if (!empty($filters['check_in_to'])) {
-            $whereClause .= " AND b.check_in <= :check_in_to";
-            $params[':check_in_to'] = $filters['check_in_to'];
-        }
-        
-        if (!empty($filters['search'])) {
-            $whereClause .= " AND (b.booking_code LIKE :search OR u.full_name LIKE :search OR u.email LIKE :search)";
-            $params[':search'] = "%{$filters['search']}%";
-        }
-        
-        // Query tổng số records
-        $countQuery = "SELECT COUNT(*) as total 
-                      FROM {$this->table} b
-                      LEFT JOIN users u ON b.customer_id = u.id
-                      $whereClause";
-        
-        $stmt = $this->conn->prepare($countQuery);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        $stmt->execute();
-        $totalResult = $stmt->fetch(PDO::FETCH_ASSOC);
-        $total = $totalResult['total'];
-        
-        // Query dữ liệu
-        $query = "SELECT b.*, 
-                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
-                         r.room_number, rt.type_name as room_type,
-                         (SELECT SUM(bs.price * bs.quantity) 
-                          FROM booking_services bs 
-                          WHERE bs.booking_id = b.id) as services_total
-                  FROM {$this->table} b
-                  LEFT JOIN users u ON b.customer_id = u.id
-                  LEFT JOIN rooms r ON b.room_id = r.id
-                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
-                  $whereClause
-                  ORDER BY b.created_at DESC
-                  LIMIT :limit OFFSET :offset";
-        
+        $query .= " ORDER BY b.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = (int)$limit;
+        $params[] = (int)$offset;
+
         $stmt = $this->conn->prepare($query);
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        for ($i = 0; $i < count($params); $i++) {
+            $stmt->bindValue($i + 1, $params[$i]);
         }
         
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
         $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Tính tổng tiền (phòng + dịch vụ)
+        // Tính số đêm cho mỗi booking
         foreach ($bookings as &$booking) {
-            $booking['services_total'] = (float)$booking['services_total'] ?? 0;
-            $booking['grand_total'] = $booking['total_price'] + $booking['services_total'];
+            $check_in = new DateTime($booking['check_in']);
+            $check_out = new DateTime($booking['check_out']);
+            $booking['nights'] = $check_out->diff($check_in)->days;
         }
         
-        return [
-            'data' => $bookings,
-            'total' => $total,
-            'page' => $page,
-            'limit' => $limit,
-            'total_pages' => ceil($total / $limit)
-        ];
+        return $bookings;
     }
 
-    // Lấy booking theo ID
-    public function getById($id) {
-        $query = "SELECT b.*, 
-                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone, u.address as customer_address,
-                         r.room_number, r.floor, r.view_type, r.image_url as room_image,
-                         rt.type_name as room_type, rt.base_price as room_price, rt.capacity,
-                         (SELECT SUM(bs.price * bs.quantity) 
-                          FROM booking_services bs 
-                          WHERE bs.booking_id = b.id) as services_total
-                  FROM {$this->table} b
-                  LEFT JOIN users u ON b.customer_id = u.id
+    // Đếm tất cả bookings (cho admin)
+    public function countAllBookings($search = '', $status = '', $date_from = '', $date_to = '') {
+        $query = "SELECT COUNT(*) as total 
+                  FROM " . $this->table_name . " b
                   LEFT JOIN rooms r ON b.room_id = r.id
-                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
-                  WHERE b.id = :id";
+                  LEFT JOIN customers c ON b.customer_id = c.id
+                  WHERE 1=1";
         
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($booking) {
-            $booking['services_total'] = (float)$booking['services_total'] ?? 0;
-            $booking['grand_total'] = $booking['total_price'] + $booking['services_total'];
-            
-            // Lấy dịch vụ
-            $booking['services'] = $this->getBookingServices($id);
-        }
-        
-        return $booking;
-    }
-
-    // Lấy booking theo mã
-    public function getByCode($booking_code) {
-        $query = "SELECT b.*, 
-                         u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone,
-                         r.room_number,
-                         rt.type_name as room_type
-                  FROM {$this->table} b
-                  LEFT JOIN users u ON b.customer_id = u.id
-                  LEFT JOIN rooms r ON b.room_id = r.id
-                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
-                  WHERE b.booking_code = :booking_code";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':booking_code', $booking_code);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Lấy dịch vụ của booking
-    private function getBookingServices($booking_id) {
-        $query = "SELECT bs.*, s.service_name, s.category
-                  FROM {$this->bookingServicesTable} bs
-                  LEFT JOIN services s ON bs.service_id = s.id
-                  WHERE bs.booking_id = :booking_id";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Cập nhật booking
-    public function update($id, $data) {
-        $setClause = [];
-        $params = [':id' => $id];
-        
-        if (isset($data['status'])) {
-            $setClause[] = "status = :status";
-            $params[':status'] = $data['status'];
-        }
-        
-        if (isset($data['payment_status'])) {
-            $setClause[] = "payment_status = :payment_status";
-            $params[':payment_status'] = $data['payment_status'];
-        }
-        
-        if (isset($data['payment_method'])) {
-            $setClause[] = "payment_method = :payment_method";
-            $params[':payment_method'] = $data['payment_method'];
-        }
-        
-        if (isset($data['special_requests'])) {
-            $setClause[] = "special_requests = :special_requests";
-            $params[':special_requests'] = $data['special_requests'];
-        }
-        
-        if (isset($data['check_in'])) {
-            $setClause[] = "check_in = :check_in";
-            $params[':check_in'] = $data['check_in'];
-        }
-        
-        if (isset($data['check_out'])) {
-            $setClause[] = "check_out = :check_out";
-            $params[':check_out'] = $data['check_out'];
-        }
-        
-        if (isset($data['num_guests'])) {
-            $setClause[] = "num_guests = :num_guests";
-            $params[':num_guests'] = $data['num_guests'];
-        }
-        
-        if (isset($data['total_price'])) {
-            $setClause[] = "total_price = :total_price";
-            $params[':total_price'] = $data['total_price'];
-        }
-        
-        if (empty($setClause)) {
-            return false;
-        }
-        
-        $query = "UPDATE {$this->table} 
-                  SET " . implode(', ', $setClause) . " 
-                  WHERE id = :id";
-        
-        $stmt = $this->conn->prepare($query);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        
-        return $stmt->execute();
-    }
-
-    // Xóa booking (soft delete)
-    public function delete($id) {
-        // Chỉ cho phép xóa nếu booking ở trạng thái pending hoặc cancelled
-        $query = "UPDATE {$this->table} 
-                  SET status = 'cancelled' 
-                  WHERE id = :id AND status IN ('pending', 'confirmed')";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
-    // Kiểm tra booking có tồn tại không
-    public function exists($id) {
-        $query = "SELECT id FROM {$this->table} WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
-    }
-
-    // Lấy bookings của customer
-    public function getByCustomer($customer_id, $limit = 10) {
-        $query = "SELECT b.*, 
-                         r.room_number,
-                         rt.type_name as room_type
-                  FROM {$this->table} b
-                  LEFT JOIN rooms r ON b.room_id = r.id
-                  LEFT JOIN room_types rt ON r.room_type_id = rt.id
-                  WHERE b.customer_id = :customer_id
-                  ORDER BY b.created_at DESC
-                  LIMIT :limit";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':customer_id', $customer_id, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Tính số đêm
-    public function calculateNights($check_in, $check_out) {
-        $start = new DateTime($check_in);
-        $end = new DateTime($check_out);
-        $interval = $start->diff($end);
-        return $interval->days;
-    }
-
-    // Kiểm tra availability
-    public function checkRoomAvailability($room_id, $check_in, $check_out, $exclude_booking_id = null) {
-        $query = "SELECT COUNT(*) as count 
-                  FROM {$this->table} 
-                  WHERE room_id = :room_id
-                  AND (:check_in < check_out AND :check_out > check_in)
-                  AND status NOT IN ('cancelled', 'checked_out')";
-        
-        $params = [
-            ':room_id' => $room_id,
-            ':check_in' => $check_in,
-            ':check_out' => $check_out
-        ];
-        
-        if ($exclude_booking_id) {
-            $query .= " AND id != :exclude_booking_id";
-            $params[':exclude_booking_id'] = $exclude_booking_id;
-        }
-        
-        $stmt = $this->conn->prepare($query);
-        
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $result['count'] == 0;
-    }
-
-    // Lấy thống kê booking
-    public function getStats($start_date = null, $end_date = null) {
-        $stats = [];
-        
-        $whereClause = "WHERE status != 'cancelled'";
         $params = [];
         
-        if ($start_date) {
-            $whereClause .= " AND created_at >= :start_date";
-            $params[':start_date'] = $start_date;
+        // Add search conditions
+        if (!empty($search)) {
+            $query .= " AND (
+                b.booking_code LIKE ? OR 
+                c.full_name LIKE ? OR 
+                c.email LIKE ? OR 
+                r.room_number LIKE ?
+            )";
+            $searchTerm = "%" . $search . "%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
         }
         
-        if ($end_date) {
-            $whereClause .= " AND created_at <= :end_date";
-            $params[':end_date'] = $end_date;
+        if (!empty($status)) {
+            $query .= " AND b.status = ?";
+            $params[] = $status;
         }
         
-        // Tổng số booking
-        $query = "SELECT COUNT(*) as total FROM {$this->table} $whereClause";
+        if (!empty($date_from)) {
+            $query .= " AND DATE(b.check_in) >= ?";
+            $params[] = $date_from;
+        }
+        
+        if (!empty($date_to)) {
+            $query .= " AND DATE(b.check_in) <= ?";
+            $params[] = $date_to;
+        }
+
         $stmt = $this->conn->prepare($query);
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        for ($i = 0; $i < count($params); $i++) {
+            $stmt->bindValue($i + 1, $params[$i]);
         }
         
         $stmt->execute();
-        $stats['total_bookings'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
+    // Get bookings by user ID
+    public function getUserBookings($user_id, $status = '', $limit = 10, $offset = 0) {
+        $query = "SELECT b.*, r.room_number, r.room_type, r.image_url,
+                         DATE_FORMAT(b.created_at, '%d/%m/%Y %H:%i') as created_date
+                  FROM " . $this->table_name . " b
+                  LEFT JOIN rooms r ON b.room_id = r.id
+                  WHERE b.customer_id = ?";
         
-        // Doanh thu
-        $query = "SELECT SUM(total_price) as revenue 
-                  FROM {$this->table} 
-                  WHERE payment_status = 'paid' $whereClause";
+        $params = [$user_id];
+        
+        if (!empty($status)) {
+            $query .= " AND b.status = ?";
+            $params[] = $status;
+        }
+        
+        $query .= " ORDER BY b.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = (int)$limit;
+        $params[] = (int)$offset;
+
         $stmt = $this->conn->prepare($query);
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        for ($i = 0; $i < count($params); $i++) {
+            $stmt->bindValue($i + 1, $params[$i]);
         }
         
         $stmt->execute();
-        $stats['revenue'] = (float)$stmt->fetch(PDO::FETCH_ASSOC)['revenue'] ?? 0;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Count user bookings
+    public function countUserBookings($user_id, $status = '') {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " 
+                  WHERE customer_id = ?";
         
-        // Booking theo status
-        $query = "SELECT status, COUNT(*) as count 
-                  FROM {$this->table} 
-                  $whereClause
-                  GROUP BY status";
+        $params = [$user_id];
+        
+        if (!empty($status)) {
+            $query .= " AND status = ?";
+            $params[] = $status;
+        }
+
         $stmt = $this->conn->prepare($query);
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        for ($i = 0; $i < count($params); $i++) {
+            $stmt->bindValue($i + 1, $params[$i]);
         }
         
         $stmt->execute();
-        $stats['bookings_by_status'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Booking theo payment method
-        $query = "SELECT payment_method, COUNT(*) as count 
-                  FROM {$this->table} 
-                  $whereClause
-                  GROUP BY payment_method";
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
+    // Update booking
+    public function update($id, $data) {
+        $query = "UPDATE " . $this->table_name . " SET ";
+        $updates = [];
+        $params = [];
+
+        foreach ($data as $key => $value) {
+            $updates[] = "$key = ?";
+            $params[] = $value;
+        }
+
+        $query .= implode(", ", $updates);
+        $query .= " WHERE id = ?";
+        $params[] = $id;
+
         $stmt = $this->conn->prepare($query);
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        for ($i = 0; $i < count($params); $i++) {
+            $stmt->bindValue($i + 1, $params[$i]);
         }
-        
-        $stmt->execute();
-        $stats['bookings_by_payment_method'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Booking theo tháng
-        $query = "SELECT DATE_FORMAT(created_at, '%Y-%m') as month, 
-                         COUNT(*) as count,
-                         SUM(CASE WHEN payment_status = 'paid' THEN total_price ELSE 0 END) as revenue
-                  FROM {$this->table} 
-                  GROUP BY DATE_FORMAT(created_at, '%Y-%m')
-                  ORDER BY month DESC
-                  LIMIT 6";
-        $stmt = $this->conn->query($query);
-        $stats['monthly_stats'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return $stats;
+
+        return $stmt->execute();
     }
 }
+?>

@@ -158,3 +158,23 @@ INSERT INTO services (service_name, description, price, category) VALUES
 INSERT INTO promotions (promo_code, description, discount_type, discount_value, valid_from, valid_to, usage_limit) VALUES
 ('WELCOME10', 'Giảm 10% cho lần đặt đầu tiên', 'percentage', 10.00, '2025-01-01', '2025-12-31', 1000),
 ('SUMMER20', 'Giảm 20% mùa hè', 'percentage', 20.00, '2025-06-01', '2025-08-31', 500);
+
+-- Thêm dữ liệu mẫu cho bookings
+INSERT INTO bookings (booking_code, customer_id, room_id, check_in, check_out, num_guests, total_price, status, special_requests, payment_method, payment_status, created_at) VALUES
+('BK20250001', 3, 1, '2025-12-20', '2025-12-22', 2, 300.00, 'confirmed', 'Yêu cầu giường đôi', 'cash', 'paid', '2025-12-15 10:30:00'),
+('BK20250002', 3, 2, '2025-12-18', '2025-12-19', 2, 150.00, 'checked_in', 'Check-in sớm', 'credit_card', 'paid', '2025-12-16 14:20:00'),
+('BK20250003', 3, 3, '2025-12-25', '2025-12-27', 2, 240.00, 'pending', 'Phòng không hút thuốc', 'momo', 'pending', '2025-12-17 09:15:00'),
+('BK20250004', 3, 4, '2025-12-22', '2025-12-24', 4, 500.00, 'confirmed', 'Thêm giường phụ', 'vnpay', 'paid', '2025-12-18 11:45:00'),
+('BK20250005', 3, 5, '2026-01-01', '2026-01-03', 2, 700.00, 'checked_out', 'Yêu cầu hoa quả', 'cash', 'refunded', '2025-12-19 16:30:00'),
+('BK20250006', 3, 1, '2025-12-28', '2025-12-30', 2, 300.00, 'cancelled', '', 'zalopay', 'failed', '2025-12-20 13:10:00');
+
+-- Thêm dữ liệu booking_services
+INSERT INTO booking_services (booking_id, service_id, quantity, price, service_date) VALUES
+(1, 1, 1, 30.00, '2025-12-20'),
+(1, 2, 2, 30.00, '2025-12-21'),
+(2, 3, 1, 50.00, '2025-12-18'),
+(4, 4, 2, 20.00, '2025-12-23');
+
+-- Update một số phòng thành occupied
+UPDATE rooms SET status = 'occupied' WHERE id IN (1, 2);
+UPDATE rooms SET status = 'cleaning' WHERE id = 5;
